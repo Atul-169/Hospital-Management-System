@@ -16,6 +16,6 @@ public class HelloController {
     }
 
     public void onclickSadman(ActionEvent actionEvent) {
-        
+        welcomeText.setText("Change");
     }
 }
