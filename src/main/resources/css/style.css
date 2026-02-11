@@ -1,0 +1,96 @@
+/* Left pane: hospital name */
+.left-pane {
+    -fx-background-color: #1976d2; /* deep blue */
+    -fx-padding: 40;
+    -fx-alignment: CENTER;         /* center vertically and horizontally */
+}
+
+/* Hospital main title */
+.hospital-title {
+    -fx-text-fill: white;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+/* Subtitle under hospital title */
+.subtitle {
+    -fx-text-fill: #e3f2fd;
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+}
+
+/* Right pane: login section */
+.right-pane {
+    -fx-background-color: #f5f5f5; /* light gray */
+    -fx-padding: 40;
+    -fx-alignment: CENTER;
+}
+
+/* Login section title */
+.login-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 20 0;
+}
+
+/* Buttons: Doctor / Patient / Guest */
+.login-btn {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 45px;
+    -fx-background-color: #1976d2;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+    -fx-border-width: 0;
+}
+
+/* Button hover effect */
+.login-btn:hover {
+    -fx-background-color: #0d47a1;
+}
+
+/* Optional: subtle hover shadow effect */
+.login-btn:focused {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 3);
+}
+
+/* Spacing between buttons */
+.right-pane .login-btn {
+    -fx-margin: 10px 0 10px 0;
+}
+
+/* Text fields inside dynamic login forms */
+.right-pane TextField, .right-pane PasswordField {
+    -fx-pref-width: 200px;
+    -fx-font-size: 14px;
+    -fx-padding: 5 10 5 10;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #c0c0c0;
+    -fx-border-width: 1px;
+}
+
+/* Labels inside dynamic login forms */
+.right-pane Label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-padding: 5 0 5 0;
+}
+
+/* Back button for dynamic login forms */
+.back-btn {
+    -fx-pref-width: 120px;
+    -fx-pref-height: 35px;
+    -fx-background-color: #f44336; /* red */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.back-btn:hover {
+    -fx-background-color: #d32f2f;
+}

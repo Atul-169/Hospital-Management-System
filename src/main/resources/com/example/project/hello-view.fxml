@@ -20,3 +20,23 @@
    <Button mnemonicParsing="false" text="Atul" textFill="#00a331" />
     <Button onAction="#onHelloButtonClick" text="Hello!" />
 </VBox>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.MainController">
+
+<left>
+    <VBox alignment="CENTER" spacing="20" styleClass="left-pane">
+        <Label text="CityCare Hospital" styleClass="hospital-name"/>
+        <Label text="Care with Compassion"/>
+    </VBox>
+</left>
+
+<right>
+    <VBox alignment="CENTER" spacing="15" styleClass="login-pane">
+        <Label text="Login As"/>
+        <Button text="Doctor Login" onAction="#handleDoctorLogin"/>
+        <Button text="Patient Login" onAction="#handlePatientLogin"/>
+        <Button text="Guest Login" onAction="#handleGuestLogin"/>
+    </VBox>
+</right>
+
+</BorderPane>
+
