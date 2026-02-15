@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.project.PatientRegisterController"
+            fitToWidth="true"
+            stylesheets="@../css/style.css">
+
+    <VBox alignment="CENTER" spacing="20" styleClass="card">
+
+        <Label text="Patient Registration" styleClass="title"/>
+
+        <TextField fx:id="fullName" promptText="Full Name" styleClass="input-field"/>
+        <TextField fx:id="email" promptText="Email Address" styleClass="input-field"/>
+        <TextField fx:id="phone" promptText="Phone Number" styleClass="input-field"/>
+        <TextField fx:id="bloodGroup" promptText="Blood Group (A+, B-, etc)" styleClass="input-field"/>
+        <TextField fx:id="age" promptText="Age" styleClass="input-field"/>
+        <TextField fx:id="gender" promptText="Gender" styleClass="input-field"/>
+        <TextField fx:id="address" promptText="Residential Address" styleClass="input-field"/>
+        <TextField fx:id="emergencyContact" promptText="Emergency Contact Number" styleClass="input-field"/>
+        <TextField fx:id="previousDisease" promptText="Previous Diseases (if any)" styleClass="input-field"/>
+        <TextField fx:id="allergies" promptText="Allergies" styleClass="input-field"/>
+
+        <PasswordField fx:id="password" promptText="Create Password" styleClass="input-field"/>
+
+        <Button text="Register Patient"
+                styleClass="primary-btn"
+                onAction="#handleRegister"/>
+
+        <Button text="Back"
+                styleClass="secondary-btn"
+                onAction="#goBack"/>
+
+    </VBox>
+</ScrollPane>

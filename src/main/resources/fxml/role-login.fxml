@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.project.RoleLoginController"
+           stylesheets="@../css/style.css"
+           alignment="CENTER">
+
+    <VBox alignment="CENTER"
+          spacing="20"
+          styleClass="card">
+
+        <Label fx:id="titleLabel"
+               text="Login"
+               styleClass="title"/>
+
+        <TextField fx:id="usernameField"
+                   promptText="Username"
+                   styleClass="input-field"/>
+
+        <PasswordField fx:id="passwordField"
+                       promptText="Password"
+                       styleClass="input-field"/>
+
+        <Button text="Login"
+                styleClass="primary-btn"
+                onAction="#handleLogin"/>
+
+        <Hyperlink fx:id="registerLink"
+                   text="Register"
+                   onAction="#openRegister"/>
+
+        <Button text="Back"
+                onAction="#goBack"/>
+
+    </VBox>
+
+</StackPane>

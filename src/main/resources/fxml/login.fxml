@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="500" prefWidth="800" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.project.LoginController">
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
 
-    <!-- LEFT STATIC PANE -->
-    <left>
-        <VBox alignment="CENTER" prefWidth="400" spacing="20" styleClass="left-pane">
-            <Label styleClass="hospital-title" text="Cure Coders" />
-            <Label styleClass="subtitle" text="Hospital &amp; Diagnostics" />
-        </VBox>
-    </left>
+<HBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.project.LoginController"
+      stylesheets="@../css/style.css">
 
-    <!-- RIGHT DYNAMIC PANE -->
-    <right>
-        <VBox fx:id="rightPane" alignment="CENTER" prefWidth="400" spacing="15" styleClass="right-pane">
-            <Label styleClass="login-title" text="Login As" />
-            <Button onAction="#doctorLogin" styleClass="login-btn" text="Doctor" />
-            <Button onAction="#patientLogin" styleClass="login-btn" text="Patient" />
-            <Button onAction="#guestLogin" styleClass="login-btn" text="Guest" />
-        </VBox>
-    </right>
+    <!-- LEFT PANEL -->
+    <VBox styleClass="left-panel" HBox.hgrow="ALWAYS">
+        <Label text="CureCoders"
+               styleClass="app-title"/>
 
-</BorderPane>
+        <Label text="Smart Hospital Management System"
+               styleClass="app-subtitle"/>
+
+        <Label text="Manage Doctors, Patients and Appointments Easily"
+               styleClass="app-subtitle"/>
+    </VBox>
+
+    <!-- RIGHT PANEL -->
+    <VBox styleClass="right-panel" spacing="25" alignment="CENTER">
+
+        <Label text="Login As"
+               styleClass="title"/>
+
+        <Button text="Doctor"
+                styleClass="primary-btn"
+                onAction="#doctorLogin"/>
+
+        <Button text="Patient"
+                styleClass="primary-btn"
+                onAction="#patientLogin"/>
+
+        <Button text="Guest"
+                styleClass="primary-btn"
+                onAction="#guestLogin"/>
+
+    </VBox>
+
+</HBox>

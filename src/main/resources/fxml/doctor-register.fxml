@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.project.DoctorRegisterController"
+            fitToWidth="true"
+            stylesheets="@../css/style.css">
+
+    <VBox alignment="CENTER" spacing="20" styleClass="card">
+
+        <Label text="Doctor Registration" styleClass="title"/>
+
+        <TextField fx:id="fullName" promptText="Full Name" styleClass="input-field"/>
+        <TextField fx:id="email" promptText="Email Address" styleClass="input-field"/>
+        <TextField fx:id="phone" promptText="Phone Number" styleClass="input-field"/>
+        <TextField fx:id="licenseNumber" promptText="Medical License Number" styleClass="input-field"/>
+        <TextField fx:id="specialization" promptText="Specialization (Cardiology, etc)" styleClass="input-field"/>
+        <TextField fx:id="experienceYears" promptText="Years of Experience" styleClass="input-field"/>
+        <TextField fx:id="hospitalReference" promptText="Previous Hospital Reference" styleClass="input-field"/>
+        <TextField fx:id="address" promptText="Residential Address" styleClass="input-field"/>
+        <TextField fx:id="qualification" promptText="Highest Qualification" styleClass="input-field"/>
+
+        <PasswordField fx:id="password" promptText="Create Password" styleClass="input-field"/>
+
+        <Button text="Register Doctor"
+                styleClass="primary-btn"
+                onAction="#handleRegister"/>
+
+        <Button text="Back"
+                styleClass="secondary-btn"
+                onAction="#goBack"/>
+
+    </VBox>
+</ScrollPane>
