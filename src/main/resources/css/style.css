@@ -73,3 +73,125 @@
 .input-field:focused {
     -fx-border-color: #4e73df;
 }
+/* LEFT SIDE */
+.left-panel {
+    -fx-background-color: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    -fx-padding: 40;
+}
+
+.app-title {
+    -fx-text-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+
+.big-title {
+    -fx-text-fill: #00f2fe;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.subtitle {
+    -fx-text-fill: #d1ecf1;
+    -fx-font-size: 14px;
+}
+
+/* RIGHT SIDE */
+.right-panel {
+    -fx-background-color: white;
+    -fx-padding: 60;
+}
+
+/* INPUT */
+.input-field {
+    -fx-pref-width: 280;
+    -fx-pref-height: 40;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #cccccc;
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+    -fx-pref-width: 280;
+    -fx-pref-height: 45;
+    -fx-background-color: #1cc88a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+}
+
+/* REGISTER BUTTON */
+.register-btn {
+    -fx-pref-width: 280;
+    -fx-pref-height: 45;
+    -fx-background-color: #4e73df;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+}
+
+/* BACK BUTTON */
+.back-btn {
+    -fx-pref-width: 280;
+    -fx-pref-height: 40;
+    -fx-background-color: transparent;
+    -fx-border-color: #858796;
+    -fx-border-radius: 25;
+    -fx-text-fill: #858796;
+}
+.normal-text {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 13px;
+}
+
+.link-text {
+    -fx-text-fill: #4e73df;
+    -fx-font-size: 13px;
+    -fx-underline: false;
+}
+
+.link-text:hover {
+    -fx-text-fill: #1cc88a;
+    -fx-underline: true;
+}
+/* REGISTER LEFT */
+.register-left {
+    -fx-background-color: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    -fx-padding: 40;
+}
+
+/* REGISTER RIGHT */
+.register-right {
+    -fx-background-color: white;
+    -fx-padding: 60;
+}
+
+/* INPUT */
+.input-field {
+    -fx-pref-width: 300;
+    -fx-pref-height: 40;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #cccccc;
+    -fx-padding: 0 10 0 10;
+}
+
+.input-field:focused {
+    -fx-border-color: #4e73df;
+}
+
+/* PRIMARY BUTTON */
+.primary-btn {
+    -fx-pref-width: 300;
+    -fx-pref-height: 45;
+    -fx-background-color: #1cc88a;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+}
+
+.primary-btn:hover {
+    -fx-opacity: 0.85;
+}
+

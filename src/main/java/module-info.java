@@ -11,6 +11,8 @@ module com.example.project {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires java.net.http;
+    requires com.fasterxml.jackson.databind;
 
     opens com.example.project to javafx.fxml;
     exports com.example.project;
