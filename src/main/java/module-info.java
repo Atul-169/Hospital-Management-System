@@ -13,6 +13,7 @@ module com.example.project {
     requires java.sql;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires java.management;
 
     opens com.example.project to javafx.fxml;
     exports com.example.project;

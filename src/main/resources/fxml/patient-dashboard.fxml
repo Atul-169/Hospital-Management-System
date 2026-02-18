@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="mainPane" styleClass="dashboard-root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.PatientDashboardController">
+    <left>
+        <VBox style="-fx-background-color: #0f172a;" styleClass="sidebar">
+            <Label style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 0 0 30 10;" text="CureCoders" />
+            <Button styleClass="nav-btn, nav-btn-active" text="🏠 Home" />
+            <Button styleClass="nav-btn" text="🔍 Find Doctor" />
+            <Button styleClass="nav-btn" text="📜 Records" />
+            <Region VBox.vgrow="ALWAYS" />
+            <Button onAction="#handleLogout" style="-fx-text-fill: #f87171;" styleClass="nav-btn" text="🚪 Logout" />
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="30" style="-fx-padding: 40;">
+            <Label fx:id="welcomeLabel" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #ffffff;" text="Welcome Back!" textFill="WHITE" />
+            <FlowPane hgap="25" vgap="25">
+                <VBox styleClass="feature-card">
+                    <Label style="-fx-text-fill: #64748b;" text="Next Appointment" />
+                    <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #3b82f6;" text="Oct 24, 10:00 AM" />
+                </VBox>
+            </FlowPane>
+        </VBox>
+    </center>
+</BorderPane>

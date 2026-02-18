@@ -38,9 +38,8 @@ public class LoginController {
 
         Scene scene = new Scene(loader.load());
 
-        // Get controller of next screen
         RoleLoginController controller = loader.getController();
-        controller.setRole(role); // PASS ROLE HERE
+        controller.setRole(role);
 
         Stage stage = (Stage) ((Node) event.getSource())
                 .getScene().getWindow();

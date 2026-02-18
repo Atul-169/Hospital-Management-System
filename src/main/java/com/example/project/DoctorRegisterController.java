@@ -48,7 +48,7 @@ public class DoctorRegisterController {
 
         try {
 
-            // 1️⃣ Register in Firebase Auth
+            //Register in Firebase
             String response = FirebaseService.registerUser(
                     email.getText(),
                     password.getText()
@@ -93,7 +93,7 @@ public class DoctorRegisterController {
         );
 
         Scene scene = new Scene(loader.load());
-
+    
         Stage stage = (Stage) ((Node) event.getSource())
                 .getScene().getWindow();
 

@@ -17,7 +17,6 @@ public class HelloApplication extends Application {
         );
         Scene scene = new Scene(loader.load(), 800, 500);
 
-// Only add CSS if it's found
 URL cssURL = HelloApplication.class.getResource("/css/style.css");
 if (cssURL != null) {
     scene.getStylesheets().add(cssURL.toExternalForm());

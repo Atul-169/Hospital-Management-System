@@ -195,3 +195,47 @@
     -fx-opacity: 0.85;
 }
 
+/* Sidebar Container */
+.sidebar {
+    -fx-background-color: #1e293b; /* Dark Slate Blue */
+    -fx-pref-width: 250;
+    -fx-padding: 30 15 30 15;
+}
+
+/* Sidebar Buttons */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94a3b8;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 20;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #334155;
+    -fx-text-fill: white;
+}
+
+.nav-btn-active {
+    -fx-background-color: #3b82f6; /* Modern Blue */
+    -fx-text-fill: white;
+}
+
+/* Feature Cards */
+.feature-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);
+    -fx-cursor: hand;
+}
+
+.feature-card:hover {
+    -fx-translate-y: -5; /* Pop up effect */
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 15, 0, 0, 8);
+}
+
+
+

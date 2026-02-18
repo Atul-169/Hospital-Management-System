@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane fx:id="mainPane" styleClass="dashboard-root" stylesheets="@../css/style.css"
+            xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.project.DoctorDashboardController">
+    <left>
+        <VBox styleClass="sidebar">
+            <Label text="CureCoders" style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 0 0 30 10;"/>
+            <Button text="📊 Dashboard" styleClass="nav-btn, nav-btn-active"/>
+            <Button text="📅 Appointments" styleClass="nav-btn"/>
+            <Button text="👥 Patients" styleClass="nav-btn"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="🚪 Logout" onAction="#handleLogout" styleClass="nav-btn" style="-fx-text-fill: #f87171;"/>
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="30" style="-fx-padding: 40;">
+            <Label fx:id="welcomeLabel" text="Welcome, Dr. Loading..." style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <FlowPane hgap="25" vgap="25">
+                <VBox styleClass="feature-card">
+                    <Label text="Today's Patients" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
+                    <Label text="14" style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                </VBox>
+                <VBox styleClass="feature-card">
+                    <Label text="Pending Reports" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
+                    <Label text="06" style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                </VBox>
+            </FlowPane>
+        </VBox>
+    </center>
+</BorderPane>

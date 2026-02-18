@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.management.relation.Role;
 import java.io.IOException;
 
 public class PatientRegisterController {
@@ -39,7 +40,6 @@ public class PatientRegisterController {
     @FXML
     private void handleRegister(ActionEvent event) {
 
-        // 🔹 Basic validation
         if (email.getText().isEmpty() ||
                 username.getText().isEmpty() ||
                 password.getText().isEmpty() ||
@@ -50,7 +50,6 @@ public class PatientRegisterController {
                 return;
         }
 
-        // 🔹 Password match check
         if (!password.getText().equals(confirmPassword.getText())) {
             showAlert("Registration Error","Password doesn't match");
             return;
@@ -58,7 +57,7 @@ public class PatientRegisterController {
 
         try {
 
-            // 🔐 Step 1: Register user in Firebase Auth
+            //Registerin Firebase
             String response = FirebaseService.registerUser(
                     email.getText(),
                     password.getText()
@@ -81,7 +80,7 @@ public class PatientRegisterController {
             String uid = node.get("localId").asText();
 
 
-            // 💾 Step 2: Save profile in Realtime Database
+            // Save profile in Database
             FirebaseService.saveUserProfile(
                     uid,
                     email.getText(),
@@ -91,7 +90,6 @@ public class PatientRegisterController {
 
             showAlert("Registration Successfull","Congrats you are a coder patient now!");
 
-            // 🔄 Step 3: Go back to login page
             goBack(event);
 
         } catch (Exception e) {
