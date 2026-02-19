@@ -156,4 +156,59 @@ public class FirebaseService {
 
         return null;
     }
+
+
+    public static void updateReport(String patientEmail, String content) throws Exception {
+        // Firebase doesn't allow '.' in keys, replace with ','
+        String safeEmail = patientEmail.replace(".", ",");
+        String url = DATABASE_URL + "reports/" + safeEmail + ".json";
+
+        // Prepare JSON body
+        String json = "{"
+                + "\"report\": \"" + content + "\","
+                + "\"date\": \"" + java.time.LocalDate.now() + "\""
+                + "}";
+
+        java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .header("Content-Type", "application/json")
+                .PUT(java.net.http.HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+    }
+
+    // Inside FirebaseService class
+
+    public static void bookAppointment(String patientEmail, String doctorInfo, String date) throws Exception {
+        String safeEmail = patientEmail.replace(".", ",");
+        String url = DATABASE_URL + "appointments/" + safeEmail + ".json";
+
+        String json = String.format("{\"doctor\": \"%s\", \"date\": \"%s\", \"timestamp\": \"%s\"}",
+                doctorInfo, date, System.currentTimeMillis());
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static String getPatientReport(String patientEmail) throws Exception {
+        String safeEmail = patientEmail.replace(".", ",");
+        String url = DATABASE_URL + "reports/" + safeEmail + ".json";
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(response.body());
+
+        if (node != null && node.has("report")) {
+            return node.get("report").asText();
+        }
+        return "No diagnosis found.";
+    }
 }

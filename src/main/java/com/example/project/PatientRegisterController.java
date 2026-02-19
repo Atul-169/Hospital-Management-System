@@ -15,7 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.management.relation.Role;
 import java.io.IOException;
 
-public class PatientRegisterController {
+public class
+PatientRegisterController {
 
     @FXML
     private TextField email;

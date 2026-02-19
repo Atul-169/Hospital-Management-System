@@ -1,32 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
 
-<BorderPane fx:id="mainPane" styleClass="dashboard-root" stylesheets="@../css/style.css"
-            xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.project.DoctorDashboardController">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainPane" prefHeight="500.0" prefWidth="800.0" stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.example.project.DoctorDashboardController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 8 20; -fx-background-color: #1e293b;" styleClass="topbar">
+            <Label style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;" text="CureCoders" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="topDoctorName" style="-fx-text-fill: white;" text="Dr. Loading..." />
+        </HBox>
+    </top>
+
     <left>
-        <VBox styleClass="sidebar">
-            <Label text="CureCoders" style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold; -fx-padding: 0 0 30 10;"/>
-            <Button text="📊 Dashboard" styleClass="nav-btn, nav-btn-active"/>
-            <Button text="📅 Appointments" styleClass="nav-btn"/>
-            <Button text="👥 Patients" styleClass="nav-btn"/>
-            <Region VBox.vgrow="ALWAYS"/>
-            <Button text="🚪 Logout" onAction="#handleLogout" styleClass="nav-btn" style="-fx-text-fill: #f87171;"/>
+        <VBox prefWidth="180" spacing="8" style="-fx-background-color: #0f172a; -fx-padding: 15 10;" styleClass="sidebar">
+            <Label fx:id="doctorName" alignment="CENTER" maxWidth="Infinity" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14;" text="Dr. Loading..." />
+            <Separator style="-fx-opacity: 0.2;" />
+
+            <Button maxWidth="Infinity" onAction="#showDashboard" styleClass="nav-btn" text="🏠 Dashboard" />
+            <Button maxWidth="Infinity" onAction="#showAppointments" styleClass="nav-btn" text="📅 Appointments" />
+            <Button maxWidth="Infinity" onAction="#showPatients" styleClass="nav-btn" text="👥 Patients" />
+
+            <VBox fx:id="surgeryBox" managed="false" visible="false">
+                <Button maxWidth="Infinity" onAction="#showSurgeries" styleClass="nav-btn" text="✂ Surgeries" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+            <Button maxWidth="Infinity" onAction="#handleEditProfile" styleClass="side-btn" text="⚙ Profile" />
+            <Button maxWidth="Infinity" onAction="#handleLogout" style="-fx-text-fill: #ffffff;" styleClass="logout-btn" text="🚪 Logout" />
         </VBox>
     </left>
+
     <center>
-        <VBox spacing="30" style="-fx-padding: 40;">
-            <Label fx:id="welcomeLabel" text="Welcome, Dr. Loading..." style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
-            <FlowPane hgap="25" vgap="25">
-                <VBox styleClass="feature-card">
-                    <Label text="Today's Patients" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
-                    <Label text="14" style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
-                </VBox>
-                <VBox styleClass="feature-card">
-                    <Label text="Pending Reports" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
-                    <Label text="06" style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
-                </VBox>
-            </FlowPane>
-        </VBox>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #f8fafc;">
+            <VBox fx:id="dashboardView" spacing="15" style="-fx-padding: 20;">
+
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="350.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+                    </columnConstraints>
+
+                    <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label fx:id="welcomeLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" text="Welcome Dr. X" />
+                        <HBox spacing="10">
+                            <VBox prefWidth="150" style="-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 8;" styleClass="feature-card">
+                                <Label style="-fx-text-fill: #64748b; -fx-font-size: 11;" text="Total Patients" />
+                                <Label fx:id="totalPatients" style="-fx-font-size: 20; -fx-font-weight: bold;" text="128" />
+                            </VBox>
+                            <VBox prefWidth="150" style="-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 8;" styleClass="feature-card">
+                                <Label style="-fx-text-fill: #64748b; -fx-font-size: 11;" text="Pending Reports" />
+                                <Label fx:id="pendingReports" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #ef4444;" text="5" />
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label style="-fx-font-size: 14; -fx-font-weight: bold;" text="Today's Schedule" />
+                        <VBox alignment="CENTER" prefHeight="80" style="-fx-background-color: #f1f5f9; -fx-padding: 10; -fx-background-radius: 8; -fx-border-color: #cbd5e1; -fx-border-radius: 8;">
+                            <Label style="-fx-font-weight: bold; -fx-font-size: 11;" text="MONDAY" />
+                            <Label style="-fx-font-size: 22; -fx-font-weight: bold;" text="20" />
+                            <Label style="-fx-text-fill: #4f46e5; -fx-font-weight: bold; -fx-font-size: 11;" text="3 Appointments" />
+                        </VBox>
+                    </VBox>
+
+                    <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                        <Label style="-fx-font-size: 16; -fx-font-weight: bold;" text="Quick Patient Report Update" />
+                        <TextField fx:id="patientIdSearch" promptText="Enter Patient Email or ID" styleClass="input-field" />
+                        <TextArea fx:id="reportArea" prefHeight="90.0" promptText="Diagnosis, Prescription, and Notes..." styleClass="input-field" wrapText="true" />
+                        <HBox alignment="CENTER_RIGHT">
+                            <Button onAction="#handleUpdateReport" prefWidth="200" styleClass="primary-btn" text="Submit Report" />
+                        </HBox>
+                    </VBox>
+                </GridPane>
+
+            </VBox>
+        </StackPane>
     </center>
 </BorderPane>
