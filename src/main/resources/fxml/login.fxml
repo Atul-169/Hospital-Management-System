@@ -1,44 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<HBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.project.LoginController"
-      stylesheets="@../css/style.css">
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" styleClass="login-root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.controller.LoginController">
 
-    <!-- LEFT PANEL -->
-    <VBox styleClass="left-panel" HBox.hgrow="ALWAYS">
-        <Label text="CureCoders"
-               styleClass="app-title"/>
+    <children>
+        <HBox prefHeight="768.0" prefWidth="1024.0" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-        <Label text="Smart Hospital Management System"
-               styleClass="app-subtitle"/>
+            <!-- Left side (Illustration/Image) -->
+            <AnchorPane prefWidth="480.0" styleClass="login-left-pane">
+                <children>
+                    <ImageView fitHeight="768.0" fitWidth="480.0" preserveRatio="false" smooth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <image>
+                            <Image url="@../images/role-select.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Overlay if needed -->
+                    <VBox alignment="CENTER" spacing="20" style="-fx-background-color: rgba(11, 18, 36, 0.4);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                </children>
+            </AnchorPane>
 
-        <Label text="Manage Doctors, Patients and Appointments Easily"
-               styleClass="app-subtitle"/>
-    </VBox>
+            <!-- Right side (Login Form) -->
+            <StackPane prefWidth="544.0" styleClass="login-right-pane">
+                <children>
+                    <!-- Form Area -->
+                    <VBox alignment="CENTER_LEFT" maxWidth="400.0" spacing="25.0" styleClass="login-card">
+                        <HBox alignment="CENTER_LEFT">
+                            <Button onAction="#handleBack" styleClass="back-btn-minimal">
+                                <graphic>
+                                    <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/back-icon.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                        </HBox>
 
-    <!-- RIGHT PANEL -->
-    <VBox styleClass="right-panel" spacing="25" alignment="CENTER">
+                        <VBox spacing="8.0">
+                            <Label fx:id="roleLabel" styleClass="login-role-tag" text="ADMIN LOGIN" />
+                            <Label styleClass="login-title" text="Welcome Back" />
+                            <Label styleClass="login-subtitle" text="Please enter your details to sign in." />
+                        </VBox>
 
-        <Label text="Login As"
-               styleClass="title"/>
+                        <!-- Error Message Label -->
+                        <Label fx:id="errorLabel" managed="false" maxWidth="400.0" styleClass="error-label" visible="false" wrapText="true" />
 
-        <Button text="Doctor"
-                styleClass="primary-btn"
-                onAction="#doctorLogin"/>
+                        <VBox spacing="15.0">
+                            <!-- Email/Username -->
+                            <VBox spacing="6.0">
+                                <Label styleClass="input-label" text="Email or Username" />
+                                <TextField fx:id="usernameField" prefHeight="50.0" promptText="Enter your email or username" styleClass="text-field-custom" />
+                            </VBox>
 
-        <Button text="Patient"
-                styleClass="primary-btn"
-                onAction="#patientLogin"/>
+                            <!-- Password -->
+                            <VBox spacing="6.0">
+                                <Label styleClass="input-label" text="Password" />
+                                <PasswordField fx:id="passwordField" prefHeight="50.0" promptText="••••••••" styleClass="text-field-custom" />
+                                <HBox alignment="CENTER_RIGHT">
+                                    <Label style="-fx-font-size: 12px;" styleClass="register-action" text="Forgot password?" />
+                                </HBox>
+                            </VBox>
+                        </VBox>
 
-        <Button text="Guest"
-                styleClass="primary-btn"
-                onAction="#guestLogin"/>
+                        <Button fx:id="loginBtn" onAction="#handleLogin" prefWidth="400.0" styleClass="login-primary-btn" text="Sign In" />
 
-    </VBox>
-
-</HBox>
+                        <HBox alignment="CENTER" spacing="5.0">
+                            <Label styleClass="register-link" text="Don't have an account?" />
+                            <Label onMouseClicked="#handleRegisterRedirect" styleClass="register-action" text="Register Now" />
+                        </HBox>
+                    </VBox>
+                </children>
+            </StackPane>
+        </HBox>
+    </children>
+</AnchorPane>

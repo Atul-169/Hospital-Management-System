@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1024.0" styleClass="login-root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.controller.ProfileSetupController">
+    <children>
+        <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" maxWidth="500.0" spacing="25.0" styleClass="login-card">
+                    <padding>
+                        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+                    </padding>
+                    <children>
+                        <VBox alignment="CENTER" spacing="8.0">
+                            <Label styleClass="login-title" text="Complete Your Profile" />
+                            <Label styleClass="login-subtitle" text="Help us provide better healthcare for you." />
+                        </VBox>
+
+                        <VBox fx:id="patientFields" spacing="15.0">
+                            <HBox spacing="15.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label styleClass="input-label" text="Phone Number" />
+                                    <TextField fx:id="phoneField" prefHeight="45.0" promptText="+880123456789" styleClass="text-field-custom" />
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label styleClass="input-label" text="Blood Group" />
+                                    <ComboBox fx:id="bloodGroupCombo" maxWidth="Infinity" prefHeight="45.0" promptText="Select" styleClass="text-field-custom" />
+                                </VBox>
+                            </HBox>
+
+                            <VBox spacing="5.0">
+                                <Label styleClass="input-label" text="Address" />
+                                <TextField fx:id="addressField" prefHeight="45.0" promptText="Your address here" styleClass="text-field-custom" />
+                            </VBox>
+
+                            <HBox spacing="20.0">
+                                <CheckBox fx:id="allergiesCheck" text="Have Allergies?" styleClass="custom-checkbox" />
+                                <CheckBox fx:id="diabetesCheck" text="Have Diabetes?" styleClass="custom-checkbox" />
+                            </HBox>
+
+                            <VBox spacing="5.0">
+                                <Label styleClass="input-label" text="Medical History (Optional)" />
+                                <TextArea fx:id="historyArea" prefHeight="80.0" promptText="Brief medical history..." wrapText="true" styleClass="text-area-custom" />
+                            </VBox>
+                        </VBox>
+
+                        <VBox fx:id="doctorFields" spacing="15.0" managed="false" visible="false">
+                            <VBox spacing="5.0">
+                                <Label styleClass="input-label" text="Specialization" />
+                                <TextField fx:id="specializationField" prefHeight="45.0" promptText="e.g. Cardiology" styleClass="text-field-custom" />
+                            </VBox>
+                            <HBox spacing="15.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label styleClass="input-label" text="Qualification" />
+                                    <TextField fx:id="qualificationField" prefHeight="45.0" promptText="e.g. MBBS, FCPS" styleClass="text-field-custom" />
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label styleClass="input-label" text="Experience (Years)" />
+                                    <TextField fx:id="experienceField" prefHeight="45.0" promptText="e.g. 5" styleClass="text-field-custom" />
+                                </VBox>
+                            </HBox>
+                            <HBox spacing="15.0">
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label styleClass="input-label" text="Contact Number" />
+                                    <TextField fx:id="docPhoneField" prefHeight="45.0" promptText="+8801..." styleClass="text-field-custom" />
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <Label styleClass="input-label" text="Consultation Fee (BDT)" />
+                                    <TextField fx:id="feeField" prefHeight="45.0" promptText="e.g. 1000" styleClass="text-field-custom" />
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <Button fx:id="saveBtn" onAction="#handleSaveProfile" prefHeight="50.0" prefWidth="Infinity" styleClass="login-primary-btn" text="Save &amp; Continue" />
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+    </children>
+</AnchorPane>

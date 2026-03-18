@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.project.controller.SplashController"
+           prefHeight="500.0"
+           prefWidth="800.0"
+           style="-fx-background-color: black;">
+
+    <ImageView fx:id="logoImage"
+               fitHeight="220"
+               fitWidth="220"
+               preserveRatio="true" />
+</StackPane>

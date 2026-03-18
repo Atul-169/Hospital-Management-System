@@ -1,0 +1,37 @@
+package com.example.project.util;
+
+public class SessionManager {
+    private static String selectedRole; // "Admin", "Doctor", or "Patient"
+    private static String userName;
+    private static int userId;
+
+    public static String getSelectedRole() {
+        return selectedRole;
+    }
+
+    public static void setSelectedRole(String role) {
+        selectedRole = role;
+    }
+
+    public static String getUserName() {
+        return userName;
+    }
+
+    public static void setUserName(String name) {
+        userName = name;
+    }
+
+    public static int getUserId() {
+        return userId;
+    }
+
+    public static void setUserId(int id) {
+        userId = id;
+    }
+    
+    public static void clearSession() {
+        selectedRole = null;
+        userName = null;
+        userId = 0;
+    }
+}

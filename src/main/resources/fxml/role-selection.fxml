@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.project.controller.RoleSelectionController"
+            prefHeight="768.0"
+            prefWidth="1024.0"
+            stylesheets="@../css/style.css"
+            styleClass="role-root">
+
+    <children>
+        <HBox spacing="0.0"
+              prefHeight="768.0" prefWidth="1024.0"
+              AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+
+            <AnchorPane prefWidth="512.0" styleClass="role-left-pane">
+                <children>
+                    <ImageView fitWidth="512.0" fitHeight="768.0"
+                               preserveRatio="false" smooth="true"
+                               AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+                               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                        <image>
+                            <Image url="@../images/role-select.png" />
+                        </image>
+                    </ImageView>
+                </children>
+            </AnchorPane>
+
+            <StackPane prefWidth="512.0" styleClass="role-right-pane">
+                <children>
+                    <VBox fx:id="rightCard"
+                          alignment="CENTER"
+                          maxWidth="340.0"
+                          spacing="16.0"
+                          styleClass="role-card">
+
+                        <Label text="Choose Your Role" styleClass="role-title" />
+                        <Label text="Continue as Admin, Doctor or Patient" styleClass="role-subtitle" />
+
+                        <Region prefHeight="8.0" />
+
+                        <Button fx:id="adminBtn" text="Admin" onAction="#handleAdminSelection"
+                                prefHeight="50.0" prefWidth="280.0"
+                                styleClass="role-btn" />
+
+                        <Button fx:id="doctorBtn" text="Doctor" onAction="#handleDoctorSelection"
+                                prefHeight="50.0" prefWidth="280.0"
+                                styleClass="role-btn" />
+
+                        <Button fx:id="patientBtn" text="Patient" onAction="#handlePatientSelection"
+                                prefHeight="50.0" prefWidth="280.0"
+                                styleClass="role-btn" />
+                    </VBox>
+                </children>
+            </StackPane>
+
+        </HBox>
+    </children>
+</AnchorPane>

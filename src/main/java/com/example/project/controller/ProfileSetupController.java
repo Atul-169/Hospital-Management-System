@@ -1,0 +1,167 @@
+package com.example.project.controller;
+
+import com.example.project.util.DatabaseConnection;
+import com.example.project.util.SessionManager;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class ProfileSetupController {
+
+    @FXML private VBox patientFields;
+    @FXML private VBox doctorFields;
+
+    // Patient Fields
+    @FXML private TextField phoneField;
+    @FXML private ComboBox<String> bloodGroupCombo;
+    @FXML private TextField addressField;
+    @FXML private CheckBox allergiesCheck;
+    @FXML private CheckBox diabetesCheck;
+    @FXML private TextArea historyArea;
+
+    // Doctor Fields
+    @FXML private TextField specializationField;
+    @FXML private TextField qualificationField;
+    @FXML private TextField experienceField;
+    @FXML private TextField docPhoneField;
+    @FXML private TextField feeField;
+
+    @FXML
+    public void initialize() {
+        String role = SessionManager.getSelectedRole();
+        if ("Doctor".equalsIgnoreCase(role)) {
+            patientFields.setVisible(false);
+            patientFields.setManaged(false);
+            doctorFields.setVisible(true);
+            doctorFields.setManaged(true);
+        } else {
+            patientFields.setVisible(true);
+            patientFields.setManaged(true);
+            doctorFields.setVisible(false);
+            doctorFields.setManaged(false);
+            bloodGroupCombo.getItems().addAll("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+        }
+    }
+
+    @FXML
+    public void handleSaveProfile(ActionEvent event) {
+        String role = SessionManager.getSelectedRole();
+        if ("Doctor".equalsIgnoreCase(role)) {
+            saveDoctorProfile(event);
+        } else {
+            savePatientProfile(event);
+        }
+    }
+
+    private void savePatientProfile(ActionEvent event) {
+        String phone = phoneField.getText();
+        String bloodGroup = bloodGroupCombo.getValue();
+        String address = addressField.getText();
+        String allergies = allergiesCheck.isSelected() ? "Yes" : "No";
+        String diabetes = diabetesCheck.isSelected() ? "Yes" : "No";
+        String history = historyArea.getText();
+
+        if (phone.isEmpty() || bloodGroup == null || address.isEmpty()) {
+            showAlert("Validation Error", "Please fill all mandatory fields (Phone, Blood Group, Address).");
+            return;
+        }
+
+        String sql = "INSERT INTO patients (user_id, phone, blood_group, address, allergies, diabetes, medical_history, profile_completed) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, 1) " +
+                     "ON CONFLICT(user_id) DO UPDATE SET " +
+                     "phone=excluded.phone, blood_group=excluded.blood_group, address=excluded.address, " +
+                     "allergies=excluded.allergies, diabetes=excluded.diabetes, medical_history=excluded.medical_history, " +
+                     "profile_completed=1";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, SessionManager.getUserId());
+            pstmt.setString(2, phone);
+            pstmt.setString(3, bloodGroup);
+            pstmt.setString(4, address);
+            pstmt.setString(5, allergies);
+            pstmt.setString(6, diabetes);
+            pstmt.setString(7, history);
+
+            pstmt.executeUpdate();
+            loadScene(event, "/fxml/patient-dashboard.fxml");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveDoctorProfile(ActionEvent event) {
+        String spec = specializationField.getText();
+        String qual = qualificationField.getText();
+        String exp = experienceField.getText();
+        String phone = docPhoneField.getText();
+        String feeStr = feeField.getText();
+
+        if (spec.isEmpty() || qual.isEmpty() || exp.isEmpty() || phone.isEmpty() || feeStr.isEmpty()) {
+            showAlert("Validation Error", "Please fill all fields.");
+            return;
+        }
+
+        double fee;
+        try {
+            fee = Double.parseDouble(feeStr);
+        } catch (NumberFormatException e) {
+            showAlert("Input Error", "Fee must be a number.");
+            return;
+        }
+
+        String sql = "INSERT INTO doctors (user_id, specialization, qualification, experience, phone, fee, profile_completed) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, 1) " +
+                     "ON CONFLICT(user_id) DO UPDATE SET " +
+                     "specialization=excluded.specialization, qualification=excluded.qualification, " +
+                     "experience=excluded.experience, phone=excluded.phone, fee=excluded.fee, " +
+                     "profile_completed=1";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, SessionManager.getUserId());
+            pstmt.setString(2, spec);
+            pstmt.setString(3, qual);
+            pstmt.setString(4, exp);
+            pstmt.setString(5, phone);
+            pstmt.setDouble(6, fee);
+
+            pstmt.executeUpdate();
+            loadScene(event, "/fxml/doctor-dashboard.fxml");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void loadScene(ActionEvent event, String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(loader.load(), 1024, 768);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
