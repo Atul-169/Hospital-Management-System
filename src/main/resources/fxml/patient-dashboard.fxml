@@ -2,192 +2,409 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" styleClass="dashboard-root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.controller.PatientDashboardController">
-    <children>
-        <HBox prefHeight="768.0" prefWidth="1024.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <!-- Sidebar -->
-            <VBox prefWidth="260.0" styleClass="sidebar">
-                <children>
-                    <VBox alignment="CENTER" spacing="15.0" styleClass="sidebar-header">
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.project.controller.PatientDashboardController"
+            styleClass="root" stylesheets="@../css/style.css">
+
+    <!-- Top Navigation Bar -->
+    <top>
+        <HBox styleClass="top-nav" spacing="20" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+
+            <Label text="BUET MedTech" styleClass="app-title">
+                <font>
+                    <Font name="System Bold" size="20"/>
+                </font>
+            </Label>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label fx:id="lblWelcome" text="Welcome, Patient!" styleClass="welcome-text">
+                <font>
+                    <Font size="14"/>
+                </font>
+            </Label>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button fx:id="btnNotification" text="🔔" styleClass="icon-btn">
+                    <font>
+                        <Font size="18"/>
+                    </font>
+                </Button>
+                <Label fx:id="lblUnreadNotifications" text="3" styleClass="notification-badge" visible="false"/>
+            </HBox>
+
+            <ToggleButton fx:id="btnThemeSwitch" text="🌙" styleClass="theme-toggle-modern" onAction="#toggleTheme">
+                <font>
+                    <Font size="16"/>
+                </font>
+            </ToggleButton>
+
+            <Button fx:id="btnProfile" text="👤" styleClass="profile-icon-btn" onAction="#showProfile">
+                <tooltip>
+                    <Tooltip text="View Profile"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="btnLogout" text="Logout" styleClass="logout-btn-modern" onAction="#handleLogout"/>
+        </HBox>
+    </top>
+
+    <!-- Left Sidebar Navigation -->
+    <left>
+        <VBox styleClass="sidebar" spacing="5" prefWidth="220">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10"/>
+            </padding>
+
+            <Label text="NAVIGATION" styleClass="sidebar-title">
+                <font>
+                    <Font name="System Bold" size="12"/>
+                </font>
+                <VBox.margin>
+                    <Insets bottom="10"/>
+                </VBox.margin>
+            </Label>
+
+            <Button fx:id="btnDashboard" text="📊 Dashboard" styleClass="nav-btn active" onAction="#showDashboard" maxWidth="Infinity"/>
+            <Button fx:id="btnSearchDoctors" text="🔍 Search Doctors" styleClass="nav-btn" onAction="#showSearchDoctors" maxWidth="Infinity"/>
+            <Button fx:id="btnBookAppointment" text="📅 Book Appointment" styleClass="nav-btn" onAction="#showBookAppointment" maxWidth="Infinity"/>
+            <Button fx:id="btnViewAppointments" text="📋 My Appointments" styleClass="nav-btn" onAction="#showViewAppointments" maxWidth="Infinity"/>
+            <Button fx:id="btnViewReports" text="📄 Medical Reports" styleClass="nav-btn" onAction="#showViewReports" maxWidth="Infinity"/>
+
+            <Separator>
+                <VBox.margin>
+                    <Insets top="10" bottom="10"/>
+                </VBox.margin>
+            </Separator>
+
+            <Button fx:id="btnDoctorPosts" text="📰 Health Tips" styleClass="nav-btn" onAction="#showDoctorPosts" maxWidth="Infinity"/>
+            <Button fx:id="btnQA" text="❓ Q&amp;A Forum" styleClass="nav-btn" onAction="#showQA" maxWidth="Infinity"/>
+            <Button fx:id="btnBloodDonation" text="🩸 Blood Donation" styleClass="nav-btn" onAction="#showBloodDonation" maxWidth="Infinity"/>
+            <Button fx:id="btnSmartAssistant" text="🤖 Smart Assistant" styleClass="nav-btn" onAction="#showSmartAssistant" maxWidth="Infinity"/>
+        </VBox>
+    </left>
+
+    <!-- Main Content Area -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Dashboard Section -->
+            <VBox fx:id="dashboardSection" spacing="20" visible="true">
+                <Label text="Dashboard" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <GridPane hgap="20" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="25"/>
+                    </columnConstraints>
+
+                    <VBox styleClass="stat-card" GridPane.columnIndex="0">
                         <padding>
-                            <Insets bottom="30.0" top="30.0" />
+                            <Insets top="20" right="20" bottom="20" left="20"/>
                         </padding>
-                        <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../images/logo.png" />
-                            </image>
-                        </ImageView>
-                        <Label styleClass="sidebar-brand" text="BUET MedTech" />
+                        <Label text="Upcoming Appointments" styleClass="stat-label"/>
+                        <Label fx:id="lblUpcomingAppointments" text="0" styleClass="stat-value">
+                            <font>
+                                <Font name="System Bold" size="32"/>
+                            </font>
+                        </Label>
                     </VBox>
 
-                    <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
-                        <content>
-                            <VBox spacing="5.0" styleClass="sidebar-menu">
-                                <padding>
-                                    <Insets left="15.0" right="15.0" top="10.0" />
-                                </padding>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item, menu-item-active" text="Dashboard">
-                                    <graphic><Label styleClass="menu-icon" text="🏠" /></graphic>
-                                </Button>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item" text="Find Doctor">
-                                    <graphic><Label styleClass="menu-icon" text="🔍" /></graphic>
-                                </Button>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item" text="My Appointments">
-                                    <graphic><Label styleClass="menu-icon" text="📅" /></graphic>
-                                </Button>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item" text="My Reports">
-                                    <graphic><Label styleClass="menu-icon" text="📄" /></graphic>
-                                </Button>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item" text="Health Tips Feed">
-                                    <graphic><Label styleClass="menu-icon" text="📰" /></graphic>
-                                </Button>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item" text="Blood Network">
-                                    <graphic><Label styleClass="menu-icon" text="🩸" /></graphic>
-                                </Button>
-                                <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" styleClass="menu-item" text="Symptom Checker">
-                                    <graphic><Label styleClass="menu-icon" text="🤖" /></graphic>
-                                </Button>
-                            </VBox>
-                        </content>
-                    </ScrollPane>
-
-                    <VBox spacing="10.0" styleClass="sidebar-footer">
+                    <VBox styleClass="stat-card" GridPane.columnIndex="1">
                         <padding>
-                            <Insets bottom="20.0" left="15.0" right="15.0" top="10.0" />
+                            <Insets top="20" right="20" bottom="20" left="20"/>
                         </padding>
-                        <Button alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" onAction="#handleLogout" styleClass="logout-btn" text="Logout">
-                            <graphic><Label styleClass="menu-icon" text="🚪" /></graphic>
-                        </Button>
+                        <Label text="Total Reports" styleClass="stat-label"/>
+                        <Label fx:id="lblTotalReports" text="0" styleClass="stat-value">
+                            <font>
+                                <Font name="System Bold" size="32"/>
+                            </font>
+                        </Label>
                     </VBox>
-                </children>
+
+                    <VBox styleClass="stat-card" GridPane.columnIndex="2">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                        <Label text="Unread Notifications" styleClass="stat-label"/>
+                        <Label fx:id="lblUnreadNotifs" text="0" styleClass="stat-value">
+                            <font>
+                                <Font name="System Bold" size="32"/>
+                            </font>
+                        </Label>
+                    </VBox>
+
+                    <VBox styleClass="stat-card" GridPane.columnIndex="3">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                        <Label text="Blood Donation Status" styleClass="stat-label"/>
+                        <Label fx:id="lblBloodDonationStatus" text="Not Registered" styleClass="stat-value-small">
+                            <font>
+                                <Font name="System Bold" size="16"/>
+                            </font>
+                        </Label>
+                    </VBox>
+                </GridPane>
             </VBox>
 
-            <!-- Main Content Area -->
-            <VBox styleClass="main-content" HBox.hgrow="ALWAYS">
-                <children>
-                    <!-- Top Navigation Bar -->
-                    <HBox alignment="CENTER_LEFT" prefHeight="80.0" styleClass="top-bar">
+            <!-- Search Doctors Section -->
+            <VBox fx:id="searchDoctorsSection" spacing="20" visible="false">
+                <Label text="Search Doctors" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtSearchName" promptText="Search by name..." prefWidth="200"/>
+                    <TextField fx:id="txtSearchSpecialization" promptText="Specialization..." prefWidth="200"/>
+                    <TextField fx:id="txtSearchFee" promptText="Max fee..." prefWidth="150"/>
+                    <Button text="Search" styleClass="primary-btn" onAction="#searchDoctors"/>
+                    <Button text="Show All" styleClass="secondary-btn" onAction="#showSearchDoctors"/>
+                </HBox>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
+                    <FlowPane fx:id="doctorGridPane" hgap="20" vgap="20" prefWrapLength="1200" styleClass="doctor-grid-container">
                         <padding>
-                            <Insets left="30.0" right="30.0" />
+                            <Insets top="10" right="10" bottom="10" left="10"/>
                         </padding>
-                        <Label fx:id="welcomeLabel" styleClass="welcome-text" text="Welcome, Patient!" />
-                        <Region HBox.hgrow="ALWAYS" />
-                        <HBox alignment="CENTER" spacing="15.0">
-                            <StackPane styleClass="notif-icon">
-                                <Label style="-fx-font-size: 20px;" text="🔔" />
-                                <Circle fill="#ef4444" radius="4.0" StackPane.alignment="TOP_RIGHT">
-                                    <StackPane.margin>
-                                        <Insets right="2.0" top="2.0" />
-                                    </StackPane.margin>
-                                </Circle>
-                            </StackPane>
-                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                            <HBox alignment="CENTER" spacing="10.0" onMouseClicked="#handleProfileUpdate" styleClass="profile-trigger" style="-fx-cursor: hand;">
-                                <Label fx:id="userNameLabel" styleClass="profile-name" text="User Name" />
-                                <ImageView fitHeight="35.0" fitWidth="35.0">
-                                    <image>
-                                        <Image url="@../images/logo.png" />
-                                    </image>
-                                    <clip>
-                                        <Circle centerX="17.5" centerY="17.5" radius="17.5" />
-                                    </clip>
-                                </ImageView>
-                            </HBox>
-                        </HBox>
+                    </FlowPane>
+                </ScrollPane>
+            </VBox>
+
+            <!-- Book Appointment Section -->
+            <VBox fx:id="bookAppointmentSection" spacing="20" visible="false">
+                <Label text="Book Appointment" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <VBox spacing="15" styleClass="form-container" maxWidth="600">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <VBox spacing="5">
+                        <Label text="Select Doctor:"/>
+                        <ComboBox fx:id="cmbSelectDoctor" promptText="Choose a doctor..." maxWidth="Infinity"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Appointment Date:"/>
+                        <DatePicker fx:id="dpAppointmentDate" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Appointment Time:"/>
+                        <ComboBox fx:id="cmbAppointmentTime" promptText="Choose time slot..." maxWidth="Infinity"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Visit Reason:"/>
+                        <TextArea fx:id="txtVisitReason" promptText="Describe your symptoms or reason for visit..." prefRowCount="5"/>
+                    </VBox>
+
+                    <Button text="Submit Appointment" styleClass="primary-btn" onAction="#submitAppointment" maxWidth="200"/>
+                </VBox>
+            </VBox>
+
+            <!-- View Appointments Section -->
+            <VBox fx:id="viewAppointmentsSection" spacing="20" visible="false">
+                <Label text="My Appointments" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Filter:"/>
+                    <ComboBox fx:id="cmbAppointmentFilter" onAction="#filterAppointments" prefWidth="150" styleClass="filter-combo"/>
+                </HBox>
+
+                <ScrollPane fitToWidth="true" styleClass="transparent-scroll" VBox.vgrow="ALWAYS">
+                    <FlowPane fx:id="gridAppointments" hgap="20" vgap="20" styleClass="appointment-grid">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                    </FlowPane>
+                </ScrollPane>
+            </VBox>
+
+            <!-- View Reports Section -->
+            <VBox fx:id="viewReportsSection" spacing="20" visible="false">
+                <Label text="Medical Reports" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <TableView fx:id="tblReports" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colReportDoctor" text="Doctor" prefWidth="130"/>
+                        <TableColumn fx:id="colDiagnosis" text="Diagnosis" prefWidth="180"/>
+                        <TableColumn fx:id="colPrescription" text="Prescription" prefWidth="200"/>
+                        <TableColumn fx:id="colNotes" text="Notes" prefWidth="200"/>
+                        <TableColumn fx:id="colReportDate" text="Date" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Doctor Posts Section -->
+            <VBox fx:id="doctorPostsSection" spacing="20" visible="false">
+                <Label text="Health Tips &amp; Posts" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Category:"/>
+                    <ComboBox fx:id="cmbPostCategory" onAction="#filterPosts" prefWidth="200"/>
+                </HBox>
+
+                <ListView fx:id="lstDoctorPosts" VBox.vgrow="ALWAYS" styleClass="post-list"/>
+            </VBox>
+
+            <!-- Q&A Section -->
+            <VBox fx:id="qaSection" spacing="20" visible="false">
+                <Label text="Q&amp;A Forum" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <VBox spacing="10" styleClass="form-container">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Ask a Question:" styleClass="form-label"/>
+                    <TextArea fx:id="txtAskQuestion" promptText="Type your health-related question here..." prefRowCount="3"/>
+                    <Button text="Submit Question" styleClass="primary-btn" onAction="#askQuestion" maxWidth="150"/>
+                </VBox>
+
+                <Label text="My Questions:" styleClass="subsection-title">
+                    <font>
+                        <Font name="System Bold" size="16"/>
+                    </font>
+                </Label>
+
+                <ListView fx:id="lstMyQuestions" VBox.vgrow="ALWAYS" styleClass="question-list"/>
+            </VBox>
+
+            <!-- Blood Donation Section -->
+            <VBox fx:id="bloodDonationSection" spacing="20" visible="false">
+                <Label text="Blood Donation Network" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <VBox fx:id="donorRegistrationForm" spacing="15" styleClass="form-container" maxWidth="600">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <Label text="Join as Blood Donor" styleClass="subsection-title">
+                        <font>
+                            <Font name="System Bold" size="16"/>
+                        </font>
+                    </Label>
+
+                    <HBox spacing="10">
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="Blood Group:"/>
+                            <ComboBox fx:id="cmbBloodGroup" promptText="Select..." maxWidth="Infinity"/>
+                        </VBox>
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="Availability:"/>
+                            <ComboBox fx:id="cmbAvailabilityStatus" maxWidth="Infinity"/>
+                        </VBox>
                     </HBox>
 
-                    <!-- Scrollable Content -->
-                    <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
-                        <content>
-                            <VBox spacing="30.0">
-                                <padding>
-                                    <Insets bottom="40.0" left="30.0" right="30.0" top="30.0" />
-                                </padding>
-                                
-                                <!-- Stats Cards -->
-                                <HBox spacing="20.0">
-                                    <children>
-                                        <VBox styleClass="stat-card, card-blue" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="stat-title" text="Upcoming" />
-                                            <Label styleClass="stat-value" text="02" />
-                                            <Label styleClass="stat-desc" text="Appointments" />
-                                        </VBox>
-                                        <VBox styleClass="stat-card, card-green" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="stat-title" text="Total" />
-                                            <Label styleClass="stat-value" text="08" />
-                                            <Label styleClass="stat-desc" text="Reports" />
-                                        </VBox>
-                                        <VBox styleClass="stat-card, card-orange" HBox.hgrow="ALWAYS">
-                                            <Label styleClass="stat-title" text="Blood" />
-                                            <Label styleClass="stat-value" text="B+" />
-                                            <Label styleClass="stat-desc" text="Group" />
-                                        </VBox>
-                                    </children>
-                                </HBox>
+                    <VBox spacing="5">
+                        <Label text="Location:"/>
+                        <TextField fx:id="txtDonorLocation" promptText="Your location..."/>
+                    </VBox>
 
-                                <!-- Main Grid Section -->
-                                <GridPane hgap="25.0" vgap="25.0">
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                    </columnConstraints>
-                                    <rowConstraints>
-                                        <RowConstraints vgrow="SOMETIMES" />
-                                    </rowConstraints>
-                                    <children>
-                                        <!-- Recent Appointments -->
-                                        <VBox spacing="15.0" styleClass="content-card" GridPane.columnIndex="0">
-                                            <HBox alignment="CENTER_LEFT">
-                                                <Label styleClass="card-header" text="Upcoming Appointments" />
-                                                <Region HBox.hgrow="ALWAYS" />
-                                                <Button styleClass="view-all-btn" text="View All" />
-                                            </HBox>
-                                            <VBox spacing="10.0" styleClass="data-list">
-                                                <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="list-item">
-                                                    <VBox alignment="CENTER" styleClass="date-badge">
-                                                        <Label styleClass="date-day" text="20" />
-                                                        <Label styleClass="date-month" text="MAR" />
-                                                    </VBox>
-                                                    <VBox spacing="2.0">
-                                                        <Label styleClass="item-primary" text="Dr. Ahmed Sharif" />
-                                                        <Label styleClass="item-secondary" text="Cardiology • 10:30 AM" />
-                                                    </VBox>
-                                                    <Region HBox.hgrow="ALWAYS" />
-                                                    <Label styleClass="status-badge, status-confirmed" text="Confirmed" />
-                                                </HBox>
-                                            </VBox>
-                                        </VBox>
+                    <VBox spacing="5">
+                        <Label text="Phone:"/>
+                        <TextField fx:id="txtDonorPhone" promptText="Contact number..."/>
+                    </VBox>
 
-                                        <!-- Recent Health Tips -->
-                                        <VBox spacing="15.0" styleClass="content-card" GridPane.columnIndex="1">
-                                            <HBox alignment="CENTER_LEFT">
-                                                <Label styleClass="card-header" text="Latest Health Tips" />
-                                                <Region HBox.hgrow="ALWAYS" />
-                                                <Button styleClass="view-all-btn" text="Explore" />
-                                            </HBox>
-                                            <VBox spacing="12.0">
-                                                <VBox spacing="5.0" styleClass="tip-item">
-                                                    <Label styleClass="tip-title" text="How to maintain a healthy heart?" />
-                                                    <Label styleClass="tip-author" text="By Dr. Sarah Khan • 2 days ago" />
-                                                </VBox>
-                                                <Separator />
-                                                <VBox spacing="5.0" styleClass="tip-item">
-                                                    <Label styleClass="tip-title" text="Benefits of drinking water in the morning." />
-                                                    <Label styleClass="tip-author" text="By Dr. Faisal Ahmed • 5 days ago" />
-                                                </VBox>
-                                            </VBox>
-                                        </VBox>
-                                    </children>
-                                </GridPane>
-                            </VBox>
-                        </content>
-                    </ScrollPane>
-                </children>
+                    <Button text="Register as Donor" styleClass="primary-btn" onAction="#joinAsDonor" maxWidth="200"/>
+                </VBox>
+
+                <Separator/>
+
+                <Label text="Available Blood Donors" styleClass="subsection-title">
+                    <font>
+                        <Font name="System Bold" size="16"/>
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtSearchBloodGroup" promptText="Enter blood group (e.g., A+, O-)..." prefWidth="250"/>
+                    <Button text="Search" styleClass="primary-btn" onAction="#searchDonors"/>
+                    <Button text="Show All" styleClass="secondary-btn" onAction="#showBloodDonation"/>
+                </HBox>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
+                    <FlowPane fx:id="donorGridPane" hgap="20" vgap="20" prefWrapLength="1200" styleClass="doctor-grid-container">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                    </FlowPane>
+                </ScrollPane>
             </VBox>
-        </HBox>
-    </children>
-</AnchorPane>
+
+            <!-- Smart Assistant Section -->
+            <VBox fx:id="smartAssistantSection" spacing="20" visible="false">
+                <Label text="Smart Health Assistant" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <Label text="Describe your symptoms and get AI-powered recommendations" styleClass="info-text"/>
+
+                <VBox spacing="15" styleClass="form-container">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <VBox spacing="5">
+                        <Label text="Symptoms:" styleClass="form-label"/>
+                        <TextArea fx:id="txtSymptoms" promptText="Describe your symptoms in detail (e.g., fever, headache, cough...)..." prefRowCount="5"/>
+                    </VBox>
+
+                    <Button text="Analyze Symptoms" styleClass="primary-btn" onAction="#analyzeSymptoms" maxWidth="200"/>
+
+                    <Separator/>
+
+                    <VBox spacing="5">
+                        <Label text="Recommendation:" styleClass="form-label"/>
+                        <TextArea fx:id="txtAssistantResponse" editable="false" wrapText="true" prefRowCount="10" styleClass="response-area"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+        </StackPane>
+    </center>
+
+</BorderPane>

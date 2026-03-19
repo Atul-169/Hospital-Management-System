@@ -74,7 +74,10 @@
                             </HBox>
                         </VBox>
 
-                        <Button fx:id="saveBtn" onAction="#handleSaveProfile" prefHeight="50.0" prefWidth="Infinity" styleClass="login-primary-btn" text="Save &amp; Continue" />
+                        <HBox spacing="10.0">
+                            <Button fx:id="cancelBtn" onAction="#handleCancel" prefHeight="50.0" prefWidth="Infinity" styleClass="secondary-btn" text="Cancel" />
+                            <Button fx:id="saveBtn" onAction="#handleSaveProfile" prefHeight="50.0" prefWidth="Infinity" styleClass="login-primary-btn" text="Save Profile" />
+                        </HBox>
                     </children>
                 </VBox>
             </children>

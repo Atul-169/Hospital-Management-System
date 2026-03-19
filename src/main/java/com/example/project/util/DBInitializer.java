@@ -51,7 +51,12 @@ public class DBInitializer {
                     "FOREIGN KEY(user_id) REFERENCES users(id)" +
                     ");";
 
-            // ৪. কলাম চেক এবং অ্যাড (যদি টেবিল আগে থেকেই থাকে কিন্তু কলাম না থাকে)
+            // কুয়েরিগুলো এক্সিকিউট করা
+            stmt.execute(createUsersTable);
+            stmt.execute(createDoctorsTable);
+            stmt.execute(createPatientsTable);
+
+            // ১০. কলাম চেক এবং অ্যাড (যদি টেবিল আগে থেকেই থাকে কিন্তু কলাম না থাকে)
             // Doctors Table columns
             addColumnIfNotExists(stmt, "doctors", "experience", "TEXT");
             addColumnIfNotExists(stmt, "doctors", "qualification", "TEXT");
@@ -64,15 +69,151 @@ public class DBInitializer {
             addColumnIfNotExists(stmt, "patients", "diabetes", "TEXT");
             addColumnIfNotExists(stmt, "patients", "profile_completed", "INTEGER DEFAULT 0");
 
-            // কুয়েরিগুলো এক্সিকিউট করা
-            stmt.execute(createUsersTable);
-            stmt.execute(createDoctorsTable);
-            stmt.execute(createPatientsTable);
+            // ৪. অ্যাপয়েন্টমেন্ট টেবিল
+            String createAppointmentsTable = "CREATE TABLE IF NOT EXISTS appointments (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "patient_id INTEGER," +
+                    "doctor_id INTEGER," +
+                    "appointment_date TEXT," +
+                    "appointment_time TEXT," +
+                    "visit_reason TEXT," +
+                    "status TEXT DEFAULT 'upcoming'," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY(patient_id) REFERENCES patients(id)," +
+                    "FOREIGN KEY(doctor_id) REFERENCES doctors(id)" +
+                    ");";
+
+            // ৫. মেডিকেল রিপোর্ট টেবিল
+            String createReportsTable = "CREATE TABLE IF NOT EXISTS medical_reports (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "patient_id INTEGER," +
+                    "doctor_id INTEGER," +
+                    "appointment_id INTEGER," +
+                    "diagnosis TEXT," +
+                    "prescription TEXT," +
+                    "doctor_notes TEXT," +
+                    "report_date TEXT," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY(patient_id) REFERENCES patients(id)," +
+                    "FOREIGN KEY(doctor_id) REFERENCES doctors(id)," +
+                    "FOREIGN KEY(appointment_id) REFERENCES appointments(id)" +
+                    ");";
+
+            // ৬. নোটিফিকেশন টেবিল
+            String createNotificationsTable = "CREATE TABLE IF NOT EXISTS notifications (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "user_id INTEGER," +
+                    "title TEXT," +
+                    "message TEXT," +
+                    "is_read INTEGER DEFAULT 0," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY(user_id) REFERENCES users(id)" +
+                    ");";
+
+            // ৭. ব্লাড ডোনার টেবিল
+            String createBloodDonorsTable = "CREATE TABLE IF NOT EXISTS blood_donors (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "patient_id INTEGER UNIQUE," +
+                    "blood_group TEXT," +
+                    "location TEXT," +
+                    "phone TEXT," +
+                    "availability_status TEXT DEFAULT 'available'," +
+                    "last_donation_date TEXT," +
+                    "FOREIGN KEY(patient_id) REFERENCES patients(id)" +
+                    ");";
+
+            // ৮. ডক্টর পোস্ট টেবিল
+            String createDoctorPostsTable = "CREATE TABLE IF NOT EXISTS doctor_posts (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "doctor_id INTEGER," +
+                    "title TEXT," +
+                    "content TEXT," +
+                    "category TEXT," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY(doctor_id) REFERENCES doctors(id)" +
+                    ");";
+
+            // ৯. Q&A টেবিল
+            String createQuestionsTable = "CREATE TABLE IF NOT EXISTS questions (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "patient_id INTEGER," +
+                    "question TEXT," +
+                    "answer TEXT," +
+                    "answered_by INTEGER," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "answered_at TIMESTAMP," +
+                    "FOREIGN KEY(patient_id) REFERENCES patients(id)," +
+                    "FOREIGN KEY(answered_by) REFERENCES doctors(id)" +
+                    ");";
+
+            stmt.execute(createAppointmentsTable);
+            stmt.execute(createReportsTable);
+            stmt.execute(createNotificationsTable);
+            stmt.execute(createBloodDonorsTable);
+            stmt.execute(createDoctorPostsTable);
+            stmt.execute(createQuestionsTable);
 
             System.out.println("[DEBUG_LOG] Database Tables Initialized Successfully!");
 
+            // Add sample doctors if none exist
+            insertSampleDoctors(conn);
+
         } catch (Exception e) {
             System.err.println("[DEBUG_LOG] Database Initialization Failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Insert sample doctors into the database for testing
+     */
+    private static void insertSampleDoctors(Connection conn) {
+        try (Statement stmt = conn.createStatement()) {
+            // Check if doctors already exist
+            var rs = stmt.executeQuery("SELECT COUNT(*) as count FROM users WHERE role = 'doctor'");
+            if (rs.next() && rs.getInt("count") > 0) {
+                System.out.println("[DEBUG_LOG] Sample doctors already exist");
+                return;
+            }
+
+            // Sample doctor data
+            String[][] doctors = {
+                {"Dr. Sarah Ahmed", "sarah.ahmed@hospital.com", "doctor123", "Cardiologist", "15 years", "MBBS, MD (Cardiology)", "01712345671", "2500"},
+                {"Dr. Mohammad Rahman", "mohammad.rahman@hospital.com", "doctor123", "Neurologist", "12 years", "MBBS, FCPS (Neurology)", "01712345672", "2200"},
+                {"Dr. Fatima Khan", "fatima.khan@hospital.com", "doctor123", "Pediatrician", "10 years", "MBBS, DCH, MD (Pediatrics)", "01712345673", "1800"},
+                {"Dr. Kamal Hossain", "kamal.hossain@hospital.com", "doctor123", "Orthopedic Surgeon", "18 years", "MBBS, MS (Orthopedics)", "01712345674", "2800"},
+                {"Dr. Nusrat Jahan", "nusrat.jahan@hospital.com", "doctor123", "Dermatologist", "8 years", "MBBS, DDV, MD (Dermatology)", "01712345675", "1500"},
+                {"Dr. Rashid Ali", "rashid.ali@hospital.com", "doctor123", "General Physician", "20 years", "MBBS, FCPS (Medicine)", "01712345676", "1200"},
+                {"Dr. Ayesha Begum", "ayesha.begum@hospital.com", "doctor123", "Gynecologist", "14 years", "MBBS, FCPS (Gynecology)", "01712345677", "2000"},
+                {"Dr. Tariq Mahmud", "tariq.mahmud@hospital.com", "doctor123", "ENT Specialist", "11 years", "MBBS, FCPS (ENT)", "01712345678", "1800"},
+                {"Dr. Shabnam Ara", "shabnam.ara@hospital.com", "doctor123", "Psychiatrist", "9 years", "MBBS, MPhil (Psychiatry)", "01712345679", "1600"},
+                {"Dr. Imran Sheikh", "imran.sheikh@hospital.com", "doctor123", "Gastroenterologist", "13 years", "MBBS, FCPS (Gastroenterology)", "01712345680", "2100"}
+            };
+
+            for (String[] doctor : doctors) {
+                // Insert user
+                String insertUser = String.format(
+                    "INSERT INTO users (name, email, password, role) VALUES ('%s', '%s', '%s', 'doctor')",
+                    doctor[0], doctor[1], doctor[2]
+                );
+                stmt.execute(insertUser);
+
+                // Get the inserted user ID
+                var userRs = stmt.executeQuery("SELECT last_insert_rowid() as id");
+                int userId = userRs.getInt("id");
+
+                // Insert doctor profile
+                String insertDoctor = String.format(
+                    "INSERT INTO doctors (user_id, specialization, experience, qualification, phone, fee, profile_completed) " +
+                    "VALUES (%d, '%s', '%s', '%s', '%s', %s, 1)",
+                    userId, doctor[3], doctor[4], doctor[5], doctor[6], doctor[7]
+                );
+                stmt.execute(insertDoctor);
+            }
+
+            System.out.println("[DEBUG_LOG] Sample doctors inserted successfully!");
+
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to insert sample doctors: " + e.getMessage());
         }
     }
 

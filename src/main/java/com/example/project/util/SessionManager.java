@@ -11,6 +11,7 @@ public class SessionManager {
 
     public static void setSelectedRole(String role) {
         selectedRole = role;
+        System.out.println("[DEBUG_LOG] Role set in SessionManager: " + role);
     }
 
     public static String getUserName() {

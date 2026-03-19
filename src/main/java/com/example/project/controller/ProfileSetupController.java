@@ -42,12 +42,63 @@ public class ProfileSetupController {
             patientFields.setManaged(false);
             doctorFields.setVisible(true);
             doctorFields.setManaged(true);
+            loadDoctorData();
         } else {
             patientFields.setVisible(true);
             patientFields.setManaged(true);
             doctorFields.setVisible(false);
             doctorFields.setManaged(false);
             bloodGroupCombo.getItems().addAll("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+            loadPatientData();
+        }
+    }
+
+    private void loadPatientData() {
+        String query = "SELECT * FROM patients WHERE user_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            java.sql.ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                phoneField.setText(rs.getString("phone"));
+                bloodGroupCombo.setValue(rs.getString("blood_group"));
+                addressField.setText(rs.getString("address"));
+                allergiesCheck.setSelected("Yes".equalsIgnoreCase(rs.getString("allergies")));
+                diabetesCheck.setSelected("Yes".equalsIgnoreCase(rs.getString("diabetes")));
+                historyArea.setText(rs.getString("medical_history"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadDoctorData() {
+        String query = "SELECT * FROM doctors WHERE user_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            java.sql.ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                specializationField.setText(rs.getString("specialization"));
+                qualificationField.setText(rs.getString("qualification"));
+                experienceField.setText(rs.getString("experience"));
+                docPhoneField.setText(rs.getString("phone"));
+                feeField.setText(String.valueOf(rs.getDouble("fee")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML private Button saveBtn, cancelBtn;
+
+    @FXML
+    public void handleCancel(ActionEvent event) {
+        String role = SessionManager.getSelectedRole();
+        if ("Doctor".equalsIgnoreCase(role)) {
+            loadScene(event, "/fxml/doctor-dashboard.fxml");
+        } else {
+            loadScene(event, "/fxml/patient-dashboard.fxml");
         }
     }
 
