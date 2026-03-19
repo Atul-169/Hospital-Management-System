@@ -47,6 +47,7 @@ public class DoctorDashboardController {
 
     // Alert/Status Labels
     @FXML private Label statusMessageLabel;
+    @FXML private ListView<NotificationItem> notificationsList;
 
     // Appointments Components
     @FXML private TableView<Appointment> appointmentsTable;
@@ -126,26 +127,19 @@ public class DoctorDashboardController {
 
     private void checkProfileCompletion() {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT specialization, qualification, experience, phone, fee FROM doctors WHERE user_id = ?";
+            String query = "SELECT profile_completed FROM doctors WHERE user_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, SessionManager.getUserId());
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                String specialization = rs.getString("specialization");
-                String qualification = rs.getString("qualification");
-                String experience = rs.getString("experience");
-                String phone = rs.getString("phone");
-
-                // Show profile setup only if basic info is missing (first login)
-                if (specialization == null || specialization.trim().isEmpty() ||
-                    qualification == null || qualification.trim().isEmpty()) {
+                if (rs.getInt("profile_completed") != 1) {
                     showProfile();
                 } else {
                     showDashboard();
                 }
             } else {
-                // No doctor record exists, should not happen but show dashboard
-                showDashboard();
+                createDoctorProfilePlaceholder();
+                showProfile();
             }
         } catch (SQLException e) {
             showStatusMessage("Error checking profile: " + e.getMessage(), false);
@@ -281,6 +275,8 @@ public class DoctorDashboardController {
         } catch (SQLException e) {
             showAlert("Error", "Failed to load dashboard statistics: " + e.getMessage());
         }
+
+        loadRecentNotifications();
     }
 
     // Navigation Methods
@@ -299,6 +295,7 @@ public class DoctorDashboardController {
         if (appointmentsPanel != null) {
             appointmentsPanel.setVisible(true);
             loadAppointments("all");
+            loadAppointmentStatusOptions();
         }
     }
 
@@ -416,8 +413,32 @@ public class DoctorDashboardController {
                 ));
             }
             appointmentsTable.setItems(appointments);
+            populateUpdateAppointmentCombo(appointments);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load appointments: " + e.getMessage());
+        }
+    }
+
+    private void loadAppointmentStatusOptions() {
+        if (newStatusCombo != null && newStatusCombo.getValue() == null) {
+            newStatusCombo.setValue("Confirmed");
+        }
+    }
+
+    private void populateUpdateAppointmentCombo(ObservableList<Appointment> appointments) {
+        if (updateAppointmentCombo == null) {
+            return;
+        }
+
+        ObservableList<String> appointmentOptions = FXCollections.observableArrayList();
+        for (Appointment appointment : appointments) {
+            appointmentOptions.add(appointment.getId() + " - " + appointment.getPatientName() + " (" +
+                    appointment.getDate() + " " + appointment.getTime() + ") [" + appointment.getStatus() + "]");
+        }
+
+        updateAppointmentCombo.setItems(appointmentOptions);
+        if (!appointmentOptions.isEmpty() && updateAppointmentCombo.getValue() == null) {
+            updateAppointmentCombo.setValue(appointmentOptions.getFirst());
         }
     }
 
@@ -449,6 +470,8 @@ public class DoctorDashboardController {
 
             showAlert("Success", "Appointment status updated successfully!");
             loadAppointments("all");
+            loadAppointmentsForPrescription();
+            loadAppointmentsForReport();
         } catch (SQLException e) {
             showAlert("Error", "Failed to update status: " + e.getMessage());
         }
@@ -526,7 +549,8 @@ public class DoctorDashboardController {
                     "JOIN patients p ON a.patient_id = p.id " +
                     "JOIN users u ON p.user_id = u.id " +
                     "WHERE a.doctor_id = " + currentDoctorId + " AND a.status = 'completed' " +
-                    "AND a.id NOT IN (SELECT appointment_id FROM medical_reports WHERE appointment_id IS NOT NULL)";
+                    "AND (a.id NOT IN (SELECT appointment_id FROM medical_reports WHERE appointment_id IS NOT NULL) " +
+                    "OR a.id IN (SELECT appointment_id FROM medical_reports WHERE COALESCE(TRIM(diagnosis), '') = ''))";
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -537,6 +561,7 @@ public class DoctorDashboardController {
 
             if (reportAppointmentCombo != null) {
                 reportAppointmentCombo.setItems(appointments);
+                reportAppointmentCombo.setValue(appointments.isEmpty() ? null : appointments.getFirst());
             }
         } catch (SQLException e) {
             showAlert("Error", "Failed to load appointments: " + e.getMessage());
@@ -567,16 +592,33 @@ public class DoctorDashboardController {
             if (rs.next()) {
                 int patientId = rs.getInt("patient_id");
 
-                String insertQuery = "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, diagnosis, doctor_notes, report_date) " +
-                        "VALUES (?, ?, ?, ?, ?, ?)";
-                PreparedStatement pstmt = conn.prepareStatement(insertQuery);
-                pstmt.setInt(1, patientId);
-                pstmt.setInt(2, currentDoctorId);
-                pstmt.setInt(3, appointmentId);
-                pstmt.setString(4, diagnosis);
-                pstmt.setString(5, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
-                pstmt.setString(6, LocalDate.now().toString());
-                pstmt.executeUpdate();
+                String checkReportQuery = "SELECT id, prescription FROM medical_reports WHERE appointment_id = ?";
+                PreparedStatement checkStmt = conn.prepareStatement(checkReportQuery);
+                checkStmt.setInt(1, appointmentId);
+                ResultSet reportRs = checkStmt.executeQuery();
+
+                if (reportRs.next()) {
+                    String updateQuery = "UPDATE medical_reports SET patient_id = ?, doctor_id = ?, diagnosis = ?, doctor_notes = ?, report_date = ? WHERE appointment_id = ?";
+                    PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+                    updateStmt.setInt(1, patientId);
+                    updateStmt.setInt(2, currentDoctorId);
+                    updateStmt.setString(3, diagnosis);
+                    updateStmt.setString(4, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
+                    updateStmt.setString(5, LocalDate.now().toString());
+                    updateStmt.setInt(6, appointmentId);
+                    updateStmt.executeUpdate();
+                } else {
+                    String insertQuery = "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, diagnosis, doctor_notes, report_date) " +
+                            "VALUES (?, ?, ?, ?, ?, ?)";
+                    PreparedStatement pstmt = conn.prepareStatement(insertQuery);
+                    pstmt.setInt(1, patientId);
+                    pstmt.setInt(2, currentDoctorId);
+                    pstmt.setInt(3, appointmentId);
+                    pstmt.setString(4, diagnosis);
+                    pstmt.setString(5, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
+                    pstmt.setString(6, LocalDate.now().toString());
+                    pstmt.executeUpdate();
+                }
 
                 showAlert("Success", "Medical report saved successfully!");
                 clearReportForm();
@@ -602,7 +644,7 @@ public class DoctorDashboardController {
                     "FROM appointments a " +
                     "JOIN patients p ON a.patient_id = p.id " +
                     "JOIN users u ON p.user_id = u.id " +
-                    "WHERE a.doctor_id = " + currentDoctorId + " AND (a.status = 'confirmed' OR a.status = 'completed')";
+                    "WHERE a.doctor_id = " + currentDoctorId + " AND (a.status = 'confirmed' OR a.status = 'completed' OR a.status = 'upcoming')";
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -613,6 +655,7 @@ public class DoctorDashboardController {
 
             if (prescriptionAppointmentCombo != null) {
                 prescriptionAppointmentCombo.setItems(appointments);
+                prescriptionAppointmentCombo.setValue(appointments.isEmpty() ? null : appointments.getFirst());
             }
         } catch (SQLException e) {
             showAlert("Error", "Failed to load appointments: " + e.getMessage());
@@ -680,6 +723,8 @@ public class DoctorDashboardController {
             pstmt.executeUpdate();
             showAlert("Success", "Prescription added successfully!");
             clearPrescriptionForm();
+            loadAppointmentsForPrescription();
+            loadAppointmentsForReport();
 
         } catch (SQLException e) {
             showAlert("Error", "Failed to add prescription: " + e.getMessage());
@@ -865,11 +910,83 @@ public class DoctorDashboardController {
     @FXML
     private void logout() {
         SessionManager.clearSession();
-        SceneManager.switchScene(logoutBtn, "/fxml/login.fxml");
+        SceneManager.switchScene(logoutBtn, "/fxml/role-selection.fxml");
+    }
+
+    private void createDoctorProfilePlaceholder() {
+        String query = "INSERT INTO doctors (user_id, profile_completed) " +
+                "SELECT ?, 0 WHERE NOT EXISTS (SELECT 1 FROM doctors WHERE user_id = ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            pstmt.setInt(2, SessionManager.getUserId());
+            pstmt.executeUpdate();
+            loadDoctorId();
+        } catch (SQLException e) {
+            showStatusMessage("Failed to prepare doctor profile: " + e.getMessage(), false);
+        }
     }
 
     private void showAlert(String title, String content) {
         showStatusMessage(content, title.equals("Success"));
+    }
+
+    private void loadRecentNotifications() {
+        if (notificationsList == null) {
+            return;
+        }
+
+        ObservableList<NotificationItem> notifications = FXCollections.observableArrayList();
+        String query = "SELECT title, message, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 6";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                notifications.add(new NotificationItem(
+                        rs.getString("title"),
+                        rs.getString("message"),
+                        rs.getString("created_at")
+                ));
+            }
+
+            notificationsList.setItems(notifications);
+            notificationsList.setCellFactory(param -> new ListCell<>() {
+                @Override
+                protected void updateItem(NotificationItem item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setGraphic(null);
+                        setText(null);
+                    } else {
+                        setGraphic(createNotificationCell(item));
+                        setText(null);
+                    }
+                }
+            });
+        } catch (SQLException e) {
+            showStatusMessage("Failed to load notifications: " + e.getMessage(), false);
+        }
+    }
+
+    private VBox createNotificationCell(NotificationItem item) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("notification-card");
+
+        Label title = new Label(item.getTitle());
+        title.getStyleClass().add("notification-title");
+
+        Label message = new Label(item.getMessage());
+        message.getStyleClass().add("notification-message");
+        message.setWrapText(true);
+
+        Label date = new Label(item.getCreatedAt());
+        date.getStyleClass().add("notification-date");
+
+        card.getChildren().addAll(title, message, date);
+        return card;
     }
 
     private void showStatusMessage(String message, boolean isSuccess) {
@@ -937,6 +1054,22 @@ public class DoctorDashboardController {
         public String getPhone() { return phone; }
         public String getBloodGroup() { return bloodGroup; }
         public int getTotalVisits() { return totalVisits; }
+    }
+
+    public static class NotificationItem {
+        private final String title;
+        private final String message;
+        private final String createdAt;
+
+        public NotificationItem(String title, String message, String createdAt) {
+            this.title = title;
+            this.message = message;
+            this.createdAt = createdAt;
+        }
+
+        public String getTitle() { return title; }
+        public String getMessage() { return message; }
+        public String getCreatedAt() { return createdAt; }
     }
 
     public static class HealthPost {

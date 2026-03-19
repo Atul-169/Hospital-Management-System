@@ -48,6 +48,8 @@ public class LoginController {
         String role = SessionManager.getSelectedRole();
         if (role != null) {
             roleLabel.setText(role.toUpperCase() + " LOGIN");
+        } else {
+            roleLabel.setText("SELECT ROLE FIRST");
         }
         installHoverAnimation(loginBtn);
     }
@@ -82,7 +84,12 @@ public class LoginController {
     public void handleLogin(ActionEvent event) {
         String email = usernameField.getText(); // ইউজার ইমেইল দিয়ে লগইন করবে
         String password = passwordField.getText();
-        String selectedRole = SessionManager.getSelectedRole();
+        String selectedRole = SessionManager.normalizeRole(SessionManager.getSelectedRole());
+
+        if (selectedRole == null || selectedRole.isBlank()) {
+            showError("Please select a role first.");
+            return;
+        }
 
         if (email.isEmpty() || password.isEmpty()) {
             showError("Please fill all fields!");
@@ -90,7 +97,7 @@ public class LoginController {
         }
 
         // ডাটাবেজ থেকে ইউজার চেক করার SQL (SELECT)
-        String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND role = ?";
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND LOWER(role) = LOWER(?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -106,7 +113,7 @@ public class LoginController {
                 // সাকসেসফুল লগইন
                 String name = rs.getString("name");
                 int id = rs.getInt("id");
-                String userRole = rs.getString("role"); // Database থেকে আসল রোল নেওয়া
+                String userRole = SessionManager.normalizeRole(rs.getString("role")); // Database থেকে আসল রোল নেওয়া
                 System.out.println("[DEBUG_LOG] Login Successful for: " + name);
 
                 // সেশনে ডাটা রাখা
@@ -135,6 +142,7 @@ public class LoginController {
 
     private void checkDoctorProfile(ActionEvent event, int userId) {
         System.out.println("[DEBUG_LOG] Checking doctor profile completion for user ID: " + userId);
+        ensureProfileRowExists("doctors", userId);
         String sql = "SELECT profile_completed FROM doctors WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -159,6 +167,7 @@ public class LoginController {
     }
 
     private void checkPatientProfile(ActionEvent event, int userId) {
+        ensureProfileRowExists("patients", userId);
         String sql = "SELECT profile_completed FROM patients WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -204,6 +213,20 @@ public class LoginController {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void ensureProfileRowExists(String tableName, int userId) {
+        String query = "INSERT INTO " + tableName + " (user_id, profile_completed) " +
+                "SELECT ?, 0 WHERE NOT EXISTS (SELECT 1 FROM " + tableName + " WHERE user_id = ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[DEBUG_LOG] Failed to ensure profile row in " + tableName + ": " + e.getMessage());
         }
     }
 

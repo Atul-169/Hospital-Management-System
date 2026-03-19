@@ -21,7 +21,7 @@ public class PatientDashboardController {
 
     // Navigation
     @FXML private Button btnDashboard, btnSearchDoctors, btnBookAppointment, btnViewAppointments;
-    @FXML private Button btnViewReports, btnDoctorPosts, btnQA, btnBloodDonation, btnSmartAssistant;
+    @FXML private Button btnViewReports, btnDoctorPosts, btnQA, btnBloodDonation, btnSmartAssistant, btnNotifications;
     @FXML private Button btnProfile, btnLogout, btnProfileSettings;
     @FXML private Label lblWelcome;
     @FXML private Button btnLightMode, btnDarkMode;
@@ -33,6 +33,7 @@ public class PatientDashboardController {
     // Dashboard Section
     @FXML private VBox dashboardSection;
     @FXML private Label lblUpcomingAppointments, lblTotalReports, lblUnreadNotifs, lblBloodDonationStatus;
+    @FXML private VBox notificationsSection;
 
     // Search Doctors Section
     @FXML private VBox searchDoctorsSection;
@@ -65,6 +66,7 @@ public class PatientDashboardController {
     @FXML private VBox qaSection;
     @FXML private TextArea txtAskQuestion;
     @FXML private ListView<Question> lstMyQuestions;
+    @FXML private ListView<NotificationItem> lstNotifications;
 
     // Blood Donation Section
     @FXML private VBox bloodDonationSection;
@@ -149,6 +151,7 @@ public class PatientDashboardController {
         btnBookAppointment.getStyleClass().remove("active");
         btnViewAppointments.getStyleClass().remove("active");
         btnViewReports.getStyleClass().remove("active");
+        btnNotifications.getStyleClass().remove("active");
         btnDoctorPosts.getStyleClass().remove("active");
         btnQA.getStyleClass().remove("active");
         btnBloodDonation.getStyleClass().remove("active");
@@ -198,6 +201,12 @@ public class PatientDashboardController {
     }
 
     @FXML
+    private void showNotifications() {
+        showSection(notificationsSection, btnNotifications);
+        loadNotifications();
+    }
+
+    @FXML
     private void showDoctorPosts() {
         showSection(doctorPostsSection, btnDoctorPosts);
         loadDoctorPosts("All");
@@ -231,6 +240,8 @@ public class PatientDashboardController {
         viewAppointmentsSection.setManaged(false);
         viewReportsSection.setVisible(false);
         viewReportsSection.setManaged(false);
+        notificationsSection.setVisible(false);
+        notificationsSection.setManaged(false);
         doctorPostsSection.setVisible(false);
         doctorPostsSection.setManaged(false);
         qaSection.setVisible(false);
@@ -304,7 +315,7 @@ public class PatientDashboardController {
     @FXML
     private void handleLogout() {
         SessionManager.clearSession();
-        SceneManager.switchScene(btnLogout, "/fxml/login.fxml");
+        SceneManager.switchScene(btnLogout, "/fxml/role-selection.fxml");
     }
 
     // ==================== DASHBOARD ====================
@@ -355,7 +366,9 @@ public class PatientDashboardController {
     }
 
     private void loadUnreadNotificationsCount() {
-        // Notifications moved to sidebar if needed, currently skipping badge update
+        if (lblUnreadNotifs != null) {
+            lblUnreadNotifs.setText(String.valueOf(getUnreadNotificationsCount()));
+        }
     }
 
     private String getBloodDonationStatus() {
@@ -664,7 +677,30 @@ public class PatientDashboardController {
         Label statusLabel = new Label(status.toUpperCase());
         statusLabel.getStyleClass().addAll("status-badge", "status-" + status.toLowerCase());
 
-        card.getChildren().addAll(drLabel, dateTimeLabel, reasonLabel, statusLabel);
+        HBox actions = new HBox(10);
+        actions.setAlignment(Pos.CENTER_LEFT);
+
+        Button rebookBtn = new Button("Rebook");
+        rebookBtn.getStyleClass().add("secondary-btn");
+        rebookBtn.setOnAction(e -> {
+            cmbSelectDoctor.setValue(doctor.replaceFirst("^Dr\\.\\s*", ""));
+            showBookAppointment();
+        });
+
+        Button refreshBtn = new Button("Refresh");
+        refreshBtn.getStyleClass().add("primary-btn");
+        refreshBtn.setOnAction(e -> loadAppointments(cmbAppointmentFilter.getValue() != null ? cmbAppointmentFilter.getValue() : "All"));
+
+        actions.getChildren().addAll(rebookBtn, refreshBtn);
+
+        if ("completed".equalsIgnoreCase(status)) {
+            Button reportBtn = new Button("View Report");
+            reportBtn.getStyleClass().add("primary-btn");
+            reportBtn.setOnAction(e -> showViewReports());
+            actions.getChildren().add(reportBtn);
+        }
+
+        card.getChildren().addAll(drLabel, dateTimeLabel, reasonLabel, statusLabel, actions);
         return card;
     }
 
@@ -703,6 +739,94 @@ public class PatientDashboardController {
                 ));
             }
             tblReports.setItems(reports);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadNotifications() {
+        ObservableList<NotificationItem> notifications = FXCollections.observableArrayList();
+        String query = "SELECT id, title, message, is_read, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, SessionManager.getUserId());
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                notifications.add(new NotificationItem(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("message"),
+                        rs.getInt("is_read") == 1,
+                        rs.getString("created_at")
+                ));
+            }
+
+            if (lstNotifications != null) {
+                lstNotifications.setItems(notifications);
+                lstNotifications.setCellFactory(param -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(NotificationItem item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            setGraphic(createNotificationCard(item));
+                            setText(null);
+                        }
+                    }
+                });
+            }
+
+            markNotificationsAsRead();
+            loadUnreadNotificationsCount();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to load notifications", Alert.AlertType.ERROR);
+        }
+    }
+
+    private VBox createNotificationCard(NotificationItem item) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("notification-card");
+        if (!item.isRead()) {
+            card.getStyleClass().add("notification-unread");
+        }
+
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Label titleLabel = new Label(item.getTitle());
+        titleLabel.getStyleClass().add("notification-title");
+
+        Label badgeLabel = new Label(item.isRead() ? "READ" : "NEW");
+        badgeLabel.getStyleClass().add(item.isRead() ? "notification-read-badge" : "notification-new-badge");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        header.getChildren().addAll(titleLabel, spacer, badgeLabel);
+
+        Label messageLabel = new Label(item.getMessage());
+        messageLabel.getStyleClass().add("notification-message");
+        messageLabel.setWrapText(true);
+
+        Label dateLabel = new Label(item.getCreatedAt());
+        dateLabel.getStyleClass().add("notification-date");
+
+        card.getChildren().addAll(header, messageLabel, dateLabel);
+        return card;
+    }
+
+    private void markNotificationsAsRead() {
+        String query = "UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1321,5 +1445,27 @@ public class PatientDashboardController {
         public String getLocation() { return location; }
         public String getPhone() { return phone; }
         public String getStatus() { return status; }
+    }
+
+    public static class NotificationItem {
+        private final int id;
+        private final String title;
+        private final String message;
+        private final boolean read;
+        private final String createdAt;
+
+        public NotificationItem(int id, String title, String message, boolean read, String createdAt) {
+            this.id = id;
+            this.title = title;
+            this.message = message;
+            this.read = read;
+            this.createdAt = createdAt;
+        }
+
+        public int getId() { return id; }
+        public String getTitle() { return title; }
+        public String getMessage() { return message; }
+        public boolean isRead() { return read; }
+        public String getCreatedAt() { return createdAt; }
     }
 }

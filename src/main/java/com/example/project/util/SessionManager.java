@@ -5,12 +5,26 @@ public class SessionManager {
     private static String userName;
     private static int userId;
 
+    public static String normalizeRole(String role) {
+        if (role == null) {
+            return null;
+        }
+
+        String normalized = role.trim().toLowerCase();
+        return switch (normalized) {
+            case "admin" -> "Admin";
+            case "doctor" -> "Doctor";
+            case "patient" -> "Patient";
+            default -> role.trim();
+        };
+    }
+
     public static String getSelectedRole() {
         return selectedRole;
     }
 
     public static void setSelectedRole(String role) {
-        selectedRole = role;
+        selectedRole = normalizeRole(role);
         System.out.println("[DEBUG_LOG] Role set in SessionManager: " + role);
     }
 

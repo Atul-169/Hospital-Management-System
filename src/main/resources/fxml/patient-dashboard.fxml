@@ -35,6 +35,7 @@
                     <Button fx:id="btnBookAppointment" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showBookAppointment" styleClass="nav-btn" text="📅 Book Appointment" />
                     <Button fx:id="btnViewAppointments" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showViewAppointments" styleClass="nav-btn" text="📋 My Appointments" />
                     <Button fx:id="btnViewReports" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showViewReports" styleClass="nav-btn" text="📄 Medical Reports" />
+                    <Button fx:id="btnNotifications" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showNotifications" styleClass="nav-btn" text="🔔 Notifications" />
                     <Button fx:id="btnDoctorPosts" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showDoctorPosts" styleClass="nav-btn" text="💡 Health Tips" />
                     <Button fx:id="btnQA" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showQA" styleClass="nav-btn" text="❓ Q&amp;A Forum" />
                     <Button fx:id="btnBloodDonation" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showBloodDonation" styleClass="nav-btn" text="🩸 Blood Donation" />
@@ -237,6 +238,19 @@
                         <TableColumn fx:id="colReportDate" text="Date" prefWidth="120"/>
                     </columns>
                 </TableView>
+            </VBox>
+
+            <!-- Notifications Section -->
+            <VBox fx:id="notificationsSection" spacing="20" visible="false" managed="false">
+                <Label text="Notifications" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <Label text="Latest updates from admin and doctors" styleClass="info-text"/>
+
+                <ListView fx:id="lstNotifications" VBox.vgrow="ALWAYS" styleClass="question-list"/>
             </VBox>
 
             <!-- Doctor Posts Section -->

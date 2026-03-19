@@ -1,6 +1,8 @@
 package com.example.project.util;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class DBInitializer {
@@ -153,6 +155,10 @@ public class DBInitializer {
             stmt.execute(createDoctorPostsTable);
             stmt.execute(createQuestionsTable);
 
+            normalizeUserRoles(conn);
+            ensureProfileRows(conn, "Doctor");
+            ensureProfileRows(conn, "Patient");
+
             System.out.println("[DEBUG_LOG] Database Tables Initialized Successfully!");
 
             // Add sample doctors if none exist
@@ -169,7 +175,7 @@ public class DBInitializer {
     private static void insertSampleDoctors(Connection conn) {
         try (Statement stmt = conn.createStatement()) {
             // Check if doctors already exist
-            var rs = stmt.executeQuery("SELECT COUNT(*) as count FROM users WHERE role = 'doctor'");
+            var rs = stmt.executeQuery("SELECT COUNT(*) as count FROM users WHERE LOWER(role) = 'doctor'");
             if (rs.next() && rs.getInt("count") > 0) {
                 System.out.println("[DEBUG_LOG] Sample doctors already exist");
                 return;
@@ -192,7 +198,7 @@ public class DBInitializer {
             for (String[] doctor : doctors) {
                 // Insert user
                 String insertUser = String.format(
-                    "INSERT INTO users (name, email, password, role) VALUES ('%s', '%s', '%s', 'doctor')",
+                    "INSERT INTO users (name, email, password, role) VALUES ('%s', '%s', '%s', 'Doctor')",
                     doctor[0], doctor[1], doctor[2]
                 );
                 stmt.execute(insertUser);
@@ -226,6 +232,47 @@ public class DBInitializer {
             System.out.println("[DEBUG_LOG] Column '" + columnName + "' added to '" + tableName + "'");
         } catch (Exception e) {
             // যদি কলাম অলরেডি থাকে, তবে SQLite এরর দেবে, আমরা সেটি ইগনোর করবো।
+        }
+    }
+
+    private static void normalizeUserRoles(Connection conn) {
+        String sql = "UPDATE users SET role = CASE " +
+                "WHEN LOWER(TRIM(role)) = 'admin' THEN 'Admin' " +
+                "WHEN LOWER(TRIM(role)) = 'doctor' THEN 'Doctor' " +
+                "WHEN LOWER(TRIM(role)) = 'patient' THEN 'Patient' " +
+                "ELSE role END";
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to normalize roles: " + e.getMessage());
+        }
+    }
+
+    private static void ensureProfileRows(Connection conn, String role) {
+        String userQuery = "SELECT id FROM users WHERE role = ?";
+        String profileQuery = "SELECT 1 FROM " + role.toLowerCase() + "s WHERE user_id = ?";
+        String insertQuery = "INSERT INTO " + role.toLowerCase() + "s (user_id, profile_completed) VALUES (?, 0)";
+
+        try (PreparedStatement userStmt = conn.prepareStatement(userQuery);
+             PreparedStatement profileStmt = conn.prepareStatement(profileQuery);
+             PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+
+            userStmt.setString(1, role);
+            try (ResultSet userRs = userStmt.executeQuery()) {
+                while (userRs.next()) {
+                    int userId = userRs.getInt("id");
+                    profileStmt.setInt(1, userId);
+                    try (ResultSet profileRs = profileStmt.executeQuery()) {
+                        if (!profileRs.next()) {
+                            insertStmt.setInt(1, userId);
+                            insertStmt.executeUpdate();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to ensure " + role + " profile rows: " + e.getMessage());
         }
     }
 }

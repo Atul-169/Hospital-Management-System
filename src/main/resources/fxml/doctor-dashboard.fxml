@@ -145,6 +145,14 @@
                         <Label text="Answered" styleClass="stat-desc"/>
                     </VBox>
                 </GridPane>
+
+                <VBox spacing="12" styleClass="form-container" VBox.vgrow="ALWAYS">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Recent Notifications" styleClass="subsection-title">
+                        <font><Font name="System Bold" size="18"/></font>
+                    </Label>
+                    <ListView fx:id="notificationsList" prefHeight="220" VBox.vgrow="ALWAYS" styleClass="question-list"/>
+                </VBox>
             </VBox>
 
             <!-- Appointments Panel -->

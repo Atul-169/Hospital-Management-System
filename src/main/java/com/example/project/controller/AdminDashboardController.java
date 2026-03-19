@@ -231,7 +231,7 @@ public class AdminDashboardController {
     private void loadDashboardStatistics() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             // Total Doctors
-            String doctorQuery = "SELECT COUNT(*) as count FROM users WHERE role = 'doctor'";
+            String doctorQuery = "SELECT COUNT(*) as count FROM users WHERE LOWER(role) = 'doctor'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(doctorQuery);
             if (rs.next()) {
@@ -239,7 +239,7 @@ public class AdminDashboardController {
             }
 
             // Total Patients
-            String patientQuery = "SELECT COUNT(*) as count FROM users WHERE role = 'patient'";
+            String patientQuery = "SELECT COUNT(*) as count FROM users WHERE LOWER(role) = 'patient'";
             rs = stmt.executeQuery(patientQuery);
             if (rs.next()) {
                 totalPatientsLabel.setText(String.valueOf(rs.getInt("count")));
@@ -402,8 +402,9 @@ public class AdminDashboardController {
     private void loadDoctors() {
         ObservableList<Doctor> doctors = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT u.id, u.name, u.email, d.specialization, d.experience, d.phone, d.fee " +
-                    "FROM users u JOIN doctors d ON u.id = d.user_id WHERE u.role = 'doctor'";
+            String query = "SELECT u.id, u.name, u.email, COALESCE(d.specialization, '') AS specialization, " +
+                    "COALESCE(d.experience, '') AS experience, COALESCE(d.phone, '') AS phone, COALESCE(d.fee, 0) AS fee " +
+                    "FROM users u LEFT JOIN doctors d ON u.id = d.user_id WHERE LOWER(u.role) = 'doctor'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -450,7 +451,7 @@ public class AdminDashboardController {
 
         try (Connection conn = DatabaseConnection.getConnection()) {
             // Insert user
-            String insertUser = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'doctor')";
+            String insertUser = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'Doctor')";
             PreparedStatement pstmt = conn.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, name);
             pstmt.setString(2, email);
@@ -520,8 +521,9 @@ public class AdminDashboardController {
 
         ObservableList<Doctor> doctors = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT u.id, u.name, u.email, d.specialization, d.experience, d.phone, d.fee " +
-                    "FROM users u JOIN doctors d ON u.id = d.user_id WHERE u.role = 'doctor' " +
+            String query = "SELECT u.id, u.name, u.email, COALESCE(d.specialization, '') AS specialization, " +
+                    "COALESCE(d.experience, '') AS experience, COALESCE(d.phone, '') AS phone, COALESCE(d.fee, 0) AS fee " +
+                    "FROM users u LEFT JOIN doctors d ON u.id = d.user_id WHERE LOWER(u.role) = 'doctor' " +
                     "AND (LOWER(u.name) LIKE ? OR LOWER(u.email) LIKE ? OR LOWER(d.specialization) LIKE ?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             String searchPattern = "%" + searchTerm + "%";
@@ -562,8 +564,9 @@ public class AdminDashboardController {
     private void loadPatients() {
         ObservableList<Patient> patients = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT u.id, u.name, u.email, p.phone, p.blood_group " +
-                    "FROM users u JOIN patients p ON u.id = p.user_id WHERE u.role = 'patient'";
+            String query = "SELECT u.id, u.name, u.email, COALESCE(p.phone, '') AS phone, " +
+                    "COALESCE(p.blood_group, '') AS blood_group " +
+                    "FROM users u LEFT JOIN patients p ON u.id = p.user_id WHERE LOWER(u.role) = 'patient'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -620,8 +623,9 @@ public class AdminDashboardController {
 
         ObservableList<Patient> patients = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT u.id, u.name, u.email, p.phone, p.blood_group " +
-                    "FROM users u JOIN patients p ON u.id = p.user_id WHERE u.role = 'patient' " +
+            String query = "SELECT u.id, u.name, u.email, COALESCE(p.phone, '') AS phone, " +
+                    "COALESCE(p.blood_group, '') AS blood_group " +
+                    "FROM users u LEFT JOIN patients p ON u.id = p.user_id WHERE LOWER(u.role) = 'patient' " +
                     "AND (LOWER(u.name) LIKE ? OR LOWER(u.email) LIKE ? OR LOWER(p.phone) LIKE ?)";
             PreparedStatement pstmt = conn.prepareStatement(query);
             String searchPattern = "%" + searchTerm + "%";
@@ -680,7 +684,7 @@ public class AdminDashboardController {
         // Load doctors for filter
         ObservableList<String> doctors = FXCollections.observableArrayList("All Doctors");
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "SELECT u.name FROM users u JOIN doctors d ON u.id = d.user_id WHERE u.role = 'doctor'";
+            String query = "SELECT u.name FROM users u JOIN doctors d ON u.id = d.user_id WHERE LOWER(u.role) = 'doctor'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -916,7 +920,7 @@ public class AdminDashboardController {
     @FXML
     private void logout() {
         SessionManager.clearSession();
-        SceneManager.switchScene(logoutBtn, "/fxml/login.fxml");
+        SceneManager.switchScene(logoutBtn, "/fxml/role-selection.fxml");
     }
 
     private void showAlert(String title, String content) {

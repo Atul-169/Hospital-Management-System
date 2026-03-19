@@ -91,7 +91,7 @@ public class RegisterController {
         String email = emailField.getText();
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
-        String role = SessionManager.getSelectedRole();
+        String role = SessionManager.normalizeRole(SessionManager.getSelectedRole());
 
         // ১. বেসিক ভ্যালিডেশন
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
