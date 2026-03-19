@@ -9,83 +9,57 @@
             fx:controller="com.example.project.controller.PatientDashboardController"
             styleClass="root" stylesheets="@../css/style.css">
 
-    <!-- Top Navigation Bar -->
-    <top>
-        <HBox styleClass="top-nav" spacing="20" alignment="CENTER_LEFT">
-            <padding>
-                <Insets top="15" right="20" bottom="15" left="20"/>
-            </padding>
-
-            <Label text="BUET MedTech" styleClass="app-title">
-                <font>
-                    <Font name="System Bold" size="20"/>
-                </font>
-            </Label>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <Label fx:id="lblWelcome" text="Welcome, Patient!" styleClass="welcome-text">
-                <font>
-                    <Font size="14"/>
-                </font>
-            </Label>
-
-            <HBox spacing="15" alignment="CENTER">
-                <Button fx:id="btnNotification" text="🔔" styleClass="icon-btn">
-                    <font>
-                        <Font size="18"/>
-                    </font>
-                </Button>
-                <Label fx:id="lblUnreadNotifications" text="3" styleClass="notification-badge" visible="false"/>
-            </HBox>
-
-            <ToggleButton fx:id="btnThemeSwitch" text="🌙" styleClass="theme-toggle-modern" onAction="#toggleTheme">
-                <font>
-                    <Font size="16"/>
-                </font>
-            </ToggleButton>
-
-            <Button fx:id="btnProfile" text="👤" styleClass="profile-icon-btn" onAction="#showProfile">
-                <tooltip>
-                    <Tooltip text="View Profile"/>
-                </tooltip>
-            </Button>
-            <Button fx:id="btnLogout" text="Logout" styleClass="logout-btn-modern" onAction="#handleLogout"/>
-        </HBox>
-    </top>
-
+    <!-- Top Navigation Bar (Removed per user request) -->
     <!-- Left Sidebar Navigation -->
     <left>
-        <VBox styleClass="sidebar" spacing="5" prefWidth="220">
+        <VBox fx:id="sidebar" spacing="5" styleClass="sidebar">
             <padding>
-                <Insets top="20" right="10" bottom="20" left="10"/>
+                <Insets bottom="20" left="15" right="15" top="20" />
             </padding>
 
-            <Label text="NAVIGATION" styleClass="sidebar-title">
-                <font>
-                    <Font name="System Bold" size="12"/>
-                </font>
+            <!-- App Logo/Brand -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-brand">
+                <Label styleClass="brand-icon" text="✚" />
+                <Label styleClass="brand-text" text="BUET MedTech" />
                 <VBox.margin>
-                    <Insets bottom="10"/>
+                    <Insets bottom="20" />
                 </VBox.margin>
-            </Label>
+            </HBox>
 
-            <Button fx:id="btnDashboard" text="📊 Dashboard" styleClass="nav-btn active" onAction="#showDashboard" maxWidth="Infinity"/>
-            <Button fx:id="btnSearchDoctors" text="🔍 Search Doctors" styleClass="nav-btn" onAction="#showSearchDoctors" maxWidth="Infinity"/>
-            <Button fx:id="btnBookAppointment" text="📅 Book Appointment" styleClass="nav-btn" onAction="#showBookAppointment" maxWidth="Infinity"/>
-            <Button fx:id="btnViewAppointments" text="📋 My Appointments" styleClass="nav-btn" onAction="#showViewAppointments" maxWidth="Infinity"/>
-            <Button fx:id="btnViewReports" text="📄 Medical Reports" styleClass="nav-btn" onAction="#showViewReports" maxWidth="Infinity"/>
+            <!-- Navigation Menu with ScrollPane -->
+            <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="5" styleClass="sidebar-menu">
+                    <Label styleClass="sidebar-group-label" text="Menu" />
+                    <Button fx:id="btnDashboard" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showDashboard" styleClass="nav-btn, active" text="📊 Dashboard" />
+                    <Button fx:id="btnSearchDoctors" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showSearchDoctors" styleClass="nav-btn" text="🔍 Search Doctors" />
+                    <Button fx:id="btnBookAppointment" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showBookAppointment" styleClass="nav-btn" text="📅 Book Appointment" />
+                    <Button fx:id="btnViewAppointments" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showViewAppointments" styleClass="nav-btn" text="📋 My Appointments" />
+                    <Button fx:id="btnViewReports" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showViewReports" styleClass="nav-btn" text="📄 Medical Reports" />
+                    <Button fx:id="btnDoctorPosts" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showDoctorPosts" styleClass="nav-btn" text="💡 Health Tips" />
+                    <Button fx:id="btnQA" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showQA" styleClass="nav-btn" text="❓ Q&amp;A Forum" />
+                    <Button fx:id="btnBloodDonation" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showBloodDonation" styleClass="nav-btn" text="🩸 Blood Donation" />
+                    <Button fx:id="btnSmartAssistant" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showSmartAssistant" styleClass="nav-btn" text="🤖 AI Assistant" />
+                    
+                    <Region prefHeight="20" />
+                </VBox>
+            </ScrollPane>
 
-            <Separator>
-                <VBox.margin>
-                    <Insets top="10" bottom="10"/>
-                </VBox.margin>
-            </Separator>
+            <!-- Profile & Settings Section at Bottom -->
+            <VBox spacing="10" styleClass="sidebar-footer">
+                <Separator styleClass="sidebar-separator" />
+                
+                <Label fx:id="lblWelcome" styleClass="sidebar-user-name" text="Welcome, Patient!" />
+                
+                <HBox alignment="CENTER" spacing="10" styleClass="mode-toggle-container">
+                    <Button fx:id="btnLightMode" onAction="#setLightMode" styleClass="mode-btn, active" text="☀️ Light" />
+                    <Button fx:id="btnDarkMode" onAction="#setDarkMode" styleClass="mode-btn" text="🌙 Dark" />
+                </HBox>
 
-            <Button fx:id="btnDoctorPosts" text="📰 Health Tips" styleClass="nav-btn" onAction="#showDoctorPosts" maxWidth="Infinity"/>
-            <Button fx:id="btnQA" text="❓ Q&amp;A Forum" styleClass="nav-btn" onAction="#showQA" maxWidth="Infinity"/>
-            <Button fx:id="btnBloodDonation" text="🩸 Blood Donation" styleClass="nav-btn" onAction="#showBloodDonation" maxWidth="Infinity"/>
-            <Button fx:id="btnSmartAssistant" text="🤖 Smart Assistant" styleClass="nav-btn" onAction="#showSmartAssistant" maxWidth="Infinity"/>
+                <Button fx:id="btnProfile" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showProfile" styleClass="nav-btn" text="👤 Profile Setup" />
+                <Button fx:id="btnProfileSettings" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showProfile" styleClass="nav-btn" text="⚙️ Profile Settings" visible="false" managed="false" />
+                
+                <Button fx:id="btnLogout" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#handleLogout" styleClass="nav-btn, logout-btn" text="🚪 Logout" />
+            </VBox>
         </VBox>
     </left>
 
@@ -178,10 +152,10 @@
                     <Button text="Show All" styleClass="secondary-btn" onAction="#showSearchDoctors"/>
                 </HBox>
 
-                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
-                    <FlowPane fx:id="doctorGridPane" hgap="20" vgap="20" prefWrapLength="1200" styleClass="doctor-grid-container">
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                    <FlowPane fx:id="doctorGridPane" hgap="20" vgap="20" styleClass="doctor-grid-container" orientation="HORIZONTAL">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
+                            <Insets top="10" right="10" bottom="20" left="10"/>
                         </padding>
                     </FlowPane>
                 </ScrollPane>

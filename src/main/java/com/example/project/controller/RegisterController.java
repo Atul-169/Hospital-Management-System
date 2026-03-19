@@ -21,7 +21,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import com.example.project.util.DatabaseConnection;
 import com.example.project.util.SessionManager;
 
@@ -108,7 +110,7 @@ public class RegisterController {
 
         try (
                 Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             // '?' চিহ্নের জায়গায় ভ্যালু সেট করা
             pstmt.setString(1, name);
@@ -118,6 +120,26 @@ public class RegisterController {
 
             // কুয়েরি রান করা
             pstmt.executeUpdate();
+
+            // ৪. ডক্টর বা পেশেন্ট টেবিলে প্রাথমিক এন্ট্রি করা (যাতে লগইনের সময় চেক করা যায়)
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int userId = rs.getInt(1);
+                    if (role.equalsIgnoreCase("Doctor")) {
+                        String doctorSql = "INSERT INTO doctors (user_id, profile_completed) VALUES (?, 0)";
+                        try (PreparedStatement dpstmt = conn.prepareStatement(doctorSql)) {
+                            dpstmt.setInt(1, userId);
+                            dpstmt.executeUpdate();
+                        }
+                    } else if (role.equalsIgnoreCase("Patient")) {
+                        String patientSql = "INSERT INTO patients (user_id, profile_completed) VALUES (?, 0)";
+                        try (PreparedStatement ppstmt = conn.prepareStatement(patientSql)) {
+                            ppstmt.setInt(1, userId);
+                            ppstmt.executeUpdate();
+                        }
+                    }
+                }
+            }
 
             System.out.println("[DEBUG_LOG] User Registered Successfully!");
 

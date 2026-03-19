@@ -22,12 +22,13 @@ public class PatientDashboardController {
     // Navigation
     @FXML private Button btnDashboard, btnSearchDoctors, btnBookAppointment, btnViewAppointments;
     @FXML private Button btnViewReports, btnDoctorPosts, btnQA, btnBloodDonation, btnSmartAssistant;
-    @FXML private Button btnProfile, btnLogout;
-    @FXML private ToggleButton btnThemeSwitch;
-    @FXML private Label lblWelcome, lblUnreadNotifications;
+    @FXML private Button btnProfile, btnLogout, btnProfileSettings;
+    @FXML private Label lblWelcome;
+    @FXML private Button btnLightMode, btnDarkMode;
 
     // Main Content Area
     @FXML private StackPane contentArea;
+    @FXML private VBox sidebar;
 
     // Dashboard Section
     @FXML private VBox dashboardSection;
@@ -88,6 +89,8 @@ public class PatientDashboardController {
              System.err.println("[DEBUG_LOG] Patient ID not found for User ID: " + SessionManager.getUserId());
         }
         lblWelcome.setText("Welcome, " + SessionManager.getUserName() + "!");
+
+        checkProfileStatus();
 
         // Initialize time slots
         if (cmbAppointmentTime != null) {
@@ -154,6 +157,8 @@ public class PatientDashboardController {
         if (navBtn != null) {
             navBtn.getStyleClass().add("active");
         }
+
+        applyTheme();
 
         // Fade In Animation
         FadeTransition ft = new FadeTransition(Duration.millis(400), section);
@@ -236,18 +241,59 @@ public class PatientDashboardController {
         smartAssistantSection.setManaged(false);
     }
 
+    private void checkProfileStatus() {
+        String query = "SELECT profile_completed FROM patients WHERE user_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next() && rs.getInt("profile_completed") == 1) {
+                btnProfile.setVisible(false);
+                btnProfile.setManaged(false);
+                btnProfileSettings.setVisible(true);
+                btnProfileSettings.setManaged(true);
+            } else {
+                btnProfile.setVisible(true);
+                btnProfile.setManaged(true);
+                btnProfileSettings.setVisible(false);
+                btnProfileSettings.setManaged(false);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void setLightMode() {
+        isDarkMode = false;
+        applyTheme();
+    }
+
+    @FXML
+    private void setDarkMode() {
+        isDarkMode = true;
+        applyTheme();
+    }
+
+    private void applyTheme() {
+        if (contentArea == null || contentArea.getScene() == null) return;
+        
+        String theme = isDarkMode ? "dark-theme" : "light-theme";
+        contentArea.getScene().getRoot().getStyleClass().removeAll("light-theme", "dark-theme");
+        contentArea.getScene().getRoot().getStyleClass().add(theme);
+
+        if (isDarkMode) {
+            btnDarkMode.getStyleClass().add("active");
+            btnLightMode.getStyleClass().remove("active");
+        } else {
+            btnLightMode.getStyleClass().add("active");
+            btnDarkMode.getStyleClass().remove("active");
+        }
+    }
+
     @FXML
     private void toggleTheme() {
-        if (contentArea == null || contentArea.getScene() == null) {
-            return;
-        }
-        isDarkMode = !isDarkMode;
-        String theme = isDarkMode ? "dark" : "light";
-        contentArea.getScene().getRoot().getStyleClass().removeAll("light-theme", "dark-theme");
-        contentArea.getScene().getRoot().getStyleClass().add(theme + "-theme");
-
-        // Update button text/icon
-        btnThemeSwitch.setText(isDarkMode ? "☀️" : "🌙");
+        // Method kept for compatibility but logic moved to setLightMode/setDarkMode
     }
 
     @FXML
@@ -309,9 +355,7 @@ public class PatientDashboardController {
     }
 
     private void loadUnreadNotificationsCount() {
-        int count = getUnreadNotificationsCount();
-        lblUnreadNotifications.setText(count > 0 ? String.valueOf(count) : "");
-        lblUnreadNotifications.setVisible(count > 0);
+        // Notifications moved to sidebar if needed, currently skipping badge update
     }
 
     private String getBloodDonationStatus() {

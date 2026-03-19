@@ -13,7 +13,7 @@ module com.example.project {
     requires com.almasb.fxgl.all;
 
     opens com.example.project to javafx.fxml;
-    opens com.example.project.controller to javafx.fxml;
+    opens com.example.project.controller to javafx.fxml, javafx.base;
 
     exports com.example.project;
 }

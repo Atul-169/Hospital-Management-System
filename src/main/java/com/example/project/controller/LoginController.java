@@ -134,14 +134,22 @@ public class LoginController {
     }
 
     private void checkDoctorProfile(ActionEvent event, int userId) {
+        System.out.println("[DEBUG_LOG] Checking doctor profile completion for user ID: " + userId);
         String sql = "SELECT profile_completed FROM doctors WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next() && rs.getInt("profile_completed") == 1) {
-                loadScene(event, "/fxml/doctor-dashboard.fxml");
+            if (rs.next()) {
+                int status = rs.getInt("profile_completed");
+                System.out.println("[DEBUG_LOG] Doctor profile_completed: " + status);
+                if (status == 1) {
+                    loadScene(event, "/fxml/doctor-dashboard.fxml");
+                } else {
+                    loadScene(event, "/fxml/profile-setup.fxml");
+                }
             } else {
+                System.out.println("[DEBUG_LOG] No doctor record found for user ID: " + userId);
                 loadScene(event, "/fxml/profile-setup.fxml");
             }
         } catch (SQLException e) {

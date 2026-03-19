@@ -48,7 +48,7 @@ public class ProfileSetupController {
             patientFields.setManaged(true);
             doctorFields.setVisible(false);
             doctorFields.setManaged(false);
-            bloodGroupCombo.getItems().addAll("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+            bloodGroupCombo.getItems().setAll("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
             loadPatientData();
         }
     }
@@ -189,9 +189,11 @@ public class ProfileSetupController {
             pstmt.setDouble(6, fee);
 
             pstmt.executeUpdate();
+            System.out.println("[DEBUG_LOG] Doctor profile saved successfully for user ID: " + SessionManager.getUserId());
             loadScene(event, "/fxml/doctor-dashboard.fxml");
 
         } catch (SQLException e) {
+            System.err.println("[DEBUG_LOG] Failed to save doctor profile: " + e.getMessage());
             e.printStackTrace();
         }
     }

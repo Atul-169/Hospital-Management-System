@@ -1,14 +1,386 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.project.controller.DoctorDashboardController"
-            prefHeight="400.0" prefWidth="600.0">
+            styleClass="root" stylesheets="@../css/style.css">
 
-</AnchorPane>
+    <!-- Left Sidebar Navigation -->
+    <left>
+        <VBox spacing="5" styleClass="sidebar">
+            <padding>
+                <Insets bottom="20" left="15" right="15" top="20" />
+            </padding>
+
+            <!-- App Logo/Brand -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-brand">
+                <Label styleClass="brand-icon" text="✚" />
+                <Label styleClass="brand-text" text="BUET MedTech" />
+                <VBox.margin>
+                    <Insets bottom="20" />
+                </VBox.margin>
+            </HBox>
+
+            <!-- Navigation Menu -->
+            <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="5" styleClass="sidebar-menu">
+                    <Label styleClass="sidebar-group-label" text="DOCTOR PANEL" />
+                    <Button fx:id="dashboardBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showDashboard" styleClass="nav-btn, active" text="📊 Dashboard" />
+                    <Button fx:id="appointmentsBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showAppointments" styleClass="nav-btn" text="📅 Appointments" />
+                    <Button fx:id="patientsBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showPatients" styleClass="nav-btn" text="👥 My Patients" />
+                    <Button fx:id="reportsBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showReports" styleClass="nav-btn" text="📝 Write Report" />
+                    <Button fx:id="prescriptionsBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showPrescriptions" styleClass="nav-btn" text="💊 Prescriptions" />
+                    <Button fx:id="healthPostsBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showHealthPosts" styleClass="nav-btn" text="💡 Health Tips" />
+                    <Button fx:id="qaBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showQA" styleClass="nav-btn" text="❓ Q&amp;A Forum" />
+
+                    <Label styleClass="sidebar-group-label" text="ACCOUNT">
+                        <VBox.margin>
+                            <Insets top="10" />
+                        </VBox.margin>
+                    </Label>
+                    <Button fx:id="profileBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                            onAction="#showProfile" styleClass="nav-btn" text="👤 My Profile" />
+                </VBox>
+            </ScrollPane>
+
+            <!-- Profile & Settings Section at Bottom -->
+            <VBox spacing="10" styleClass="sidebar-footer">
+                <Separator styleClass="sidebar-separator" />
+                <Button fx:id="logoutBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
+                        onAction="#logout" styleClass="nav-btn, logout-btn" text="🚪 Logout" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- Main Content Area -->
+    <center>
+        <StackPane styleClass="content-area">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Status Message Label -->
+            <VBox alignment="TOP_CENTER" pickOnBounds="false">
+                <padding>
+                    <Insets top="10"/>
+                </padding>
+                <Label fx:id="statusMessageLabel" styleClass="success-label" text="" wrapText="true" maxWidth="600" visible="true"/>
+            </VBox>
+
+            <!-- Dashboard Panel -->
+            <VBox fx:id="dashboardPanel" spacing="20" visible="true">
+                <Label text="Doctor Dashboard" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <GridPane hgap="15" vgap="15" styleClass="dashboard-grid">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="33.33" minWidth="200"/>
+                        <ColumnConstraints percentWidth="33.33" minWidth="200"/>
+                        <ColumnConstraints percentWidth="33.33" minWidth="200"/>
+                    </columnConstraints>
+
+                    <VBox styleClass="stat-card stat-card-blue" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="📅 TODAY'S" styleClass="stat-label"/>
+                        <Label fx:id="todayAppointmentsLabel" text="0" styleClass="stat-value">
+                            <font><Font name="System Bold" size="32"/></font>
+                        </Label>
+                        <Label text="Appointments" styleClass="stat-desc"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card stat-card-green" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="👥 PATIENTS" styleClass="stat-label"/>
+                        <Label fx:id="totalPatientsLabel" text="0" styleClass="stat-value">
+                            <font><Font name="System Bold" size="32"/></font>
+                        </Label>
+                        <Label text="Total Treated" styleClass="stat-desc"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card stat-card-orange" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="📝 PENDING" styleClass="stat-label"/>
+                        <Label fx:id="pendingReportsLabel" text="0" styleClass="stat-value">
+                            <font><Font name="System Bold" size="32"/></font>
+                        </Label>
+                        <Label text="Reports" styleClass="stat-desc"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card stat-card-teal" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="💰 INCOME" styleClass="stat-label"/>
+                        <Label fx:id="totalIncomeLabel" text="৳0.00" styleClass="stat-value-small">
+                            <font><Font name="System Bold" size="24"/></font>
+                        </Label>
+                        <Label text="Total Earnings" styleClass="stat-desc"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card stat-card-purple" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="💡 POSTS" styleClass="stat-label"/>
+                        <Label fx:id="totalPostsLabel" text="0" styleClass="stat-value">
+                            <font><Font name="System Bold" size="32"/></font>
+                        </Label>
+                        <Label text="Health Tips" styleClass="stat-desc"/>
+                    </VBox>
+
+                    <VBox styleClass="stat-card stat-card-pink" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                        <Label text="❓ Q&amp;A" styleClass="stat-label"/>
+                        <Label fx:id="answeredQuestionsLabel" text="0" styleClass="stat-value">
+                            <font><Font name="System Bold" size="32"/></font>
+                        </Label>
+                        <Label text="Answered" styleClass="stat-desc"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- Appointments Panel -->
+            <VBox fx:id="appointmentsPanel" spacing="20" visible="false">
+                <Label text="My Appointments" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Filter:"/>
+                    <ComboBox fx:id="filterAppointmentStatus" onAction="#filterAppointments" prefWidth="150"/>
+                </HBox>
+
+                <TableView fx:id="appointmentsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="appointmentIdCol" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="patientNameCol" text="Patient Name" prefWidth="150"/>
+                        <TableColumn fx:id="appointmentDateCol" text="Date" prefWidth="100"/>
+                        <TableColumn fx:id="appointmentTimeCol" text="Time" prefWidth="80"/>
+                        <TableColumn fx:id="appointmentReasonCol" text="Reason" prefWidth="200"/>
+                        <TableColumn fx:id="appointmentStatusCol" text="Status" prefWidth="100"/>
+                    </columns>
+                </TableView>
+
+                <HBox spacing="10">
+                    <Label text="Update Status:"/>
+                    <ComboBox fx:id="updateAppointmentCombo" promptText="Select appointment..." prefWidth="250"/>
+                    <ComboBox fx:id="newStatusCombo" prefWidth="120"/>
+                    <Button fx:id="updateStatusBtn" text="Update" onAction="#updateAppointmentStatus" styleClass="primary-btn"/>
+                </HBox>
+            </VBox>
+
+            <!-- Patients Panel -->
+            <VBox fx:id="patientsPanel" spacing="20" visible="false">
+                <Label text="My Patients" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <HBox spacing="10">
+                    <TextField fx:id="patientSearchField" promptText="Search patient..." prefWidth="300"/>
+                    <Button text="Search" onAction="#searchPatients" styleClass="primary-btn"/>
+                </HBox>
+
+                <TableView fx:id="patientsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="patientNameDetailCol" text="Patient Name" prefWidth="200"/>
+                        <TableColumn fx:id="patientPhoneCol" text="Phone" prefWidth="120"/>
+                        <TableColumn fx:id="patientBloodGroupCol" text="Blood Group" prefWidth="100"/>
+                        <TableColumn fx:id="patientVisitsCol" text="Total Visits" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Reports Panel -->
+            <VBox fx:id="reportsPanel" spacing="20" visible="false">
+                <Label text="Write Medical Report" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <VBox spacing="15" styleClass="form-container" maxWidth="800">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                    <VBox spacing="5">
+                        <Label text="Select Appointment:"/>
+                        <ComboBox fx:id="reportAppointmentCombo" promptText="Choose completed appointment..." maxWidth="Infinity"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Diagnosis:"/>
+                        <TextArea fx:id="reportDiagnosis" promptText="Enter diagnosis..." prefRowCount="3"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Treatment Notes:"/>
+                        <TextArea fx:id="reportTreatmentNotes" promptText="Enter treatment details..." prefRowCount="4"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Follow-up Advice:"/>
+                        <TextArea fx:id="reportFollowUpAdvice" promptText="Enter follow-up advice..." prefRowCount="3"/>
+                    </VBox>
+
+                    <Button fx:id="saveReportBtn" text="Save Report" onAction="#saveReport" styleClass="primary-btn" maxWidth="150"/>
+                </VBox>
+            </VBox>
+
+            <!-- Prescriptions Panel -->
+            <VBox fx:id="prescriptionsPanel" spacing="20" visible="false">
+                <Label text="Add Prescription" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <HBox spacing="20" VBox.vgrow="ALWAYS">
+                    <VBox spacing="15" styleClass="form-container" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                        <VBox spacing="5">
+                            <Label text="Select Appointment:"/>
+                            <ComboBox fx:id="prescriptionAppointmentCombo" promptText="Choose appointment..." maxWidth="Infinity"/>
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Medicine Name:"/>
+                            <TextField fx:id="medicineName" promptText="Enter medicine name..."/>
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Dosage:"/>
+                            <TextField fx:id="medicineDosage" promptText="e.g., 500mg twice daily"/>
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Duration:"/>
+                            <TextField fx:id="medicineDuration" promptText="e.g., 7 days"/>
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Special Instructions:"/>
+                            <TextArea fx:id="specialInstructions" promptText="e.g., Take after meals..." prefRowCount="2"/>
+                        </VBox>
+
+                        <Button fx:id="addPrescriptionBtn" text="Add Medicine" onAction="#addPrescription" styleClass="primary-btn" maxWidth="150"/>
+                    </VBox>
+
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="Prescription Preview:" styleClass="subsection-title"/>
+                        <TextArea fx:id="prescriptionPreview" editable="false" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Health Posts Panel -->
+            <VBox fx:id="healthPostsPanel" spacing="20" visible="false">
+                <Label text="Create Health Tips Post" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <VBox spacing="15" styleClass="form-container" maxWidth="800">
+                    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                    <VBox spacing="5">
+                        <Label text="Post Title:"/>
+                        <TextField fx:id="postTitle" promptText="Enter post title..."/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Category:"/>
+                        <ComboBox fx:id="postCategory" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Content:"/>
+                        <TextArea fx:id="postContent" promptText="Write your health tips here..." prefRowCount="8"/>
+                    </VBox>
+
+                    <Button fx:id="createPostBtn" text="Create Post" onAction="#createPost" styleClass="primary-btn" maxWidth="150"/>
+                </VBox>
+
+                <Separator/>
+
+                <Label text="My Posts:" styleClass="subsection-title">
+                    <font><Font name="System Bold" size="16"/></font>
+                </Label>
+
+                <TableView fx:id="myPostsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="postTitleCol" text="Title" prefWidth="250"/>
+                        <TableColumn fx:id="postCategoryCol" text="Category" prefWidth="150"/>
+                        <TableColumn fx:id="postDateCol" text="Date" prefWidth="150"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Q&A Panel -->
+            <VBox fx:id="qaPanel" spacing="20" visible="false">
+                <Label text="Q&amp;A Forum - Answer Patient Questions" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <Label text="Unanswered Questions:" styleClass="subsection-title"/>
+
+                <TableView fx:id="questionsTable" VBox.vgrow="ALWAYS" prefHeight="300" styleClass="qa-table">
+                    <columns>
+                        <TableColumn fx:id="questionPatientCol" text="Patient" prefWidth="150"/>
+                        <TableColumn fx:id="questionTextCol" text="Question" prefWidth="400"/>
+                        <TableColumn fx:id="questionDateCol" text="Date" prefWidth="120"/>
+                    </columns>
+                </TableView>
+
+                <VBox spacing="10" styleClass="form-container">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                    <Label text="Your Answer:"/>
+                    <TextArea fx:id="answerText" promptText="Type your answer here..." prefRowCount="4"/>
+                    <Button fx:id="submitAnswerBtn" text="Submit Answer" onAction="#submitAnswer" styleClass="primary-btn" maxWidth="150"/>
+                </VBox>
+            </VBox>
+
+            <!-- Profile Panel -->
+            <VBox fx:id="profilePanel" spacing="20" visible="false">
+                <Label text="My Profile" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <VBox spacing="15" styleClass="form-container" maxWidth="800">
+                    <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+
+                    <VBox spacing="5">
+                        <Label text="Specialization:" styleClass="form-label"/>
+                        <TextField fx:id="profileSpecializationField" promptText="e.g., Cardiology, Pediatrics"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Qualification:" styleClass="form-label"/>
+                        <TextField fx:id="profileQualificationField" promptText="e.g., MBBS, MD"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Experience:" styleClass="form-label"/>
+                        <TextField fx:id="profileExperienceField" promptText="e.g., 5 years"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Phone:" styleClass="form-label"/>
+                        <TextField fx:id="profilePhoneField" promptText="Contact number"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Consultation Fee (৳):" styleClass="form-label"/>
+                        <TextField fx:id="profileFeeField" promptText="e.g., 500"/>
+                    </VBox>
+
+                    <Button fx:id="saveProfileBtn" text="Save Profile" onAction="#saveProfile" styleClass="primary-btn" maxWidth="150"/>
+                </VBox>
+            </VBox>
+
+        </StackPane>
+    </center>
+
+</BorderPane>
