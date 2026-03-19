@@ -34,6 +34,10 @@ public class PatientDashboardController {
     @FXML private VBox dashboardSection;
     @FXML private Label lblUpcomingAppointments, lblTotalReports, lblUnreadNotifs, lblBloodDonationStatus;
     @FXML private VBox notificationsSection;
+    @FXML private ListView<NotificationItem> lstDashboardNotifications;
+    @FXML private ListView<DoctorPost> lstDashboardPosts;
+    @FXML private ListView<Question> lstDashboardQuestions;
+    @FXML private FlowPane dashboardDonorGridPane;
 
     // Search Doctors Section
     @FXML private VBox searchDoctorsSection;
@@ -174,6 +178,7 @@ public class PatientDashboardController {
     private void showDashboard() {
         showSection(dashboardSection, btnDashboard);
         loadDashboardData();
+        loadNotificationsPreview();
     }
 
     @FXML
@@ -324,6 +329,10 @@ public class PatientDashboardController {
         lblTotalReports.setText(String.valueOf(getTotalReportsCount()));
         lblUnreadNotifs.setText(String.valueOf(getUnreadNotificationsCount()));
         lblBloodDonationStatus.setText(getBloodDonationStatus());
+        loadDashboardNotificationsPreview();
+        loadDashboardPostsPreview();
+        loadDashboardQuestionsPreview();
+        loadDashboardDonorsPreview();
     }
 
     private int getUpcomingAppointmentsCount() {
@@ -789,6 +798,16 @@ public class PatientDashboardController {
                 ));
             }
 
+            if (notifications.isEmpty()) {
+                notifications.add(new NotificationItem(
+                        -1,
+                        "No notifications yet",
+                        "Admin or doctors send update dile ekhane show korbe.",
+                        true,
+                        "Just now"
+                ));
+            }
+
             if (lstNotifications != null) {
                 lstNotifications.setItems(notifications);
                 lstNotifications.setCellFactory(param -> new ListCell<>() {
@@ -857,6 +876,151 @@ public class PatientDashboardController {
         }
     }
 
+    private void loadNotificationsPreview() {
+        if (lblUnreadNotifs == null) {
+            return;
+        }
+        loadUnreadNotificationsCount();
+    }
+
+    private void loadDashboardNotificationsPreview() {
+        if (lstDashboardNotifications == null) return;
+        ObservableList<NotificationItem> notifications = FXCollections.observableArrayList();
+        String query = "SELECT id, title, message, is_read, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 3";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, SessionManager.getUserId());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                notifications.add(new NotificationItem(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("message"),
+                        rs.getInt("is_read") == 1,
+                        rs.getString("created_at")
+                ));
+            }
+            if (notifications.isEmpty()) {
+                notifications.add(new NotificationItem(-1, "No updates yet", "Admin alerts and doctor messages will appear here.", true, "Now"));
+            }
+            lstDashboardNotifications.setItems(notifications);
+            lstDashboardNotifications.setCellFactory(param -> createNotificationCellFactory());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadDashboardPostsPreview() {
+        if (lstDashboardPosts == null) return;
+        ObservableList<DoctorPost> posts = FXCollections.observableArrayList();
+        String query = "SELECT u.name, p.title, p.content, p.category, p.created_at " +
+                "FROM doctor_posts p JOIN doctors d ON p.doctor_id = d.id JOIN users u ON d.user_id = u.id " +
+                "ORDER BY p.created_at DESC LIMIT 3";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                posts.add(new DoctorPost(rs.getString("name"), rs.getString("title"), rs.getString("content"), rs.getString("category"), rs.getString("created_at")));
+            }
+            lstDashboardPosts.setItems(posts);
+            lstDashboardPosts.setCellFactory(param -> createDoctorPostCellFactory());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadDashboardQuestionsPreview() {
+        if (lstDashboardQuestions == null) return;
+        ObservableList<Question> questions = FXCollections.observableArrayList();
+        String query = "SELECT q.question, q.answer, u.name as doctor_name, q.created_at FROM questions q " +
+                "LEFT JOIN doctors d ON q.answered_by = d.id LEFT JOIN users u ON d.user_id = u.id " +
+                "WHERE q.patient_id = ? ORDER BY q.created_at DESC LIMIT 3";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, patientId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                questions.add(new Question(rs.getString("question"), rs.getString("answer"), rs.getString("doctor_name"), rs.getString("created_at")));
+            }
+            lstDashboardQuestions.setItems(questions);
+            lstDashboardQuestions.setCellFactory(param -> createQuestionCellFactory());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadDashboardDonorsPreview() {
+        if (dashboardDonorGridPane == null) return;
+        dashboardDonorGridPane.getChildren().clear();
+        String query = "SELECT u.name, b.blood_group, b.location, b.phone, b.availability_status " +
+                "FROM blood_donors b JOIN patients p ON b.patient_id = p.id JOIN users u ON p.user_id = u.id " +
+                "WHERE b.availability_status = 'available' LIMIT 4";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                dashboardDonorGridPane.getChildren().add(createDonorCard(new BloodDonor(
+                        rs.getString("name"),
+                        rs.getString("blood_group"),
+                        rs.getString("location"),
+                        rs.getString("phone"),
+                        rs.getString("availability_status")
+                )));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ListCell<NotificationItem> createNotificationCellFactory() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(NotificationItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(createNotificationCard(item));
+                    setText(null);
+                }
+            }
+        };
+    }
+
+    private ListCell<DoctorPost> createDoctorPostCellFactory() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(DoctorPost item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(createPostCard(item));
+                    setText(null);
+                }
+            }
+        };
+    }
+
+    private ListCell<Question> createQuestionCellFactory() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Question item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(createQACard(item));
+                    setText(null);
+                }
+            }
+        };
+    }
+
     // ==================== DOCTOR POSTS ====================
     @FXML
     private void filterPosts() {
@@ -892,21 +1056,7 @@ public class PatientDashboardController {
                 ));
             }
             lstDoctorPosts.setItems(posts);
-
-            // Custom cell factory for styled post cards
-            lstDoctorPosts.setCellFactory(param -> new javafx.scene.control.ListCell<DoctorPost>() {
-                @Override
-                protected void updateItem(DoctorPost item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setGraphic(null);
-                        setText(null);
-                    } else {
-                        setGraphic(createPostCard(item));
-                        setText(null);
-                    }
-                }
-            });
+            lstDoctorPosts.setCellFactory(param -> createDoctorPostCellFactory());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1017,21 +1167,7 @@ public class PatientDashboardController {
                 ));
             }
             lstMyQuestions.setItems(questions);
-
-            // Custom cell factory for styled Q&A cards
-            lstMyQuestions.setCellFactory(param -> new javafx.scene.control.ListCell<Question>() {
-                @Override
-                protected void updateItem(Question item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setGraphic(null);
-                        setText(null);
-                    } else {
-                        setGraphic(createQACard(item));
-                        setText(null);
-                    }
-                }
-            });
+            lstMyQuestions.setCellFactory(param -> createQuestionCellFactory());
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -4,7 +4,12 @@ import com.example.project.util.DatabaseConnection;
 import com.example.project.util.SceneManager;
 import com.example.project.util.SessionManager;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -64,6 +69,7 @@ public class AdminDashboardController {
     @FXML private TextField addDoctorQualification;
     @FXML private TextField addDoctorPhone;
     @FXML private TextField addDoctorFee;
+    @FXML private FlowPane doctorsGrid;
 
     // Manage Patients Components
     @FXML private TableView<Patient> patientsTable;
@@ -73,6 +79,7 @@ public class AdminDashboardController {
     @FXML private TableColumn<Patient, String> patientPhoneCol;
     @FXML private TableColumn<Patient, String> patientBloodGroupCol;
     @FXML private TextField patientSearchField;
+    @FXML private FlowPane patientsGrid;
 
     // View Appointments Components
     @FXML private TableView<Appointment> appointmentsTable;
@@ -86,6 +93,8 @@ public class AdminDashboardController {
     @FXML private ComboBox<String> filterPatientCombo;
     @FXML private DatePicker filterDatePicker;
     @FXML private ComboBox<String> filterStatusCombo;
+    @FXML private ComboBox<String> manageAppointmentStatusCombo;
+    @FXML private FlowPane appointmentsGrid;
 
     // Reports Components
     @FXML private TableView<Report> reportsTable;
@@ -95,6 +104,7 @@ public class AdminDashboardController {
     @FXML private TableColumn<Report, String> reportDateCol;
     @FXML private TableColumn<Report, String> reportDiagnosisCol;
     @FXML private Label totalReportsCountLabel;
+    @FXML private FlowPane reportsGrid;
 
     // Transactions Components
     @FXML private TableView<Transaction> transactionsTable;
@@ -107,6 +117,7 @@ public class AdminDashboardController {
     @FXML private Label reportFeeLabel;
     @FXML private Label hospitalShareLabel;
     @FXML private Label totalTransactionsLabel;
+    @FXML private FlowPane transactionsGrid;
 
     // Notifications Components
     @FXML private TextField notificationTitle;
@@ -121,18 +132,25 @@ public class AdminDashboardController {
     @FXML private TableColumn<BloodDonor, String> donorPhoneCol;
     @FXML private TableColumn<BloodDonor, String> donorLocationCol;
     @FXML private TableColumn<BloodDonor, String> donorStatusCol;
+    @FXML private FlowPane bloodDonorsGrid;
 
     @FXML private TableView<DoctorPost> doctorPostsTable;
     @FXML private TableColumn<DoctorPost, String> postTitleCol;
     @FXML private TableColumn<DoctorPost, String> postDoctorCol;
     @FXML private TableColumn<DoctorPost, String> postCategoryCol;
     @FXML private TableColumn<DoctorPost, String> postDateCol;
+    @FXML private FlowPane doctorPostsGrid;
 
     @FXML private TableView<Question> questionsTable;
     @FXML private TableColumn<Question, String> questionPatientCol;
     @FXML private TableColumn<Question, String> questionTextCol;
     @FXML private TableColumn<Question, String> questionAnswerCol;
     @FXML private TableColumn<Question, String> questionDateCol;
+    @FXML private FlowPane questionsGrid;
+
+    private Doctor selectedDoctor;
+    private Patient selectedPatient;
+    private Appointment selectedAppointment;
 
     @FXML
     public void initialize() {
@@ -149,6 +167,13 @@ public class AdminDashboardController {
                 "General", "Important", "Maintenance", "Update", "Alert"
             ));
             notificationCategory.setValue("General");
+        }
+
+        if (manageAppointmentStatusCombo != null) {
+            manageAppointmentStatusCombo.setItems(FXCollections.observableArrayList(
+                "confirmed", "completed", "cancelled", "upcoming"
+            ));
+            manageAppointmentStatusCombo.setValue("confirmed");
         }
     }
 
@@ -419,7 +444,8 @@ public class AdminDashboardController {
                     rs.getDouble("fee")
                 ));
             }
-            doctorsTable.setItems(doctors);
+            if (doctorsTable != null) doctorsTable.setItems(doctors);
+            renderDoctors(doctors);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load doctors: " + e.getMessage());
         }
@@ -485,7 +511,8 @@ public class AdminDashboardController {
 
     @FXML
     private void deleteDoctor() {
-        Doctor selected = doctorsTable.getSelectionModel().getSelectedItem();
+        Doctor selected = selectedDoctor != null ? selectedDoctor :
+                (doctorsTable != null ? doctorsTable.getSelectionModel().getSelectedItem() : null);
         if (selected == null) {
             showAlert("Error", "Please select a doctor to delete!");
             return;
@@ -543,7 +570,8 @@ public class AdminDashboardController {
                     rs.getDouble("fee")
                 ));
             }
-            doctorsTable.setItems(doctors);
+            if (doctorsTable != null) doctorsTable.setItems(doctors);
+            renderDoctors(doctors);
         } catch (SQLException e) {
             showAlert("Error", "Failed to search doctors: " + e.getMessage());
         }
@@ -579,7 +607,8 @@ public class AdminDashboardController {
                     rs.getString("blood_group")
                 ));
             }
-            patientsTable.setItems(patients);
+            if (patientsTable != null) patientsTable.setItems(patients);
+            renderPatients(patients);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load patients: " + e.getMessage());
         }
@@ -587,7 +616,8 @@ public class AdminDashboardController {
 
     @FXML
     private void deletePatient() {
-        Patient selected = patientsTable.getSelectionModel().getSelectedItem();
+        Patient selected = selectedPatient != null ? selectedPatient :
+                (patientsTable != null ? patientsTable.getSelectionModel().getSelectedItem() : null);
         if (selected == null) {
             showAlert("Error", "Please select a patient to delete!");
             return;
@@ -643,7 +673,8 @@ public class AdminDashboardController {
                     rs.getString("blood_group")
                 ));
             }
-            patientsTable.setItems(patients);
+            if (patientsTable != null) patientsTable.setItems(patients);
+            renderPatients(patients);
         } catch (SQLException e) {
             showAlert("Error", "Failed to search patients: " + e.getMessage());
         }
@@ -674,7 +705,8 @@ public class AdminDashboardController {
                     rs.getString("status")
                 ));
             }
-            appointmentsTable.setItems(appointments);
+            if (appointmentsTable != null) appointmentsTable.setItems(appointments);
+            renderAppointments(appointments);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load appointments: " + e.getMessage());
         }
@@ -710,8 +742,89 @@ public class AdminDashboardController {
 
     @FXML
     private void applyAppointmentFilters() {
-        // Implementation for filtering appointments
+        ObservableList<Appointment> appointments = FXCollections.observableArrayList();
+        StringBuilder query = new StringBuilder(
+                "SELECT a.id, u1.name as patient_name, u2.name as doctor_name, " +
+                "a.appointment_date, a.appointment_time, a.status " +
+                "FROM appointments a " +
+                "JOIN patients p ON a.patient_id = p.id " +
+                "JOIN users u1 ON p.user_id = u1.id " +
+                "JOIN doctors d ON a.doctor_id = d.id " +
+                "JOIN users u2 ON d.user_id = u2.id WHERE 1=1"
+        );
+
+        ObservableList<Object> params = FXCollections.observableArrayList();
+        if (filterDoctorCombo != null && filterDoctorCombo.getValue() != null && !"All Doctors".equals(filterDoctorCombo.getValue())) {
+            query.append(" AND u2.name = ?");
+            params.add(filterDoctorCombo.getValue());
+        }
+        if (filterStatusCombo != null && filterStatusCombo.getValue() != null && !"All".equalsIgnoreCase(filterStatusCombo.getValue())) {
+            query.append(" AND a.status = ?");
+            params.add(filterStatusCombo.getValue().toLowerCase());
+        }
+        if (filterDatePicker != null && filterDatePicker.getValue() != null) {
+            query.append(" AND a.appointment_date = ?");
+            params.add(filterDatePicker.getValue().toString());
+        }
+        query.append(" ORDER BY a.appointment_date DESC, a.appointment_time DESC");
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pstmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                appointments.add(new Appointment(
+                        rs.getInt("id"),
+                        rs.getString("patient_name"),
+                        rs.getString("doctor_name"),
+                        rs.getString("appointment_date"),
+                        rs.getString("appointment_time"),
+                        rs.getString("status")
+                ));
+            }
+            if (appointmentsTable != null) appointmentsTable.setItems(appointments);
+            renderAppointments(appointments);
+        } catch (SQLException e) {
+            showAlert("Error", "Failed to apply filters: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void updateSelectedAppointmentStatus() {
+        Appointment selected = selectedAppointment != null ? selectedAppointment :
+                (appointmentsTable != null ? appointmentsTable.getSelectionModel().getSelectedItem() : null);
+        String targetStatus = manageAppointmentStatusCombo != null ? manageAppointmentStatusCombo.getValue() : null;
+
+        if (selected == null || targetStatus == null) {
+            showAlert("Error", "Select an appointment and status first.");
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement("UPDATE appointments SET status = ? WHERE id = ?")) {
+            pstmt.setString(1, targetStatus);
+            pstmt.setInt(2, selected.getId());
+            pstmt.executeUpdate();
+
+            showAlert("Success", "Appointment status updated.");
+            loadAppointments();
+            loadDashboardStatistics();
+        } catch (SQLException e) {
+            showAlert("Error", "Failed to update appointment: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void refreshAdminTables() {
+        loadDoctors();
+        loadPatients();
         loadAppointments();
+        loadReports();
+        loadTransactions();
+        loadMonitoringData();
+        loadDashboardStatistics();
     }
 
     // Reports Methods
@@ -740,7 +853,8 @@ public class AdminDashboardController {
                 ));
                 count++;
             }
-            reportsTable.setItems(reports);
+            if (reportsTable != null) reportsTable.setItems(reports);
+            renderReports(reports);
             if (totalReportsCountLabel != null) {
                 totalReportsCountLabel.setText("Total Reports: " + count);
             }
@@ -779,7 +893,8 @@ public class AdminDashboardController {
                 ));
             }
 
-            transactionsTable.setItems(transactions);
+            if (transactionsTable != null) transactionsTable.setItems(transactions);
+            renderTransactions(transactions);
 
             // Calculate hospital share (30% of total)
             double total = totalDoctorFees + totalReportFees;
@@ -862,6 +977,7 @@ public class AdminDashboardController {
                 ));
             }
             if (bloodDonorsTable != null) bloodDonorsTable.setItems(donors);
+            renderBloodDonors(donors);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load blood donors: " + e.getMessage());
         }
@@ -887,6 +1003,7 @@ public class AdminDashboardController {
                 ));
             }
             if (doctorPostsTable != null) doctorPostsTable.setItems(posts);
+            renderDoctorPosts(posts);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load doctor posts: " + e.getMessage());
         }
@@ -912,6 +1029,7 @@ public class AdminDashboardController {
                 ));
             }
             if (questionsTable != null) questionsTable.setItems(questions);
+            renderQuestions(questions);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load questions: " + e.getMessage());
         }
@@ -921,6 +1039,165 @@ public class AdminDashboardController {
     private void logout() {
         SessionManager.clearSession();
         SceneManager.switchScene(logoutBtn, "/fxml/role-selection.fxml");
+    }
+
+    private void renderDoctors(ObservableList<Doctor> doctors) {
+        if (doctorsGrid == null) return;
+        doctorsGrid.getChildren().clear();
+        for (Doctor doctor : doctors) {
+            doctorsGrid.getChildren().add(createSelectableCard(
+                    selectedDoctor != null && selectedDoctor.getId() == doctor.getId(),
+                    doctor.getName(),
+                    "Email: " + doctor.getEmail(),
+                    "Specialization: " + doctor.getSpecialization(),
+                    "Experience: " + doctor.getExperience(),
+                    "Phone: " + doctor.getPhone(),
+                    String.format("Fee: ৳%.0f", doctor.getFee()),
+                    () -> selectedDoctor = doctor
+            ));
+        }
+    }
+
+    private void renderPatients(ObservableList<Patient> patients) {
+        if (patientsGrid == null) return;
+        patientsGrid.getChildren().clear();
+        for (Patient patient : patients) {
+            patientsGrid.getChildren().add(createSelectableCard(
+                    selectedPatient != null && selectedPatient.getId() == patient.getId(),
+                    patient.getName(),
+                    "Email: " + patient.getEmail(),
+                    "Phone: " + patient.getPhone(),
+                    "Blood Group: " + patient.getBloodGroup(),
+                    "Patient ID: #" + patient.getId(),
+                    null,
+                    () -> selectedPatient = patient
+            ));
+        }
+    }
+
+    private void renderAppointments(ObservableList<Appointment> appointments) {
+        if (appointmentsGrid == null) return;
+        appointmentsGrid.getChildren().clear();
+        for (Appointment appointment : appointments) {
+            VBox card = createSelectableCard(
+                    selectedAppointment != null && selectedAppointment.getId() == appointment.getId(),
+                    appointment.getPatientName() + " with Dr. " + appointment.getDoctorName(),
+                    "Date: " + appointment.getDate(),
+                    "Time: " + appointment.getTime(),
+                    "Status: " + appointment.getStatus(),
+                    "Appointment #" + appointment.getId(),
+                    null,
+                    () -> selectedAppointment = appointment
+            );
+            Label status = new Label(appointment.getStatus().toUpperCase());
+            status.getStyleClass().addAll("status-badge", "status-" + appointment.getStatus().toLowerCase());
+            card.getChildren().add(status);
+            appointmentsGrid.getChildren().add(card);
+        }
+    }
+
+    private void renderReports(ObservableList<Report> reports) {
+        if (reportsGrid == null) return;
+        reportsGrid.getChildren().clear();
+        for (Report report : reports) {
+            reportsGrid.getChildren().add(createInfoCard(
+                    "Report #" + report.getId(),
+                    "Patient: " + report.getPatientName(),
+                    "Doctor: " + report.getDoctorName(),
+                    "Date: " + report.getDate(),
+                    "Diagnosis: " + (report.getDiagnosis() == null || report.getDiagnosis().isBlank() ? "Pending" : report.getDiagnosis())
+            ));
+        }
+    }
+
+    private void renderTransactions(ObservableList<Transaction> transactions) {
+        if (transactionsGrid == null) return;
+        transactionsGrid.getChildren().clear();
+        for (Transaction transaction : transactions) {
+            transactionsGrid.getChildren().add(createInfoCard(
+                    transaction.getType(),
+                    "Doctor: " + transaction.getDoctorName(),
+                    String.format("Amount: ৳%.2f", transaction.getAmount()),
+                    "Date: " + transaction.getDate(),
+                    "Ref: #" + transaction.getId()
+            ));
+        }
+    }
+
+    private void renderBloodDonors(ObservableList<BloodDonor> donors) {
+        if (bloodDonorsGrid == null) return;
+        bloodDonorsGrid.getChildren().clear();
+        for (BloodDonor donor : donors) {
+            bloodDonorsGrid.getChildren().add(createInfoCard(
+                    donor.getName(),
+                    "Blood Group: " + donor.getBloodGroup(),
+                    "Phone: " + donor.getPhone(),
+                    "Location: " + donor.getLocation(),
+                    "Status: " + donor.getStatus()
+            ));
+        }
+    }
+
+    private void renderDoctorPosts(ObservableList<DoctorPost> posts) {
+        if (doctorPostsGrid == null) return;
+        doctorPostsGrid.getChildren().clear();
+        for (DoctorPost post : posts) {
+            doctorPostsGrid.getChildren().add(createInfoCard(
+                    post.getTitle(),
+                    "Doctor: " + post.getDoctorName(),
+                    "Category: " + post.getCategory(),
+                    "Date: " + post.getDate()
+            ));
+        }
+    }
+
+    private void renderQuestions(ObservableList<Question> questions) {
+        if (questionsGrid == null) return;
+        questionsGrid.getChildren().clear();
+        for (Question question : questions) {
+            questionsGrid.getChildren().add(createInfoCard(
+                    question.getPatientName(),
+                    "Question: " + question.getQuestion(),
+                    "Answer: " + (question.getAnswer() == null || question.getAnswer().isBlank() ? "Not answered yet" : question.getAnswer()),
+                    "Date: " + question.getDate()
+            ));
+        }
+    }
+
+    private VBox createSelectableCard(boolean selected, String title, String line1, String line2, String line3, String line4, String line5, Runnable onSelect) {
+        VBox card = createInfoCard(title, line1, line2, line3, line4, line5);
+        card.getStyleClass().add("admin-select-card");
+        if (selected) {
+            card.getStyleClass().add("selected");
+        }
+        card.setOnMouseClicked(event -> {
+            if (onSelect != null) {
+                onSelect.run();
+                refreshAdminTables();
+            }
+        });
+        return card;
+    }
+
+    private VBox createInfoCard(String title, String... lines) {
+        VBox card = new VBox(8);
+        card.getStyleClass().add("admin-grid-card");
+        card.setPrefWidth(280);
+        card.setMaxWidth(320);
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("admin-card-title");
+        titleLabel.setWrapText(true);
+        card.getChildren().add(titleLabel);
+
+        for (String line : lines) {
+            if (line == null || line.isBlank()) continue;
+            Label label = new Label(line);
+            label.getStyleClass().add("admin-card-line");
+            label.setWrapText(true);
+            card.getChildren().add(label);
+        }
+        return card;
     }
 
     private void showAlert(String title, String content) {

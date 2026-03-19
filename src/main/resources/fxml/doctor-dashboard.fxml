@@ -235,7 +235,7 @@
                         <TextArea fx:id="reportFollowUpAdvice" promptText="Enter follow-up advice..." prefRowCount="3"/>
                     </VBox>
 
-                    <Button fx:id="saveReportBtn" text="Save Report" onAction="#saveReport" styleClass="primary-btn" maxWidth="150"/>
+                    <Button fx:id="saveReportBtn" text="Save Report" onAction="#saveReport" styleClass="primary-btn" prefWidth="180" maxWidth="180"/>
                 </VBox>
             </VBox>
 
@@ -274,7 +274,7 @@
                             <TextArea fx:id="specialInstructions" promptText="e.g., Take after meals..." prefRowCount="2"/>
                         </VBox>
 
-                        <Button fx:id="addPrescriptionBtn" text="Add Medicine" onAction="#addPrescription" styleClass="primary-btn" maxWidth="150"/>
+                        <Button fx:id="addPrescriptionBtn" text="Add Medicine" onAction="#addPrescription" styleClass="primary-btn" prefWidth="180" maxWidth="180"/>
                     </VBox>
 
                     <VBox spacing="10" HBox.hgrow="ALWAYS">
@@ -308,7 +308,7 @@
                         <TextArea fx:id="postContent" promptText="Write your health tips here..." prefRowCount="8"/>
                     </VBox>
 
-                    <Button fx:id="createPostBtn" text="Create Post" onAction="#createPost" styleClass="primary-btn" maxWidth="150"/>
+                    <Button fx:id="createPostBtn" text="Create Post" onAction="#createPost" styleClass="primary-btn" prefWidth="180" maxWidth="180"/>
                 </VBox>
 
                 <Separator/>
@@ -346,7 +346,7 @@
                     <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
                     <Label text="Your Answer:"/>
                     <TextArea fx:id="answerText" promptText="Type your answer here..." prefRowCount="4"/>
-                    <Button fx:id="submitAnswerBtn" text="Submit Answer" onAction="#submitAnswer" styleClass="primary-btn" maxWidth="150"/>
+                    <Button fx:id="submitAnswerBtn" text="Submit Answer" onAction="#submitAnswer" styleClass="primary-btn" prefWidth="190" maxWidth="190"/>
                 </VBox>
             </VBox>
 
@@ -384,7 +384,7 @@
                         <TextField fx:id="profileFeeField" promptText="e.g., 500"/>
                     </VBox>
 
-                    <Button fx:id="saveProfileBtn" text="Save Profile" onAction="#saveProfile" styleClass="primary-btn" maxWidth="150"/>
+                    <Button fx:id="saveProfileBtn" text="Save Profile" onAction="#saveProfile" styleClass="primary-btn" prefWidth="180" maxWidth="180"/>
                 </VBox>
             </VBox>
 

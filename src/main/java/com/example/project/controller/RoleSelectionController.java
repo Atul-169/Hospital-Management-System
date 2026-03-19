@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import com.example.project.util.SceneManager;
 
 public class RoleSelectionController {
 
@@ -97,8 +98,10 @@ public class RoleSelectionController {
     private void openLogin(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Scene scene = new Scene(loader.load(), 1024, 768);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(loader.load(),
+                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
+                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {

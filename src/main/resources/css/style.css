@@ -873,11 +873,13 @@
 .primary-btn {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);
     -fx-text-fill: white;
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
     -fx-font-weight: 700;
     -fx-background-radius: 14;
     -fx-cursor: hand;
-    -fx-padding: 14 28;
+    -fx-padding: 12 20;
+    -fx-min-height: 42;
+    -fx-min-width: 138;
     -fx-border-width: 0;
     -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 15, 0, 0, 5);
 }
@@ -896,7 +898,9 @@
     -fx-font-weight: 600;
     -fx-background-radius: 14;
     -fx-cursor: hand;
-    -fx-padding: 12 24;
+    -fx-padding: 11 18;
+    -fx-min-height: 42;
+    -fx-min-width: 128;
     -fx-border-width: 0;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);
 }
@@ -946,28 +950,32 @@ TextArea .content {
 /* Tables */
 TableView {
     -fx-background-color: white;
-    -fx-background-radius: 12;
-    -fx-border-color: #e2e8f0;
-    -fx-border-radius: 12;
+    -fx-background-radius: 18;
+    -fx-border-color: #dbe6f2;
+    -fx-border-radius: 18;
     -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.05), 18, 0.12, 0, 8);
 }
 
 TableView .column-header-background {
-    -fx-background-color: #f8fafc;
+    -fx-background-color: linear-gradient(to bottom, #f8fbff, #eef4fb);
+    -fx-background-radius: 18 18 0 0;
 }
 
 TableView .column-header {
-    -fx-background-color: #f8fafc;
+    -fx-background-color: transparent;
     -fx-text-fill: #475569;
-    -fx-font-weight: 700;
+    -fx-font-weight: 800;
     -fx-font-size: 13px;
-    -fx-padding: 12;
+    -fx-padding: 14 12;
+    -fx-border-color: transparent transparent rgba(226,232,240,0.9) transparent;
 }
 
 TableView .table-row-cell {
     -fx-background-color: white;
-    -fx-border-color: transparent;
-    -fx-padding: 8;
+    -fx-border-color: transparent transparent rgba(226,232,240,0.45) transparent;
+    -fx-padding: 10 8;
+    -fx-cell-size: 52;
 }
 
 TableView .table-row-cell:odd {
@@ -975,7 +983,7 @@ TableView .table-row-cell:odd {
 }
 
 TableView .table-row-cell:hover {
-    -fx-background-color: #f1f5f9;
+    -fx-background-color: linear-gradient(to right, #f8fbff, #eff6ff);
 }
 
 TableView .table-row-cell:selected {
@@ -991,7 +999,78 @@ TableView .table-row-cell:selected:focused {
 TableView .table-cell {
     -fx-text-fill: #1e293b;
     -fx-font-size: 13px;
-    -fx-padding: 10;
+    -fx-padding: 10 12;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-panel,
+.monitor-card,
+.quick-grid-card {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f8fbff);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(148, 163, 184, 0.16);
+    -fx-border-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.05), 18, 0.12, 0, 8);
+    -fx-padding: 0;
+}
+
+.table-toolbar {
+    -fx-padding: 0 0 4 0;
+}
+
+.admin-table {
+    -fx-background-insets: 0;
+}
+
+.admin-card-grid {
+    -fx-alignment: top-left;
+}
+
+.admin-grid-card {
+    -fx-background-color: linear-gradient(to bottom right, #ffffff, #f8fbff);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(148, 163, 184, 0.20);
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-padding: 18;
+    -fx-spacing: 8;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 16, 0.14, 0, 8);
+}
+
+.admin-select-card {
+    -fx-cursor: hand;
+}
+
+.admin-select-card:hover {
+    -fx-background-color: linear-gradient(to bottom right, #f8fbff, #eef6ff);
+    -fx-border-color: rgba(96, 165, 250, 0.34);
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.12), 20, 0.18, 0, 8);
+}
+
+.admin-select-card.selected {
+    -fx-background-color: linear-gradient(to bottom right, #eff6ff, #ffffff);
+    -fx-border-color: rgba(37, 99, 235, 0.55);
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.18), 22, 0.18, 0, 8);
+}
+
+.admin-card-title {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+}
+
+.admin-card-line {
+    -fx-text-fill: #475569;
+    -fx-font-size: 13px;
+    -fx-line-spacing: 1.2px;
+}
+
+.dashboard-highlight {
+    -fx-background-color: linear-gradient(to bottom right, #f8fbff, #eef6ff);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(96, 165, 250, 0.20);
+    -fx-border-radius: 18;
 }
 
 /* Q&A Table Specific Styling */

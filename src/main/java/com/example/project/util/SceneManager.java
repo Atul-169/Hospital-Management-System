@@ -7,6 +7,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class SceneManager {
+    public static final double AUTH_WIDTH = 1024;
+    public static final double AUTH_HEIGHT = 768;
+    public static final double APP_WIDTH = 1280;
+    public static final double APP_HEIGHT = 820;
 
     /**
      * This method switches the scene based on the source node and the FXML path.
@@ -16,8 +20,10 @@ public class SceneManager {
     public static void switchScene(Node sourceNode, String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));
-            Scene scene = new Scene(loader.load(), 1024, 768);
             Stage stage = (Stage) sourceNode.getScene().getWindow();
+            double width = stage.getWidth() > 0 ? stage.getWidth() : APP_WIDTH;
+            double height = stage.getHeight() > 0 ? stage.getHeight() : APP_HEIGHT;
+            Scene scene = new Scene(loader.load(), width, height);
             stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();

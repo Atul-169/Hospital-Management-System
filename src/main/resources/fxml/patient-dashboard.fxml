@@ -79,7 +79,9 @@
                     </font>
                 </Label>
 
-                <GridPane hgap="20" vgap="20">
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                    <VBox spacing="22">
+                        <GridPane hgap="20" vgap="20">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="25"/>
                         <ColumnConstraints percentWidth="25"/>
@@ -134,7 +136,69 @@
                             </font>
                         </Label>
                     </VBox>
-                </GridPane>
+                        </GridPane>
+
+                        <HBox spacing="18">
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                        <Label text="Stay Updated" styleClass="subsection-title"/>
+                        <Label text="See admin alerts, doctor updates and appointment reminders in one place." styleClass="info-text" wrapText="true"/>
+                        <Button text="Open Notifications" styleClass="primary-btn" onAction="#showNotifications" prefWidth="200"/>
+                            </VBox>
+
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                        <Label text="Health Feed" styleClass="subsection-title"/>
+                        <Label text="Doctor health tips, Q&amp;A replies and report summaries quickly access korun." styleClass="info-text" wrapText="true"/>
+                        <HBox spacing="10">
+                            <Button text="Health Tips" styleClass="secondary-btn" onAction="#showDoctorPosts" prefWidth="150"/>
+                            <Button text="My Reports" styleClass="primary-btn" onAction="#showViewReports" prefWidth="150"/>
+                        </HBox>
+                            </VBox>
+
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                        <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                        <Label text="Take Action" styleClass="subsection-title"/>
+                        <Label text="Appointment book, donor profile update, ar symptom assistant use korun." styleClass="info-text" wrapText="true"/>
+                        <HBox spacing="10">
+                            <Button text="Book Now" styleClass="primary-btn" onAction="#showBookAppointment" prefWidth="145"/>
+                            <Button text="Blood Donor" styleClass="secondary-btn" onAction="#showBloodDonation" prefWidth="145"/>
+                        </HBox>
+                            </VBox>
+                        </HBox>
+
+                        <GridPane hgap="18" vgap="18">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50"/>
+                                <ColumnConstraints percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox styleClass="dashboard-highlight" spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Latest Notifications" styleClass="subsection-title"/>
+                                <ListView fx:id="lstDashboardNotifications" prefHeight="260" styleClass="question-list"/>
+                            </VBox>
+
+                            <VBox styleClass="dashboard-highlight" spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Recent Health Posts" styleClass="subsection-title"/>
+                                <ListView fx:id="lstDashboardPosts" prefHeight="260" styleClass="question-list"/>
+                            </VBox>
+
+                            <VBox styleClass="dashboard-highlight" spacing="12" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="My Q&amp;A Activity" styleClass="subsection-title"/>
+                                <ListView fx:id="lstDashboardQuestions" prefHeight="260" styleClass="question-list"/>
+                            </VBox>
+
+                            <VBox styleClass="dashboard-highlight" spacing="12" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Available Donors Nearby" styleClass="subsection-title"/>
+                                <FlowPane fx:id="dashboardDonorGridPane" hgap="12" vgap="12" prefWrapLength="520"/>
+                            </VBox>
+                        </GridPane>
+                    </VBox>
+                </ScrollPane>
             </VBox>
 
             <!-- Search Doctors Section -->

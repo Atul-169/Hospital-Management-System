@@ -224,28 +224,23 @@
                     </VBox>
 
                     <!-- Search and List Doctors -->
-                    <VBox spacing="15">
+                    <VBox spacing="15" styleClass="table-panel">
                         <Label text="Doctor List" styleClass="subsection-title">
                             <font><Font name="System Bold" size="16"/></font>
                         </Label>
 
-                        <HBox spacing="10">
+                        <HBox spacing="10" styleClass="table-toolbar">
                             <TextField fx:id="doctorSearchField" promptText="Search doctors..." prefWidth="300"/>
                             <Button text="Search" onAction="#searchDoctors" styleClass="primary-btn"/>
+                            <Button text="Refresh" onAction="#refreshAdminTables" styleClass="secondary-btn"/>
                             <Button text="Delete Selected" onAction="#deleteDoctor" styleClass="secondary-btn"/>
                         </HBox>
 
-                        <TableView fx:id="doctorsTable" VBox.vgrow="ALWAYS" prefHeight="400">
-                            <columns>
-                                <TableColumn fx:id="doctorIdCol" text="ID" prefWidth="50"/>
-                                <TableColumn fx:id="doctorNameCol" text="Name" prefWidth="150"/>
-                                <TableColumn fx:id="doctorEmailCol" text="Email" prefWidth="180"/>
-                                <TableColumn fx:id="doctorSpecializationCol" text="Specialization" prefWidth="130"/>
-                                <TableColumn fx:id="doctorExperienceCol" text="Experience" prefWidth="100"/>
-                                <TableColumn fx:id="doctorPhoneCol" text="Phone" prefWidth="120"/>
-                                <TableColumn fx:id="doctorFeeCol" text="Fee (৳)" prefWidth="80"/>
-                            </columns>
-                        </TableView>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                            <FlowPane fx:id="doctorsGrid" hgap="16" vgap="16" prefWrapLength="1080" styleClass="admin-card-grid">
+                                <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                            </FlowPane>
+                        </ScrollPane>
                     </VBox>
             </VBox>
 
@@ -257,26 +252,23 @@
                         <font><Font name="System Bold" size="24"/></font>
                     </Label>
 
-                    <VBox spacing="15">
+                    <VBox spacing="15" styleClass="table-panel">
                         <Label text="Patient List" styleClass="subsection-title">
                             <font><Font name="System Bold" size="16"/></font>
                         </Label>
 
-                        <HBox spacing="10">
+                        <HBox spacing="10" styleClass="table-toolbar">
                             <TextField fx:id="patientSearchField" promptText="Search patients..." prefWidth="300"/>
                             <Button text="Search" onAction="#searchPatients" styleClass="primary-btn"/>
+                            <Button text="Refresh" onAction="#refreshAdminTables" styleClass="secondary-btn"/>
                             <Button text="Delete Selected" onAction="#deletePatient" styleClass="secondary-btn"/>
                         </HBox>
 
-                        <TableView fx:id="patientsTable" VBox.vgrow="ALWAYS" prefHeight="500">
-                            <columns>
-                                <TableColumn fx:id="patientIdCol" text="ID" prefWidth="50"/>
-                                <TableColumn fx:id="patientNameCol" text="Name" prefWidth="200"/>
-                                <TableColumn fx:id="patientEmailCol" text="Email" prefWidth="220"/>
-                                <TableColumn fx:id="patientPhoneCol" text="Phone" prefWidth="150"/>
-                                <TableColumn fx:id="patientBloodGroupCol" text="Blood Group" prefWidth="100"/>
-                            </columns>
-                        </TableView>
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                            <FlowPane fx:id="patientsGrid" hgap="16" vgap="16" prefWrapLength="1080" styleClass="admin-card-grid">
+                                <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                            </FlowPane>
+                        </ScrollPane>
                     </VBox>
                 </VBox>
 
@@ -320,16 +312,17 @@
                     </VBox>
 
                     <!-- Appointments Table -->
-                    <TableView fx:id="appointmentsTable" VBox.vgrow="ALWAYS" prefHeight="450">
-                        <columns>
-                            <TableColumn fx:id="appointmentIdCol" text="ID" prefWidth="50"/>
-                            <TableColumn fx:id="appointmentPatientCol" text="Patient" prefWidth="180"/>
-                            <TableColumn fx:id="appointmentDoctorCol" text="Doctor" prefWidth="180"/>
-                            <TableColumn fx:id="appointmentDateCol" text="Date" prefWidth="120"/>
-                            <TableColumn fx:id="appointmentTimeCol" text="Time" prefWidth="100"/>
-                            <TableColumn fx:id="appointmentStatusCol" text="Status" prefWidth="120"/>
-                        </columns>
-                    </TableView>
+                    <HBox spacing="10" styleClass="table-toolbar">
+                        <ComboBox fx:id="manageAppointmentStatusCombo" prefWidth="180"/>
+                        <Button text="Update Selected" onAction="#updateSelectedAppointmentStatus" styleClass="primary-btn"/>
+                        <Button text="Refresh" onAction="#refreshAdminTables" styleClass="secondary-btn"/>
+                    </HBox>
+
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                        <FlowPane fx:id="appointmentsGrid" hgap="16" vgap="16" prefWrapLength="1080" styleClass="admin-card-grid">
+                            <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                        </FlowPane>
+                    </ScrollPane>
                 </VBox>
 
             <!-- Reports Panel -->
@@ -349,15 +342,11 @@
                         </VBox>
                     </HBox>
 
-                    <TableView fx:id="reportsTable" VBox.vgrow="ALWAYS" prefHeight="500">
-                        <columns>
-                            <TableColumn fx:id="reportIdCol" text="ID" prefWidth="50"/>
-                            <TableColumn fx:id="reportPatientCol" text="Patient" prefWidth="180"/>
-                            <TableColumn fx:id="reportDoctorCol" text="Doctor" prefWidth="180"/>
-                            <TableColumn fx:id="reportDateCol" text="Date" prefWidth="120"/>
-                            <TableColumn fx:id="reportDiagnosisCol" text="Diagnosis" prefWidth="250"/>
-                        </columns>
-                    </TableView>
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                        <FlowPane fx:id="reportsGrid" hgap="16" vgap="16" prefWrapLength="1080" styleClass="admin-card-grid">
+                            <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                        </FlowPane>
+                    </ScrollPane>
                 </VBox>
 
             <!-- Transactions Panel -->
@@ -414,15 +403,11 @@
                         <font><Font name="System Bold" size="16"/></font>
                     </Label>
 
-                    <TableView fx:id="transactionsTable" VBox.vgrow="ALWAYS" prefHeight="400">
-                        <columns>
-                            <TableColumn fx:id="transactionIdCol" text="ID" prefWidth="60"/>
-                            <TableColumn fx:id="transactionTypeCol" text="Type" prefWidth="150"/>
-                            <TableColumn fx:id="transactionDoctorCol" text="Doctor" prefWidth="200"/>
-                            <TableColumn fx:id="transactionAmountCol" text="Amount (৳)" prefWidth="120"/>
-                            <TableColumn fx:id="transactionDateCol" text="Date" prefWidth="180"/>
-                        </columns>
-                    </TableView>
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane">
+                        <FlowPane fx:id="transactionsGrid" hgap="16" vgap="16" prefWrapLength="1080" styleClass="admin-card-grid">
+                            <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                        </FlowPane>
+                    </ScrollPane>
                 </VBox>
 
             <!-- Notifications Panel -->
@@ -477,54 +462,48 @@
                         <font><Font name="System Bold" size="24"/></font>
                     </Label>
 
-                    <!-- Blood Donors -->
-                    <VBox spacing="15">
-                        <Label text="Blood Donors List" styleClass="subsection-title">
-                            <font><Font name="System Bold" size="16"/></font>
-                        </Label>
+                    <GridPane hgap="18" vgap="18">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
 
-                        <TableView fx:id="bloodDonorsTable" prefHeight="250">
-                            <columns>
-                                <TableColumn fx:id="donorNameCol" text="Name" prefWidth="180"/>
-                                <TableColumn fx:id="donorBloodGroupCol" text="Blood Group" prefWidth="120"/>
-                                <TableColumn fx:id="donorPhoneCol" text="Phone" prefWidth="150"/>
-                                <TableColumn fx:id="donorLocationCol" text="Location" prefWidth="180"/>
-                                <TableColumn fx:id="donorStatusCol" text="Status" prefWidth="120"/>
-                            </columns>
-                        </TableView>
-                    </VBox>
+                        <VBox spacing="15" styleClass="monitor-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Blood Donors List" styleClass="subsection-title">
+                                <font><Font name="System Bold" size="16"/></font>
+                            </Label>
+                            <ScrollPane fitToWidth="true" styleClass="content-scroll-pane">
+                                <FlowPane fx:id="bloodDonorsGrid" hgap="16" vgap="16" prefWrapLength="520" styleClass="admin-card-grid">
+                                    <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                                </FlowPane>
+                            </ScrollPane>
+                        </VBox>
 
-                    <!-- Doctor Posts -->
-                    <VBox spacing="15">
-                        <Label text="Doctor Health Posts" styleClass="subsection-title">
-                            <font><Font name="System Bold" size="16"/></font>
-                        </Label>
+                        <VBox spacing="15" styleClass="monitor-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Doctor Health Posts" styleClass="subsection-title">
+                                <font><Font name="System Bold" size="16"/></font>
+                            </Label>
+                            <ScrollPane fitToWidth="true" styleClass="content-scroll-pane">
+                                <FlowPane fx:id="doctorPostsGrid" hgap="16" vgap="16" prefWrapLength="520" styleClass="admin-card-grid">
+                                    <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                                </FlowPane>
+                            </ScrollPane>
+                        </VBox>
 
-                        <TableView fx:id="doctorPostsTable" prefHeight="250">
-                            <columns>
-                                <TableColumn fx:id="postTitleCol" text="Title" prefWidth="250"/>
-                                <TableColumn fx:id="postDoctorCol" text="Doctor" prefWidth="180"/>
-                                <TableColumn fx:id="postCategoryCol" text="Category" prefWidth="150"/>
-                                <TableColumn fx:id="postDateCol" text="Date" prefWidth="150"/>
-                            </columns>
-                        </TableView>
-                    </VBox>
-
-                    <!-- Q&A Section -->
-                    <VBox spacing="15">
-                        <Label text="Q&amp;A Section" styleClass="subsection-title">
-                            <font><Font name="System Bold" size="16"/></font>
-                        </Label>
-
-                        <TableView fx:id="questionsTable" prefHeight="250">
-                            <columns>
-                                <TableColumn fx:id="questionPatientCol" text="Patient" prefWidth="150"/>
-                                <TableColumn fx:id="questionTextCol" text="Question" prefWidth="300"/>
-                                <TableColumn fx:id="questionAnswerCol" text="Answer" prefWidth="300"/>
-                                <TableColumn fx:id="questionDateCol" text="Date" prefWidth="150"/>
-                            </columns>
-                        </TableView>
-                    </VBox>
+                        <VBox spacing="15" styleClass="monitor-card" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Q&amp;A Section" styleClass="subsection-title">
+                                <font><Font name="System Bold" size="16"/></font>
+                            </Label>
+                            <ScrollPane fitToWidth="true" styleClass="content-scroll-pane">
+                                <FlowPane fx:id="questionsGrid" hgap="16" vgap="16" prefWrapLength="1080" styleClass="admin-card-grid">
+                                    <padding><Insets top="6" right="6" bottom="12" left="6"/></padding>
+                                </FlowPane>
+                            </ScrollPane>
+                        </VBox>
+                    </GridPane>
                 </VBox>
 
             </StackPane>

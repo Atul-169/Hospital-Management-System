@@ -163,6 +163,7 @@ public class DBInitializer {
 
             // Add sample doctors if none exist
             insertSampleDoctors(conn);
+            insertDemoContent(conn);
 
         } catch (Exception e) {
             System.err.println("[DEBUG_LOG] Database Initialization Failed: " + e.getMessage());
@@ -273,6 +274,82 @@ public class DBInitializer {
             }
         } catch (Exception e) {
             System.err.println("[DEBUG_LOG] Failed to ensure " + role + " profile rows: " + e.getMessage());
+        }
+    }
+
+    private static void insertDemoContent(Connection conn) {
+        try {
+            int patientId = getFirstId(conn, "SELECT id FROM patients ORDER BY id LIMIT 1");
+            int doctorId = getFirstId(conn, "SELECT id FROM doctors ORDER BY id LIMIT 1");
+            int userPatientId = getFirstId(conn, "SELECT user_id FROM patients ORDER BY id LIMIT 1");
+            int userDoctorId = getFirstId(conn, "SELECT user_id FROM doctors ORDER BY id LIMIT 1");
+
+            if (patientId == 0 || doctorId == 0 || userPatientId == 0 || userDoctorId == 0) {
+                return;
+            }
+
+            insertIfEmpty(conn, "appointments",
+                    "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, visit_reason, status) VALUES " +
+                            "(" + patientId + ", " + doctorId + ", DATE('now', '+1 day'), '10:00 AM', 'General consultation and test follow-up', 'upcoming'), " +
+                            "(" + patientId + ", " + doctorId + ", DATE('now'), '03:00 PM', 'Prescription review and blood pressure check', 'completed')");
+
+            int completedAppointmentId = getFirstId(conn, "SELECT id FROM appointments WHERE status = 'completed' ORDER BY id DESC LIMIT 1");
+
+            insertIfEmpty(conn, "medical_reports",
+                    "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, diagnosis, prescription, doctor_notes, report_date) VALUES " +
+                            "(" + patientId + ", " + doctorId + ", " + completedAppointmentId + ", 'Seasonal viral fever', 'Paracetamol 500mg twice daily', 'Hydrate well and review after 3 days', DATE('now'))");
+
+            insertIfEmpty(conn, "doctor_posts",
+                    "INSERT INTO doctor_posts (doctor_id, title, content, category) VALUES " +
+                            "(" + doctorId + ", 'How to Prevent Seasonal Flu', 'Drink water, rest properly, and avoid self-medication. Visit your physician if symptoms persist for more than 3 days.', 'General Health'), " +
+                            "(" + doctorId + ", 'Heart Health Basics', 'Walk daily, avoid excess salt, monitor blood pressure, and maintain a balanced sleep schedule.', 'Exercise')");
+
+            insertIfEmpty(conn, "questions",
+                    "INSERT INTO questions (patient_id, question, answer, answered_by, answered_at) VALUES " +
+                            "(" + patientId + ", 'What should I do for recurring headaches?', 'Track hydration, sleep, and stress first. If it continues, schedule a visit for full evaluation.', " + doctorId + ", CURRENT_TIMESTAMP), " +
+                            "(" + patientId + ", 'Is light fever normal after weather change?', NULL, NULL, NULL)");
+
+            insertIfEmpty(conn, "blood_donors",
+                    "INSERT INTO blood_donors (patient_id, blood_group, location, phone, availability_status) VALUES " +
+                            "(" + patientId + ", 'O+', 'Dhaka', '01700000000', 'available')");
+
+            insertIfEmpty(conn, "notifications",
+                    "INSERT INTO notifications (user_id, title, message) VALUES " +
+                            "(" + userPatientId + ", 'Appointment Reminder', 'Your consultation is scheduled for tomorrow. Please arrive 15 minutes early.'), " +
+                            "(" + userPatientId + ", 'Health Tip', 'Check the latest doctor health posts for seasonal care guidance.'), " +
+                            "(" + userDoctorId + ", 'New Patient Activity', 'A patient has asked a new question in the Q&A section.')");
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to insert demo content: " + e.getMessage());
+        }
+    }
+
+    private static int getFirstId(Connection conn, String query) {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to fetch seed id: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    private static void insertIfEmpty(Connection conn, String tableName, String insertSql) {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + tableName)) {
+            if (rs.next() && rs.getInt(1) > 0) {
+                return;
+            }
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to inspect table " + tableName + ": " + e.getMessage());
+            return;
+        }
+
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(insertSql);
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to seed table " + tableName + ": " + e.getMessage());
         }
     }
 }

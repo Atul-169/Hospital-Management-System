@@ -1,6 +1,7 @@
 package com.example.project.controller;
 
 import com.example.project.util.DatabaseConnection;
+import com.example.project.util.SceneManager;
 import com.example.project.util.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -209,8 +210,10 @@ public class ProfileSetupController {
     private void loadScene(ActionEvent event, String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(loader.load(), 1024, 768);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(loader.load(),
+                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
+                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package com.example.project;
 
 import com.example.project.util.DBInitializer;
+import com.example.project.util.SceneManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,7 +15,7 @@ public class MainApp extends Application {
         DBInitializer.initialize();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/splash.fxml"));
-        Scene scene = new Scene(loader.load(), 800, 500);
+        Scene scene = new Scene(loader.load(), SceneManager.AUTH_WIDTH, SceneManager.AUTH_HEIGHT);
 
         stage.setTitle("BUET MedTech");
         stage.setScene(scene);

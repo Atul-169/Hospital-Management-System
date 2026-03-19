@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.example.project.util.DatabaseConnection;
+import com.example.project.util.SceneManager;
 import com.example.project.util.SessionManager;
 
 public class LoginController {
@@ -207,8 +208,10 @@ public class LoginController {
     public void handleBack(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/role-selection.fxml"));
-            Scene scene = new Scene(loader.load(), 1024, 768);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(loader.load(),
+                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
+                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {
@@ -238,7 +241,6 @@ public class LoginController {
     private void loadScene(Object eventSource, String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(loader.load(), 1024, 768);
             Stage stage;
             if (eventSource instanceof ActionEvent) {
                 stage = (Stage) ((Node) ((ActionEvent) eventSource).getSource()).getScene().getWindow();
@@ -247,6 +249,9 @@ public class LoginController {
             } else {
                 stage = (Stage) ((Node) eventSource).getScene().getWindow();
             }
+            Scene scene = new Scene(loader.load(),
+                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
+                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {

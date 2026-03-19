@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import com.example.project.util.SceneManager;
 
 public class SplashController {
 
@@ -53,8 +54,10 @@ public class SplashController {
     private void openRoleSelection() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/role-selection.fxml"));
-            Scene scene = new Scene(loader.load(), 1024, 768);
             Stage stage = (Stage) logoImage.getScene().getWindow();
+            Scene scene = new Scene(loader.load(),
+                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
+                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {
