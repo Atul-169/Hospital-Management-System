@@ -105,7 +105,7 @@ public class PatientDashboardController {
         // Initialize filters
         if (cmbAppointmentFilter != null) {
             cmbAppointmentFilter.setItems(FXCollections.observableArrayList(
-                    "All", "Upcoming", "Completed", "Cancelled"
+                    "All", "Upcoming", "Confirmed", "Completed", "Cancelled"
             ));
             cmbAppointmentFilter.setValue("All");
         }
@@ -614,7 +614,7 @@ public class PatientDashboardController {
     // ==================== VIEW APPOINTMENTS ====================
     private void setupAppointmentGrid() {
         if (cmbAppointmentFilter != null && cmbAppointmentFilter.getItems().isEmpty()) {
-            cmbAppointmentFilter.setItems(FXCollections.observableArrayList("All", "Pending", "Confirmed", "Completed", "Cancelled"));
+            cmbAppointmentFilter.setItems(FXCollections.observableArrayList("All", "Upcoming", "Confirmed", "Completed", "Cancelled"));
             cmbAppointmentFilter.setValue("All");
         }
     }
@@ -627,7 +627,7 @@ public class PatientDashboardController {
 
     private void loadAppointments(String filter) {
         gridAppointments.getChildren().clear();
-        String query = "SELECT u.name, a.appointment_date, a.appointment_time, a.visit_reason, a.status " +
+        String query = "SELECT a.id, u.name, a.appointment_date, a.appointment_time, a.visit_reason, a.status " +
                         "FROM appointments a " +
                         "JOIN doctors d ON a.doctor_id = d.id " +
                         "JOIN users u ON d.user_id = u.id " +
@@ -645,6 +645,7 @@ public class PatientDashboardController {
 
             while (rs.next()) {
                 VBox card = createAppointmentCard(
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("appointment_date"),
                         rs.getString("appointment_time"),
@@ -658,7 +659,7 @@ public class PatientDashboardController {
         }
     }
 
-    private VBox createAppointmentCard(String doctor, String date, String time, String reason, String status) {
+    private VBox createAppointmentCard(int appointmentId, String doctor, String date, String time, String reason, String status) {
         VBox card = new VBox(10);
         card.getStyleClass().add("appointment-card");
         card.setPrefWidth(260);
@@ -687,11 +688,14 @@ public class PatientDashboardController {
             showBookAppointment();
         });
 
-        Button refreshBtn = new Button("Refresh");
-        refreshBtn.getStyleClass().add("primary-btn");
-        refreshBtn.setOnAction(e -> loadAppointments(cmbAppointmentFilter.getValue() != null ? cmbAppointmentFilter.getValue() : "All"));
+        actions.getChildren().add(rebookBtn);
 
-        actions.getChildren().addAll(rebookBtn, refreshBtn);
+        if ("upcoming".equalsIgnoreCase(status) || "confirmed".equalsIgnoreCase(status)) {
+            Button cancelBtn = new Button("Cancel");
+            cancelBtn.getStyleClass().add("secondary-btn");
+            cancelBtn.setOnAction(e -> cancelAppointment(appointmentId));
+            actions.getChildren().add(cancelBtn);
+        }
 
         if ("completed".equalsIgnoreCase(status)) {
             Button reportBtn = new Button("View Report");
@@ -702,6 +706,27 @@ public class PatientDashboardController {
 
         card.getChildren().addAll(drLabel, dateTimeLabel, reasonLabel, statusLabel, actions);
         return card;
+    }
+
+    private void cancelAppointment(int appointmentId) {
+        String query = "UPDATE appointments SET status = 'cancelled' WHERE id = ? AND patient_id = ? AND status IN ('upcoming', 'confirmed')";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, appointmentId);
+            pstmt.setInt(2, patientId);
+            int updated = pstmt.executeUpdate();
+
+            if (updated > 0) {
+                showAlert("Success", "Appointment cancelled successfully.", Alert.AlertType.INFORMATION);
+                loadAppointments(cmbAppointmentFilter.getValue() != null ? cmbAppointmentFilter.getValue() : "All");
+                loadDashboardData();
+            } else {
+                showAlert("Error", "This appointment can no longer be cancelled.", Alert.AlertType.ERROR);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to cancel appointment", Alert.AlertType.ERROR);
+        }
     }
 
     // ==================== VIEW REPORTS ====================

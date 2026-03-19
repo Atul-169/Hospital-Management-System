@@ -490,22 +490,27 @@
 
 /* Sidebar Navigation */
 .sidebar {
-    -fx-background-color: #0f172a;
+    -fx-background-color: linear-gradient(to bottom, #081121 0%, #0f172a 42%, #132238 100%);
     -fx-pref-width: 280;
     -fx-min-width: 280;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 10, 0);
+    -fx-border-color: rgba(148, 163, 184, 0.08);
+    -fx-border-width: 0 1 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(2, 6, 23, 0.45), 32, 0.18, 10, 0);
 }
 
 .sidebar-brand {
-    -fx-padding: 10 5;
+    -fx-padding: 10 8 16 8;
+    -fx-border-color: rgba(148, 163, 184, 0.10);
+    -fx-border-width: 0 0 1 0;
 }
 
 .brand-icon {
-    -fx-background-color: #3b82f6;
+    -fx-background-color: linear-gradient(to bottom right, #38bdf8, #2563eb);
     -fx-text-fill: white;
     -fx-font-size: 20px;
-    -fx-padding: 8;
-    -fx-background-radius: 10;
+    -fx-padding: 8 10;
+    -fx-background-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(56, 189, 248, 0.45), 16, 0.18, 0, 4);
 }
 
 .brand-text {
@@ -529,40 +534,47 @@
 }
 
 .sidebar-group-label {
-    -fx-text-fill: #64748b;
-    -fx-font-size: 11px;
+    -fx-text-fill: #7dd3fc;
+    -fx-font-size: 10px;
     -fx-font-weight: 800;
     -fx-letter-spacing: 1.5;
-    -fx-padding: 15 5 10 5;
+    -fx-padding: 18 8 10 8;
 }
 
 .nav-btn {
-    -fx-background-color: transparent;
-    -fx-text-fill: #94a3b8;
+    -fx-background-color: rgba(255, 255, 255, 0.02);
+    -fx-text-fill: #cbd5e1;
     -fx-font-size: 15px;
-    -fx-font-weight: 600;
-    -fx-padding: 12 15;
-    -fx-background-radius: 12;
+    -fx-font-weight: 700;
+    -fx-padding: 13 16 13 18;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
     -fx-cursor: hand;
     -fx-alignment: CENTER_LEFT;
 }
 
 .nav-btn:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.08);
-    -fx-text-fill: #e2e8f0;
+    -fx-background-color: linear-gradient(to right, rgba(56, 189, 248, 0.18), rgba(37, 99, 235, 0.10));
+    -fx-text-fill: #f8fafc;
+    -fx-border-color: rgba(125, 211, 252, 0.26);
+    -fx-effect: dropshadow(gaussian, rgba(56, 189, 248, 0.28), 18, 0.18, 0, 0);
 }
 
 .nav-btn.active {
-    -fx-background-color: rgba(59, 130, 246, 0.20);
-    -fx-text-fill: #93c5fd;
-    -fx-border-color: rgba(59, 130, 246, 0.6);
-    -fx-border-width: 0 0 0 3;
+    -fx-background-color: linear-gradient(to right, rgba(37, 99, 235, 0.34), rgba(56, 189, 248, 0.16));
+    -fx-text-fill: #eff6ff;
+    -fx-border-color: rgba(96, 165, 250, 0.55);
+    -fx-border-width: 1 1 1 4;
     -fx-border-insets: 0;
-    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.4), 12, 0.5, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.40), 22, 0.24, 0, 0);
 }
 
 .sidebar-footer {
-    -fx-padding: 10 0 0 0;
+    -fx-padding: 14 0 0 0;
+    -fx-border-color: rgba(148, 163, 184, 0.10);
+    -fx-border-width: 1 0 0 0;
 }
 
 .sidebar-user-name {
@@ -573,9 +585,11 @@
 }
 
 .mode-toggle-container {
-    -fx-background-color: #1e293b;
-    -fx-background-radius: 12;
-    -fx-padding: 4;
+    -fx-background-color: rgba(15, 23, 42, 0.85);
+    -fx-background-radius: 16;
+    -fx-padding: 5;
+    -fx-border-color: rgba(148, 163, 184, 0.12);
+    -fx-border-radius: 16;
 }
 
 .mode-btn {
@@ -583,14 +597,20 @@
     -fx-text-fill: #94a3b8;
     -fx-font-size: 13px;
     -fx-font-weight: 700;
-    -fx-padding: 8 20;
-    -fx-background-radius: 10;
+    -fx-padding: 9 18;
+    -fx-background-radius: 12;
     -fx-cursor: hand;
 }
 
+.mode-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: #e2e8f0;
+}
+
 .mode-btn.active {
-    -fx-background-color: #334155;
+    -fx-background-color: linear-gradient(to right, #334155, #1e3a8a);
     -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.25), 12, 0.18, 0, 2);
 }
 
 .sidebar-separator {
@@ -598,11 +618,17 @@
 }
 
 .logout-btn {
-    -fx-text-fill: #f87171 !important;
+    -fx-background-color: rgba(248, 113, 113, 0.08);
+    -fx-text-fill: #fca5a5 !important;
+    -fx-border-color: rgba(248, 113, 113, 0.16);
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
 }
 
 .logout-btn:hover {
-    -fx-background-color: rgba(248, 113, 113, 0.1);
+    -fx-background-color: linear-gradient(to right, rgba(248, 113, 113, 0.22), rgba(239, 68, 68, 0.10));
+    -fx-text-fill: #fff1f2 !important;
+    -fx-effect: dropshadow(gaussian, rgba(248, 113, 113, 0.24), 16, 0.18, 0, 0);
 }
 
 /* Appointment Grid & Cards */
@@ -632,6 +658,7 @@
 }
 
 .status-pending { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
+.status-upcoming { -fx-background-color: #ede9fe; -fx-text-fill: #5b21b6; }
 .status-confirmed { -fx-background-color: #dcfce7; -fx-text-fill: #166534; }
 .status-completed { -fx-background-color: #e0f2fe; -fx-text-fill: #075985; }
 .status-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #991b1b; }
@@ -1025,7 +1052,7 @@ Separator {
 }
 
 .dark-theme .sidebar {
-    -fx-background-color: #0b1224;
+    -fx-background-color: linear-gradient(to bottom, #030712 0%, #081121 44%, #0b1730 100%);
 }
 
 .dark-theme .content-area {
@@ -1064,7 +1091,72 @@ Separator {
 }
 
 .dark-theme .nav-btn:hover {
-    -fx-background-color: rgba(255,255,255,0.05);
+    -fx-background-color: linear-gradient(to right, rgba(59,130,246,0.22), rgba(14,165,233,0.10));
+    -fx-border-color: rgba(125, 211, 252, 0.20);
+    -fx-text-fill: #f8fafc;
+    -fx-effect: dropshadow(gaussian, rgba(56, 189, 248, 0.18), 16, 0.18, 0, 0);
+}
+
+.sidebar-scroll,
+.scroll-pane,
+.content-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.sidebar-scroll .corner,
+.scroll-pane .corner,
+.content-scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
+.sidebar-scroll .scroll-bar:vertical,
+.scroll-pane .scroll-bar:vertical,
+.content-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 10;
+    -fx-padding: 2;
+}
+
+.sidebar-scroll .scroll-bar:vertical .track,
+.scroll-pane .scroll-bar:vertical .track,
+.content-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: rgba(148, 163, 184, 0.08);
+    -fx-background-radius: 999;
+}
+
+.sidebar-scroll .scroll-bar:vertical .thumb,
+.scroll-pane .scroll-bar:vertical .thumb,
+.content-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: linear-gradient(to bottom, rgba(125, 211, 252, 0.55), rgba(59, 130, 246, 0.48));
+    -fx-background-radius: 999;
+}
+
+.sidebar-scroll .scroll-bar:vertical .thumb:hover,
+.scroll-pane .scroll-bar:vertical .thumb:hover,
+.content-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: linear-gradient(to bottom, rgba(186, 230, 253, 0.85), rgba(96, 165, 250, 0.72));
+}
+
+.sidebar-scroll .scroll-bar:vertical .increment-button,
+.sidebar-scroll .scroll-bar:vertical .decrement-button,
+.scroll-pane .scroll-bar:vertical .increment-button,
+.scroll-pane .scroll-bar:vertical .decrement-button,
+.content-scroll-pane .scroll-bar:vertical .increment-button,
+.content-scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.sidebar-scroll .scroll-bar:vertical .increment-arrow,
+.sidebar-scroll .scroll-bar:vertical .decrement-arrow,
+.scroll-pane .scroll-bar:vertical .increment-arrow,
+.scroll-pane .scroll-bar:vertical .decrement-arrow,
+.content-scroll-pane .scroll-bar:vertical .increment-arrow,
+.content-scroll-pane .scroll-bar:vertical .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
 }
 
 .dark-theme TableView, .dark-theme ListView, .dark-theme .form-container, .dark-theme .scroll-pane {
