@@ -55,10 +55,9 @@ public class SplashController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/role-selection.fxml"));
             Stage stage = (Stage) logoImage.getScene().getWindow();
-            Scene scene = new Scene(loader.load(),
-                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
-                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
+            Scene scene = SceneManager.createScene(loader.load(), "/fxml/role-selection.fxml");
             stage.setScene(scene);
+            SceneManager.configureStage(stage, "/fxml/role-selection.fxml");
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

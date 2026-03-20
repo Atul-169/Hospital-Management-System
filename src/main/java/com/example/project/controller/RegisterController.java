@@ -217,10 +217,9 @@ public class RegisterController {
             } else {
                 stage = (Stage) ((Node) eventSource).getScene().getWindow();
             }
-            Scene scene = new Scene(loader.load(),
-                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
-                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
+            Scene scene = SceneManager.createScene(loader.load(), fxmlPath);
             stage.setScene(scene);
+            SceneManager.configureStage(stage, fxmlPath);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
