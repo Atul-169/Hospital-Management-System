@@ -15,13 +15,15 @@ public class MainApp extends Application {
         DBInitializer.initialize();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/splash.fxml"));
-        Scene scene = new Scene(loader.load(), SceneManager.AUTH_WIDTH, SceneManager.AUTH_HEIGHT);
+        Scene scene = SceneManager.createScene(loader.load(), "/fxml/splash.fxml");
 
         stage.setTitle("BUET MedTech");
         stage.setWidth(SceneManager.AUTH_WIDTH);   // ✅ set on stage once
         stage.setHeight(SceneManager.AUTH_HEIGHT); // ✅ set on stage once
 
         stage.setScene(scene);
+        SceneManager.configureStage(stage, "/fxml/splash.fxml");
+
         stage.show();
     }
 }
