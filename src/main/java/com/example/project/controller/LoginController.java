@@ -209,9 +209,7 @@ public class LoginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/role-selection.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(loader.load(),
-                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
-                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
+            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {
@@ -249,9 +247,7 @@ public class LoginController {
             } else {
                 stage = (Stage) ((Node) eventSource).getScene().getWindow();
             }
-            Scene scene = new Scene(loader.load(),
-                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
-                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
+            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {

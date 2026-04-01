@@ -22,14 +22,14 @@
 
     <children>
         <HBox spacing="0.0"
-              prefHeight="768.0" prefWidth="1024.0"
+
               AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 
-            <AnchorPane prefWidth="512.0" styleClass="role-left-pane">
+            <AnchorPane  styleClass="role-left-pane" HBox.hgrow="ALWAYS">
                 <children>
                     <ImageView fitWidth="512.0" fitHeight="768.0"
-                               preserveRatio="false" smooth="true"
+                               preserveRatio="true"
                                AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
                                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                         <image>
@@ -39,11 +39,11 @@
                 </children>
             </AnchorPane>
 
-            <StackPane prefWidth="512.0" styleClass="role-right-pane">
+            <StackPane  styleClass="role-right-pane" HBox.hgrow="ALWAYS" >
                 <children>
                     <VBox fx:id="rightCard"
                           alignment="CENTER"
-                          maxWidth="340.0"
+                          maxWidth="512"
                           spacing="16.0"
                           styleClass="role-card">
 

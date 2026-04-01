@@ -4,15 +4,15 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1024.0" styleClass="login-root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.controller.RegisterController">
+<AnchorPane  styleClass="login-root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.controller.RegisterController">
 
     <children>
-        <HBox prefHeight="768.0" prefWidth="1024.0" spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <HBox  spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
             <!-- Left side (Illustration/Image) -->
-            <AnchorPane prefWidth="480.0" styleClass="login-left-pane">
+            <AnchorPane styleClass="login-left-pane" HBox.hgrow="ALWAYS">
                 <children>
-                    <ImageView fitHeight="768.0" fitWidth="480.0" preserveRatio="false" smooth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <ImageView fitHeight="768.0" fitWidth="512.0" preserveRatio="false" smooth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <image>
                             <Image url="@../images/role-select.png" />
                         </image>
@@ -23,10 +23,10 @@
             </AnchorPane>
 
             <!-- Right side (Register Form) -->
-            <StackPane prefWidth="544.0" styleClass="login-right-pane">
+            <StackPane  styleClass="login-right-pane" HBox.hgrow="ALWAYS">
                 <children>
                     <!-- Form Area -->
-                    <VBox alignment="CENTER_LEFT" maxWidth="420.0" spacing="20.0" styleClass="login-card">
+                    <VBox alignment="CENTER_LEFT" maxWidth="512" spacing="20.0" styleClass="login-card">
                         <VBox spacing="6.0">
                             <Label fx:id="roleLabel" styleClass="login-role-tag" text="PATIENT REGISTRATION" />
                             <Label styleClass="login-title" text="Create Account" />

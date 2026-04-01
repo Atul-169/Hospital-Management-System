@@ -99,9 +99,7 @@ public class RoleSelectionController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(loader.load(),
-                    stage.getWidth() > 0 ? stage.getWidth() : SceneManager.AUTH_WIDTH,
-                    stage.getHeight() > 0 ? stage.getHeight() : SceneManager.AUTH_HEIGHT);
+            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {

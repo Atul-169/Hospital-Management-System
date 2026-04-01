@@ -9,8 +9,8 @@
 <StackPane xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.example.project.controller.SplashController"
-           prefHeight="500.0"
-           prefWidth="800.0"
+           prefHeight="768.0"
+           prefWidth="1024.0"
            style="-fx-background-color: black;">
 
     <ImageView fx:id="logoImage"
