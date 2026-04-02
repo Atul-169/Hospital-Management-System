@@ -9,8 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class SceneManager {
-    public static final double SPLASH_WIDTH = 800;
-    public static final double SPLASH_HEIGHT = 500;
+    public static final double SPLASH_WIDTH = 1024;
+    public static final double SPLASH_HEIGHT = 768;
     public static final double AUTH_WIDTH = 1024;
     public static final double AUTH_HEIGHT = 768;
     public static final double APP_WIDTH = 1280;
@@ -39,11 +39,9 @@ public class SceneManager {
         double[] size = getSceneSize(fxmlPath);
         stage.setWidth(size[0]);
         stage.setHeight(size[1]);
-        stage.setMinWidth(size[0]);
-        stage.setMaxWidth(size[0]);
-        stage.setMinHeight(size[1]);
-        stage.setMaxHeight(size[1]);
-        stage.setResizable(false);
+        stage.setMinWidth(size[0] * 0.6);   // allow shrink up to 60%
+        stage.setMinHeight(size[1] * 0.6);
+        stage.setResizable(true);
         stage.centerOnScreen();
     }
 

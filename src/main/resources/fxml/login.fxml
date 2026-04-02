@@ -10,7 +10,7 @@
         <HBox  spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
             <!-- Left side (Illustration/Image) -->
-            <AnchorPane styleClass="login-left-pane" HBox.hgrow="ALWAYS" >
+            <AnchorPane styleClass="login-left-pane" HBox.hgrow="NEVER" prefWidth="512.0" >
                 <children>
                     <ImageView fitHeight="768.0" fitWidth="512.0" preserveRatio="false" smooth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <image>
@@ -23,7 +23,7 @@
             </AnchorPane>
 
             <!-- Right side (Login Form) -->
-            <StackPane styleClass="login-right-pane" HBox.hgrow="ALWAYS" >
+            <StackPane styleClass="login-right-pane" HBox.hgrow="NEVER" prefWidth="512.0" >
                 <children>
                     <!-- Form Area -->
                     <VBox alignment="CENTER_LEFT" maxWidth="512" spacing="25.0" styleClass="login-card">
