@@ -5,6 +5,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,6 +59,14 @@ public class RegisterController {
             roleLabel.setText(role.toUpperCase() + " REGISTRATION");
         }
         installHoverAnimation(registerBtn);
+        Platform.runLater(() -> {
+            nameField.getScene().setOnKeyPressed(event -> {
+                switch (event.getCode()) {
+                    case ENTER -> registerBtn.fire();
+                    case ESCAPE -> handleBackToLogin(new ActionEvent(registerBtn, null));
+                }
+            });
+        });
     }
 
     private void installHoverAnimation(Button btn) {

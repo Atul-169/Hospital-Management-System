@@ -5,6 +5,7 @@ import com.example.project.util.SceneManager;
 import com.example.project.util.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -114,6 +115,9 @@ public class DoctorDashboardController {
     @FXML private TextField profilePhoneField;
     @FXML private TextField profileFeeField;
     @FXML private Button saveProfileBtn;
+    @FXML private Button btnLightMode, btnDarkMode;
+    @FXML private StackPane contentArea;   // make sure fx:id="contentArea" exists on your StackPane in FXML
+    private boolean isDarkMode = false;
 
     private int currentDoctorId;
 
@@ -124,6 +128,34 @@ public class DoctorDashboardController {
         populateComboBoxes();
         checkProfileCompletion();
     }
+    @FXML
+    private void setLightMode() {
+        isDarkMode = false;
+        applyTheme();
+    }
+
+    @FXML
+    private void setDarkMode() {
+        isDarkMode = true;
+        applyTheme();
+    }
+
+    private void applyTheme() {
+        if (contentArea == null || contentArea.getScene() == null) return;
+
+        String theme = isDarkMode ? "dark-theme" : "light-theme";
+        contentArea.getScene().getRoot().getStyleClass().removeAll("light-theme", "dark-theme");
+        contentArea.getScene().getRoot().getStyleClass().add(theme);
+
+        if (isDarkMode) {
+            btnDarkMode.getStyleClass().add("active");
+            btnLightMode.getStyleClass().remove("active");
+        } else {
+            btnLightMode.getStyleClass().add("active");
+            btnDarkMode.getStyleClass().remove("active");
+        }
+    }
+
 
     private void checkProfileCompletion() {
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -146,6 +178,7 @@ public class DoctorDashboardController {
             showDashboard();
         }
     }
+
 
     private void populateComboBoxes() {
         // Populate appointment filter

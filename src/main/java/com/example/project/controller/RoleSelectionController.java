@@ -1,6 +1,7 @@
 package com.example.project.controller;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -52,6 +54,15 @@ public class RoleSelectionController {
         installHoverAnimation(adminBtn);
         installHoverAnimation(doctorBtn);
         installHoverAnimation(patientBtn);
+        Platform.runLater(() -> {
+            rightCard.getScene().setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    // go back to splash or close
+                    Stage stage = (Stage) rightCard.getScene().getWindow();
+                    stage.close();
+                }
+            });
+        });
     }
 
     private void installHoverAnimation(Button btn) {

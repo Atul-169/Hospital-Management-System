@@ -5,6 +5,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +27,8 @@ import java.sql.SQLException;
 import com.example.project.util.DatabaseConnection;
 import com.example.project.util.SceneManager;
 import com.example.project.util.SessionManager;
+import javafx.concurrent.Task;
+
 
 public class LoginController {
 
@@ -53,6 +56,14 @@ public class LoginController {
             roleLabel.setText("SELECT ROLE FIRST");
         }
         installHoverAnimation(loginBtn);
+        Platform.runLater(() -> {
+            usernameField.getScene().setOnKeyPressed(event -> {
+                switch (event.getCode()) {
+                    case ENTER -> loginBtn.fire();
+                    case ESCAPE -> handleBack(new ActionEvent(loginBtn, null));
+                }
+            });
+        });
     }
 
     private void installHoverAnimation(Button btn) {
@@ -82,8 +93,9 @@ public class LoginController {
     }
 
     @FXML
+
     public void handleLogin(ActionEvent event) {
-        String email = usernameField.getText(); // ইউজার ইমেইল দিয়ে লগইন করবে
+        String email = usernameField.getText();
         String password = passwordField.getText();
         String selectedRole = SessionManager.normalizeRole(SessionManager.getSelectedRole());
 
@@ -91,54 +103,77 @@ public class LoginController {
             showError("Please select a role first.");
             return;
         }
-
         if (email.isEmpty() || password.isEmpty()) {
             showError("Please fill all fields!");
             return;
         }
 
-        // ডাটাবেজ থেকে ইউজার চেক করার SQL (SELECT)
-        String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND LOWER(role) = LOWER(?)";
+        // ✅ Show loading state
+        loginBtn.setDisable(true);
+        loginBtn.setText("Connecting...");
+        errorLabel.setVisible(false);
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        // ✅ Run DB work on background thread
+        Task<String[]> loginTask = new Task<>() {
+            @Override
+            protected String[] call() throws Exception {
+                String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND LOWER(role) = LOWER(?)";
+                try (Connection conn = DatabaseConnection.getConnection();
+                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, email);
-            pstmt.setString(2, password);
-            pstmt.setString(3, selectedRole);
+                    pstmt.setString(1, email);
+                    pstmt.setString(2, password);
+                    pstmt.setString(3, selectedRole);
 
-            // কুয়েরি রান করে রেজাল্ট সেট আনা
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                // সাকসেসফুল লগইন
-                String name = rs.getString("name");
-                int id = rs.getInt("id");
-                String userRole = SessionManager.normalizeRole(rs.getString("role")); // Database থেকে আসল রোল নেওয়া
-                System.out.println("[DEBUG_LOG] Login Successful for: " + name);
-
-                // সেশনে ডাটা রাখা
-                SessionManager.setUserName(name);
-                SessionManager.setUserId(id);
-                SessionManager.setSelectedRole(userRole); // Session এ রোল আপডেট করা
-
-                if (userRole.equalsIgnoreCase("Patient")) {
-                    checkPatientProfile(event, id);
-                } else if (userRole.equalsIgnoreCase("Doctor")) {
-                    checkDoctorProfile(event, id);
-                } else {
-                    // রোল অনুযায়ী ড্যাশবোর্ড ওপেন করা
-                    String dashboardPath = "/fxml/" + userRole.toLowerCase() + "-dashboard.fxml";
-                    loadScene(event, dashboardPath);
+                    ResultSet rs = pstmt.executeQuery();
+                    if (rs.next()) {
+                        return new String[]{
+                                rs.getString("name"),
+                                String.valueOf(rs.getInt("id")),
+                                rs.getString("role")
+                        };
+                    }
                 }
-            } else {
-                // ভুল তথ্য
+                return null; // login failed
+            }
+        };
+
+        loginTask.setOnSucceeded(e -> {
+            String[] result = loginTask.getValue();
+
+            // ✅ Reset button
+            loginBtn.setDisable(false);
+            loginBtn.setText("Sign In");
+
+            if (result == null) {
                 showError("Invalid email, password or role!");
+                return;
             }
 
-        } catch (SQLException e) {
-            showError("Database error: " + e.getMessage());
-        }
+            String name = result[0];
+            int id = Integer.parseInt(result[1]);
+            String userRole = SessionManager.normalizeRole(result[2]);
+
+            SessionManager.setUserName(name);
+            SessionManager.setUserId(id);
+            SessionManager.setSelectedRole(userRole);
+
+            if (userRole.equalsIgnoreCase("Patient")) {
+                checkPatientProfile(event, id);
+            } else if (userRole.equalsIgnoreCase("Doctor")) {
+                checkDoctorProfile(event, id);
+            } else {
+                loadScene(event, "/fxml/" + userRole.toLowerCase() + "-dashboard.fxml");
+            }
+        });
+
+        loginTask.setOnFailed(e -> {
+            loginBtn.setDisable(false);
+            loginBtn.setText("Sign In");
+            showError("Database error: " + loginTask.getException().getMessage());
+        });
+
+        new Thread(loginTask).start();
     }
 
     private void checkDoctorProfile(ActionEvent event, int userId) {

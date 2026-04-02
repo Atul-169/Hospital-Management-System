@@ -57,6 +57,13 @@
             <!-- Profile & Settings Section at Bottom -->
             <VBox spacing="10" styleClass="sidebar-footer">
                 <Separator styleClass="sidebar-separator" />
+                <!-- Theme Toggle -->
+                <HBox alignment="CENTER" spacing="10" styleClass="mode-toggle-container">
+                    <Button fx:id="btnLightMode" onAction="#setLightMode" styleClass="mode-btn, active" text="☀️ Light" />
+                    <Button fx:id="btnDarkMode" onAction="#setDarkMode" styleClass="mode-btn" text="🌙 Dark" />
+                </HBox>
+                <Separator styleClass="sidebar-separator" />
+
                 <Button fx:id="logoutBtn" alignment="CENTER_LEFT" maxWidth="Infinity"
                         onAction="#logout" styleClass="nav-btn, logout-btn" text="🚪 Logout" />
             </VBox>
@@ -65,7 +72,7 @@
 
     <!-- Main Content Area -->
     <center>
-        <StackPane styleClass="content-area">
+        <StackPane fx:id="contentArea" styleClass="content-area">
             <padding>
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
