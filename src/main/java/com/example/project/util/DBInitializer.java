@@ -80,6 +80,8 @@ public class DBInitializer {
                     "appointment_time TEXT," +
                     "visit_reason TEXT," +
                     "status TEXT DEFAULT 'upcoming'," +
+                    "payment_status TEXT DEFAULT 'unpaid'," +
+                    "payment_method TEXT," +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
                     "FOREIGN KEY(patient_id) REFERENCES patients(id)," +
                     "FOREIGN KEY(doctor_id) REFERENCES doctors(id)" +
@@ -91,11 +93,34 @@ public class DBInitializer {
                     "patient_id INTEGER," +
                     "doctor_id INTEGER," +
                     "appointment_id INTEGER," +
+                    "report_title TEXT," +
+                    "lab_tests TEXT," +
                     "diagnosis TEXT," +
                     "prescription TEXT," +
                     "doctor_notes TEXT," +
                     "report_date TEXT," +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY(patient_id) REFERENCES patients(id)," +
+                    "FOREIGN KEY(doctor_id) REFERENCES doctors(id)," +
+                    "FOREIGN KEY(appointment_id) REFERENCES appointments(id)" +
+                    ");";
+
+            String createLabReportRequestsTable = "CREATE TABLE IF NOT EXISTS lab_report_requests (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "medical_report_id INTEGER NOT NULL," +
+                    "patient_id INTEGER NOT NULL," +
+                    "doctor_id INTEGER," +
+                    "appointment_id INTEGER," +
+                    "request_status TEXT DEFAULT 'not_requested'," +
+                    "result_status TEXT DEFAULT 'pending'," +
+                    "admin_notes TEXT," +
+                    "file_path TEXT," +
+                    "price REAL DEFAULT 0," +
+                    "payment_status TEXT DEFAULT 'unpaid'," +
+                    "payment_method TEXT," +
+                    "requested_at TIMESTAMP," +
+                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY(medical_report_id) REFERENCES medical_reports(id)," +
                     "FOREIGN KEY(patient_id) REFERENCES patients(id)," +
                     "FOREIGN KEY(doctor_id) REFERENCES doctors(id)," +
                     "FOREIGN KEY(appointment_id) REFERENCES appointments(id)" +
@@ -150,12 +175,28 @@ public class DBInitializer {
 
             stmt.execute(createAppointmentsTable);
             stmt.execute(createReportsTable);
+            stmt.execute(createLabReportRequestsTable);
             stmt.execute(createNotificationsTable);
             stmt.execute(createBloodDonorsTable);
             stmt.execute(createDoctorPostsTable);
             stmt.execute(createQuestionsTable);
 
+            addColumnIfNotExists(stmt, "appointments", "payment_status", "TEXT DEFAULT 'unpaid'");
+            addColumnIfNotExists(stmt, "appointments", "payment_method", "TEXT");
+            addColumnIfNotExists(stmt, "medical_reports", "report_title", "TEXT");
+            addColumnIfNotExists(stmt, "medical_reports", "lab_tests", "TEXT");
+            addColumnIfNotExists(stmt, "lab_report_requests", "request_status", "TEXT DEFAULT 'not_requested'");
+            addColumnIfNotExists(stmt, "lab_report_requests", "result_status", "TEXT DEFAULT 'pending'");
+            addColumnIfNotExists(stmt, "lab_report_requests", "admin_notes", "TEXT");
+            addColumnIfNotExists(stmt, "lab_report_requests", "file_path", "TEXT");
+            addColumnIfNotExists(stmt, "lab_report_requests", "price", "REAL DEFAULT 0");
+            addColumnIfNotExists(stmt, "lab_report_requests", "payment_status", "TEXT DEFAULT 'unpaid'");
+            addColumnIfNotExists(stmt, "lab_report_requests", "payment_method", "TEXT");
+            addColumnIfNotExists(stmt, "lab_report_requests", "requested_at", "TIMESTAMP");
+            addColumnIfNotExists(stmt, "lab_report_requests", "updated_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+
             normalizeUserRoles(conn);
+            ensureDefaultAdmin(conn);
             ensureProfileRows(conn, "Doctor");
             ensureProfileRows(conn, "Patient");
 
@@ -250,6 +291,31 @@ public class DBInitializer {
         }
     }
 
+    private static void ensureDefaultAdmin(Connection conn) {
+        String existsSql = "SELECT 1 FROM users WHERE LOWER(TRIM(role)) = 'admin' LIMIT 1";
+        String insertSql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'Admin')";
+
+        try (PreparedStatement existsStmt = conn.prepareStatement(existsSql);
+             ResultSet rs = existsStmt.executeQuery()) {
+            if (rs.next()) {
+                return;
+            }
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to check admin existence: " + e.getMessage());
+            return;
+        }
+
+        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            insertStmt.setString(1, "Admin");
+            insertStmt.setString(2, "admin");
+            insertStmt.setString(3, "admin");
+            insertStmt.executeUpdate();
+            System.out.println("[DEBUG_LOG] Default admin account created: username/email 'admin', password 'admin'");
+        } catch (Exception e) {
+            System.err.println("[DEBUG_LOG] Failed to create default admin account: " + e.getMessage());
+        }
+    }
+
     private static void ensureProfileRows(Connection conn, String role) {
         String userQuery = "SELECT id FROM users WHERE role = ?";
         String profileQuery = "SELECT 1 FROM " + role.toLowerCase() + "s WHERE user_id = ?";
@@ -296,8 +362,8 @@ public class DBInitializer {
             int completedAppointmentId = getFirstId(conn, "SELECT id FROM appointments WHERE status = 'completed' ORDER BY id DESC LIMIT 1");
 
             insertIfEmpty(conn, "medical_reports",
-                    "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, diagnosis, prescription, doctor_notes, report_date) VALUES " +
-                            "(" + patientId + ", " + doctorId + ", " + completedAppointmentId + ", 'Seasonal viral fever', 'Paracetamol 500mg twice daily', 'Hydrate well and review after 3 days', DATE('now'))");
+                    "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, report_title, lab_tests, diagnosis, prescription, doctor_notes, report_date) VALUES " +
+                            "(" + patientId + ", " + doctorId + ", " + completedAppointmentId + ", 'Fever Lab Workup', 'Dengue NS1, CBC, Hemoglobin', 'Seasonal viral fever', 'Paracetamol 500mg twice daily', 'Hydrate well, complete the tests, and review after 3 days', DATE('now'))");
 
             insertIfEmpty(conn, "doctor_posts",
                     "INSERT INTO doctor_posts (doctor_id, title, content, category) VALUES " +

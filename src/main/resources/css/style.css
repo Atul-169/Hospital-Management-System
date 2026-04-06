@@ -1572,3 +1572,77 @@ Separator {
         -fx-font-size: 28px;
     }
 }
+
+/* ==================== ADMIN DASHBOARD ==================== */
+.admin-panel-scroll {
+    -fx-fit-to-width: true;
+}
+
+.admin-hero-card {
+    -fx-background-color: linear-gradient(to right, rgba(14, 116, 144, 0.96), rgba(37, 99, 235, 0.92));
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(125, 211, 252, 0.30);
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(14,116,144,0.22), 28, 0.18, 0, 10);
+}
+
+.admin-hero-card .info-text {
+    -fx-text-fill: rgba(239, 246, 255, 0.92);
+    -fx-font-size: 14px;
+}
+
+.admin-hero-title {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+}
+
+.admin-summary-card {
+    -fx-border-color: rgba(148, 163, 184, 0.18);
+    -fx-border-radius: 18;
+}
+
+.admin-section-shell {
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 18, 0.14, 0, 8);
+}
+
+.admin-stat-amber {
+    -fx-border-color: #f59e0b;
+    -fx-background-color: linear-gradient(to bottom right, #fef3c7, #ffffff);
+}
+
+.danger-btn {
+    -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 14;
+    -fx-cursor: hand;
+    -fx-padding: 12 20;
+    -fx-min-height: 42;
+    -fx-min-width: 160;
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.28), 15, 0.18, 0, 5);
+}
+
+.danger-btn:hover {
+    -fx-background-color: linear-gradient(to right, #dc2626, #b91c1c);
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+    -fx-effect: dropshadow(gaussian, rgba(220,38,38,0.34), 18, 0.18, 0, 6);
+}
+
+.dark-theme .admin-hero-card {
+    -fx-background-color: linear-gradient(to right, rgba(8, 47, 73, 0.98), rgba(30, 64, 175, 0.92));
+    -fx-border-color: rgba(56, 189, 248, 0.22);
+}
+
+.dark-theme .admin-summary-card,
+.dark-theme .admin-section-shell {
+    -fx-background-color: linear-gradient(to bottom right, #162033, #1e293b);
+    -fx-border-color: rgba(71, 85, 105, 0.60);
+}
+
+.dark-theme .admin-hero-card .info-text,
+.dark-theme .admin-summary-card .info-text {
+    -fx-text-fill: #cbd5e1;
+}

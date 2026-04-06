@@ -71,6 +71,9 @@ public class DoctorDashboardController {
 
     // Write Report Components
     @FXML private ComboBox<String> reportAppointmentCombo;
+    @FXML private Label reportPatientInfoLabel;
+    @FXML private TextField reportTitleField;
+    @FXML private TextArea reportLabTests;
     @FXML private TextArea reportDiagnosis;
     @FXML private TextArea reportTreatmentNotes;
     @FXML private TextArea reportFollowUpAdvice;
@@ -78,6 +81,7 @@ public class DoctorDashboardController {
 
     // Prescription Components
     @FXML private ComboBox<String> prescriptionAppointmentCombo;
+    @FXML private Label prescriptionPatientInfoLabel;
     @FXML private TextField medicineName;
     @FXML private TextField medicineDosage;
     @FXML private TextField medicineDuration;
@@ -203,6 +207,16 @@ public class DoctorDashboardController {
             ));
             postCategory.setValue("General");
         }
+
+        if (reportAppointmentCombo != null) {
+            reportAppointmentCombo.valueProperty().addListener((obs, oldValue, newValue) ->
+                    updateSelectedPatientLabel(reportPatientInfoLabel, newValue));
+        }
+
+        if (prescriptionAppointmentCombo != null) {
+            prescriptionAppointmentCombo.valueProperty().addListener((obs, oldValue, newValue) ->
+                    updateSelectedPatientLabel(prescriptionPatientInfoLabel, newValue));
+        }
     }
 
     private void loadDoctorId() {
@@ -288,7 +302,7 @@ public class DoctorDashboardController {
             rs = stmt.executeQuery(incomeQuery);
             if (rs.next()) {
                 double income = rs.getDouble("total");
-                totalIncomeLabel.setText(String.format("৳%.2f", income));
+                totalIncomeLabel.setText(String.format("Tk %.2f", income));
             }
 
             // Total Posts
@@ -589,13 +603,19 @@ public class DoctorDashboardController {
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
-                appointments.add(rs.getInt("id") + " - " + rs.getString("patient_name") + " (" + rs.getString("appointment_date") + ")");
+                appointments.add(formatAppointmentDisplay(
+                        rs.getInt("id"),
+                        rs.getString("patient_name"),
+                        rs.getString("appointment_date")
+                ));
             }
 
             if (reportAppointmentCombo != null) {
                 reportAppointmentCombo.setItems(appointments);
                 reportAppointmentCombo.setValue(appointments.isEmpty() ? null : appointments.getFirst());
             }
+            updateSelectedPatientLabel(reportPatientInfoLabel,
+                    reportAppointmentCombo != null ? reportAppointmentCombo.getValue() : null);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load appointments: " + e.getMessage());
         }
@@ -604,12 +624,14 @@ public class DoctorDashboardController {
     @FXML
     private void saveReport() {
         String selectedAppointment = reportAppointmentCombo.getValue();
+        String reportTitle = reportTitleField.getText().trim();
+        String labTests = reportLabTests.getText().trim();
         String diagnosis = reportDiagnosis.getText().trim();
         String treatmentNotes = reportTreatmentNotes.getText().trim();
         String followUpAdvice = reportFollowUpAdvice.getText().trim();
 
-        if (selectedAppointment == null || diagnosis.isEmpty()) {
-            showAlert("Error", "Please select appointment and enter diagnosis!");
+        if (selectedAppointment == null || reportTitle.isEmpty() || labTests.isEmpty() || diagnosis.isEmpty()) {
+            showAlert("Error", "Please select appointment and enter report title, lab tests and report details!");
             return;
         }
 
@@ -631,29 +653,38 @@ public class DoctorDashboardController {
                 ResultSet reportRs = checkStmt.executeQuery();
 
                 if (reportRs.next()) {
-                    String updateQuery = "UPDATE medical_reports SET patient_id = ?, doctor_id = ?, diagnosis = ?, doctor_notes = ?, report_date = ? WHERE appointment_id = ?";
+                    String updateQuery = "UPDATE medical_reports SET patient_id = ?, doctor_id = ?, report_title = ?, lab_tests = ?, diagnosis = ?, doctor_notes = ?, report_date = ? WHERE appointment_id = ?";
                     PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
                     updateStmt.setInt(1, patientId);
                     updateStmt.setInt(2, currentDoctorId);
-                    updateStmt.setString(3, diagnosis);
-                    updateStmt.setString(4, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
-                    updateStmt.setString(5, LocalDate.now().toString());
-                    updateStmt.setInt(6, appointmentId);
+                    updateStmt.setString(3, reportTitle);
+                    updateStmt.setString(4, labTests);
+                    updateStmt.setString(5, diagnosis);
+                    updateStmt.setString(6, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
+                    updateStmt.setString(7, LocalDate.now().toString());
+                    updateStmt.setInt(8, appointmentId);
                     updateStmt.executeUpdate();
                 } else {
-                    String insertQuery = "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, diagnosis, doctor_notes, report_date) " +
-                            "VALUES (?, ?, ?, ?, ?, ?)";
+                    String insertQuery = "INSERT INTO medical_reports (patient_id, doctor_id, appointment_id, report_title, lab_tests, diagnosis, doctor_notes, report_date) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                     PreparedStatement pstmt = conn.prepareStatement(insertQuery);
                     pstmt.setInt(1, patientId);
                     pstmt.setInt(2, currentDoctorId);
                     pstmt.setInt(3, appointmentId);
-                    pstmt.setString(4, diagnosis);
-                    pstmt.setString(5, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
-                    pstmt.setString(6, LocalDate.now().toString());
+                    pstmt.setString(4, reportTitle);
+                    pstmt.setString(5, labTests);
+                    pstmt.setString(6, diagnosis);
+                    pstmt.setString(7, treatmentNotes + "\n\nFollow-up Advice:\n" + followUpAdvice);
+                    pstmt.setString(8, LocalDate.now().toString());
                     pstmt.executeUpdate();
                 }
 
-                showAlert("Success", "Medical report saved successfully!");
+                int medicalReportId = getMedicalReportIdByAppointment(conn, appointmentId);
+                if (medicalReportId > 0) {
+                    ensureLabReportRequestExists(conn, medicalReportId, patientId, appointmentId);
+                }
+
+                showAlert("Success", "Lab report request saved successfully!");
                 clearReportForm();
                 loadAppointmentsForReport();
             }
@@ -663,10 +694,13 @@ public class DoctorDashboardController {
     }
 
     private void clearReportForm() {
+        reportTitleField.clear();
+        reportLabTests.clear();
         reportDiagnosis.clear();
         reportTreatmentNotes.clear();
         reportFollowUpAdvice.clear();
         reportAppointmentCombo.setValue(null);
+        updateSelectedPatientLabel(reportPatientInfoLabel, null);
     }
 
     // Prescription Methods
@@ -677,19 +711,26 @@ public class DoctorDashboardController {
                     "FROM appointments a " +
                     "JOIN patients p ON a.patient_id = p.id " +
                     "JOIN users u ON p.user_id = u.id " +
-                    "WHERE a.doctor_id = " + currentDoctorId + " AND (a.status = 'confirmed' OR a.status = 'completed' OR a.status = 'upcoming')";
+                    "WHERE a.doctor_id = " + currentDoctorId + " AND (a.status = 'confirmed' OR a.status = 'upcoming') " +
+                    "AND (a.id NOT IN (SELECT appointment_id FROM medical_reports WHERE COALESCE(TRIM(prescription), '') <> ''))";
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
-                appointments.add(rs.getInt("id") + " - " + rs.getString("patient_name") + " (" + rs.getString("appointment_date") + ")");
+                appointments.add(formatAppointmentDisplay(
+                        rs.getInt("id"),
+                        rs.getString("patient_name"),
+                        rs.getString("appointment_date")
+                ));
             }
 
             if (prescriptionAppointmentCombo != null) {
                 prescriptionAppointmentCombo.setItems(appointments);
                 prescriptionAppointmentCombo.setValue(appointments.isEmpty() ? null : appointments.getFirst());
             }
+            updateSelectedPatientLabel(prescriptionPatientInfoLabel,
+                    prescriptionAppointmentCombo != null ? prescriptionAppointmentCombo.getValue() : null);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load appointments: " + e.getMessage());
         }
@@ -769,6 +810,69 @@ public class DoctorDashboardController {
         medicineDosage.clear();
         medicineDuration.clear();
         specialInstructions.clear();
+        prescriptionAppointmentCombo.setValue(null);
+        updateSelectedPatientLabel(prescriptionPatientInfoLabel, null);
+    }
+
+    private String formatAppointmentDisplay(int appointmentId, String patientName, String appointmentDate) {
+        return appointmentId + " - " + patientName + " (" + appointmentDate + ")";
+    }
+
+    private int getMedicalReportIdByAppointment(Connection conn, int appointmentId) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement("SELECT id FROM medical_reports WHERE appointment_id = ?")) {
+            pstmt.setInt(1, appointmentId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        }
+        return -1;
+    }
+
+    private void ensureLabReportRequestExists(Connection conn, int medicalReportId, int patientId, int appointmentId) throws SQLException {
+        String existsSql = "SELECT id FROM lab_report_requests WHERE medical_report_id = ?";
+        try (PreparedStatement existsStmt = conn.prepareStatement(existsSql)) {
+            existsStmt.setInt(1, medicalReportId);
+            ResultSet rs = existsStmt.executeQuery();
+            if (rs.next()) {
+                try (PreparedStatement updateStmt = conn.prepareStatement(
+                        "UPDATE lab_report_requests SET doctor_id = ?, patient_id = ?, appointment_id = ?, updated_at = CURRENT_TIMESTAMP WHERE medical_report_id = ?")) {
+                    updateStmt.setInt(1, currentDoctorId);
+                    updateStmt.setInt(2, patientId);
+                    updateStmt.setInt(3, appointmentId);
+                    updateStmt.setInt(4, medicalReportId);
+                    updateStmt.executeUpdate();
+                }
+                return;
+            }
+        }
+
+        try (PreparedStatement insertStmt = conn.prepareStatement(
+                "INSERT INTO lab_report_requests (medical_report_id, patient_id, doctor_id, appointment_id, request_status, result_status, payment_status, updated_at) " +
+                        "VALUES (?, ?, ?, ?, 'not_requested', 'pending', 'unpaid', CURRENT_TIMESTAMP)")) {
+            insertStmt.setInt(1, medicalReportId);
+            insertStmt.setInt(2, patientId);
+            insertStmt.setInt(3, currentDoctorId);
+            insertStmt.setInt(4, appointmentId);
+            insertStmt.executeUpdate();
+        }
+    }
+
+    private void updateSelectedPatientLabel(Label targetLabel, String appointmentDisplay) {
+        if (targetLabel == null) return;
+        if (appointmentDisplay == null || appointmentDisplay.isBlank()) {
+            targetLabel.setText("Selected Patient: None");
+            return;
+        }
+
+        int separatorIndex = appointmentDisplay.indexOf(" - ");
+        int dateStartIndex = appointmentDisplay.lastIndexOf(" (");
+        if (separatorIndex >= 0 && dateStartIndex > separatorIndex) {
+            String patientName = appointmentDisplay.substring(separatorIndex + 3, dateStartIndex).trim();
+            targetLabel.setText("Selected Patient: " + patientName);
+        } else {
+            targetLabel.setText("Selected Patient: " + appointmentDisplay);
+        }
     }
 
     // Health Posts Methods
@@ -903,11 +1007,17 @@ public class DoctorDashboardController {
 
     @FXML
     private void saveProfile() {
-        String spec = profileSpecializationField.getText().trim();
-        String qual = profileQualificationField.getText().trim();
-        String exp = profileExperienceField.getText().trim();
-        String phone = profilePhoneField.getText().trim();
-        String feeStr = profileFeeField.getText().trim();
+        if (profileSpecializationField == null || profileQualificationField == null ||
+                profileExperienceField == null || profilePhoneField == null || profileFeeField == null) {
+            showStatusMessage("Profile form is not loaded correctly.", false);
+            return;
+        }
+
+        String spec = profileSpecializationField.getText() == null ? "" : profileSpecializationField.getText().trim();
+        String qual = profileQualificationField.getText() == null ? "" : profileQualificationField.getText().trim();
+        String exp = profileExperienceField.getText() == null ? "" : profileExperienceField.getText().trim();
+        String phone = profilePhoneField.getText() == null ? "" : profilePhoneField.getText().trim();
+        String feeStr = profileFeeField.getText() == null ? "" : profileFeeField.getText().trim();
 
         if (spec.isEmpty() || qual.isEmpty() || exp.isEmpty() || phone.isEmpty() || feeStr.isEmpty()) {
             showStatusMessage("Please fill all fields.", false);
@@ -923,6 +1033,13 @@ public class DoctorDashboardController {
         }
 
         try (Connection conn = DatabaseConnection.getConnection()) {
+            String ensureSql = "INSERT INTO doctors (user_id, profile_completed) " +
+                    "SELECT ?, 0 WHERE NOT EXISTS (SELECT 1 FROM doctors WHERE user_id = ?)";
+            PreparedStatement ensureStmt = conn.prepareStatement(ensureSql);
+            ensureStmt.setInt(1, SessionManager.getUserId());
+            ensureStmt.setInt(2, SessionManager.getUserId());
+            ensureStmt.executeUpdate();
+
             String sql = "UPDATE doctors SET specialization=?, qualification=?, experience=?, phone=?, fee=?, profile_completed=1 WHERE user_id=?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, spec);
@@ -931,8 +1048,21 @@ public class DoctorDashboardController {
             pstmt.setString(4, phone);
             pstmt.setDouble(5, fee);
             pstmt.setInt(6, SessionManager.getUserId());
-            pstmt.executeUpdate();
 
+            int updated = pstmt.executeUpdate();
+            if (updated == 0) {
+                String insertSql = "INSERT INTO doctors (user_id, specialization, qualification, experience, phone, fee, profile_completed) VALUES (?, ?, ?, ?, ?, ?, 1)";
+                PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+                insertStmt.setInt(1, SessionManager.getUserId());
+                insertStmt.setString(2, spec);
+                insertStmt.setString(3, qual);
+                insertStmt.setString(4, exp);
+                insertStmt.setString(5, phone);
+                insertStmt.setDouble(6, fee);
+                insertStmt.executeUpdate();
+            }
+
+            loadDoctorId();
             showStatusMessage("Profile updated successfully!", true);
             showDashboard();
         } catch (SQLException e) {

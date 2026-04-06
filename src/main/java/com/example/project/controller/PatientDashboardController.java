@@ -12,8 +12,15 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -21,7 +28,7 @@ public class PatientDashboardController {
 
     // Navigation
     @FXML private Button btnDashboard, btnSearchDoctors, btnBookAppointment, btnViewAppointments;
-    @FXML private Button btnViewReports, btnDoctorPosts, btnQA, btnBloodDonation, btnSmartAssistant, btnNotifications;
+    @FXML private Button btnViewReports, btnPayments, btnDoctorPosts, btnQA, btnBloodDonation, btnSmartAssistant, btnNotifications;
     @FXML private Button btnProfile, btnLogout, btnProfileSettings;
     @FXML private Label lblWelcome;
     @FXML private Button btnLightMode, btnDarkMode;
@@ -59,7 +66,18 @@ public class PatientDashboardController {
     // View Reports Section
     @FXML private VBox viewReportsSection;
     @FXML private TableView<MedicalReport> tblReports;
-    @FXML private TableColumn<MedicalReport, String> colReportDoctor, colDiagnosis, colPrescription, colNotes, colReportDate;
+    @FXML private TableColumn<MedicalReport, String> colReportAppointment, colReportDoctor, colReportTitle, colLabTests, colPrescription, colLabRequestStatus, colLabResultStatus, colReportDate;
+    @FXML private Label lblSelectedReportInfo;
+    @FXML private TextArea txtSelectedReportDetails;
+    @FXML private Button btnRequestLabReport, btnDownloadLabReport;
+
+    // Payment Section
+    @FXML private VBox paymentSection;
+    @FXML private TableView<LabPayment> tblPayments;
+    @FXML private TableColumn<LabPayment, String> colPaymentType, colPaymentReport, colPaymentDoctor, colPaymentAmount, colPaymentStatus, colPaymentMethod;
+    @FXML private ComboBox<String> cmbPaymentMethod;
+    @FXML private Label lblPaymentInfo;
+    @FXML private Button btnSubmitPayment;
 
     // Doctor Posts Section
     @FXML private VBox doctorPostsSection;
@@ -134,9 +152,15 @@ public class PatientDashboardController {
             cmbAvailabilityStatus.setValue("Available");
         }
 
+        if (cmbPaymentMethod != null) {
+            cmbPaymentMethod.setItems(FXCollections.observableArrayList("bKash", "Bank", "Card"));
+            cmbPaymentMethod.setValue("bKash");
+        }
+
         // Setup table columns
         setupAppointmentGrid();
         setupReportTable();
+        setupPaymentTable();
 
         // Load dashboard by default
         showDashboard();
@@ -155,6 +179,7 @@ public class PatientDashboardController {
         btnBookAppointment.getStyleClass().remove("active");
         btnViewAppointments.getStyleClass().remove("active");
         btnViewReports.getStyleClass().remove("active");
+        btnPayments.getStyleClass().remove("active");
         btnNotifications.getStyleClass().remove("active");
         btnDoctorPosts.getStyleClass().remove("active");
         btnQA.getStyleClass().remove("active");
@@ -206,6 +231,12 @@ public class PatientDashboardController {
     }
 
     @FXML
+    private void showPayments() {
+        showSection(paymentSection, btnPayments);
+        loadPayments();
+    }
+
+    @FXML
     private void showNotifications() {
         showSection(notificationsSection, btnNotifications);
         loadNotifications();
@@ -245,6 +276,8 @@ public class PatientDashboardController {
         viewAppointmentsSection.setManaged(false);
         viewReportsSection.setVisible(false);
         viewReportsSection.setManaged(false);
+        paymentSection.setVisible(false);
+        paymentSection.setManaged(false);
         notificationsSection.setVisible(false);
         notificationsSection.setManaged(false);
         doctorPostsSection.setVisible(false);
@@ -464,7 +497,7 @@ public class PatientDashboardController {
         overlayQual.setStyle("-fx-text-fill: white;");
         overlayQual.setWrapText(true);
         overlayQual.setAlignment(Pos.CENTER);
-        Label overlayFee = new Label("৳ " + doctor.getFee());
+        Label overlayFee = new Label("Tk " + doctor.getFee());
         overlayFee.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 900;");
 
         Button bookBtn = new Button("Book Now");
@@ -741,21 +774,36 @@ public class PatientDashboardController {
     // ==================== VIEW REPORTS ====================
     private void setupReportTable() {
         if (tblReports != null) {
+            colReportAppointment.setCellValueFactory(new PropertyValueFactory<>("appointmentDate"));
             colReportDoctor.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
-            colDiagnosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
+            colReportTitle.setCellValueFactory(new PropertyValueFactory<>("reportTitle"));
+            colLabTests.setCellValueFactory(new PropertyValueFactory<>("labTests"));
             colPrescription.setCellValueFactory(new PropertyValueFactory<>("prescription"));
-            colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
+            colLabRequestStatus.setCellValueFactory(new PropertyValueFactory<>("requestStatus"));
+            colLabResultStatus.setCellValueFactory(new PropertyValueFactory<>("resultStatus"));
             colReportDate.setCellValueFactory(new PropertyValueFactory<>("reportDate"));
+            tblReports.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> updateSelectedReportInfo(newValue));
         }
     }
 
     private void loadMedicalReports() {
         ObservableList<MedicalReport> reports = FXCollections.observableArrayList();
-        String query = "SELECT u.name, r.diagnosis, r.prescription, r.doctor_notes, r.report_date " +
+        String query = "SELECT r.id, u.name, a.appointment_date, COALESCE(r.report_title, '') AS report_title, " +
+                "COALESCE(r.lab_tests, '') AS lab_tests, COALESCE(r.diagnosis, '') AS diagnosis, " +
+                "COALESCE(r.prescription, '') AS prescription, COALESCE(r.doctor_notes, '') AS doctor_notes, r.report_date, " +
+                "COALESCE(l.request_status, 'not_requested') AS request_status, " +
+                "COALESCE(l.result_status, 'pending') AS result_status, " +
+                "COALESCE(l.file_path, '') AS file_path, COALESCE(l.price, 0) AS price, " +
+                "COALESCE(l.payment_status, 'unpaid') AS payment_status, COALESCE(l.payment_method, '') AS payment_method, " +
+                "COALESCE(l.admin_notes, '') AS admin_notes " +
                 "FROM medical_reports r " +
+                "JOIN appointments a ON r.appointment_id = a.id " +
                 "JOIN doctors d ON r.doctor_id = d.id " +
                 "JOIN users u ON d.user_id = u.id " +
-                "WHERE r.patient_id = ?";
+                "LEFT JOIN lab_report_requests l ON l.medical_report_id = r.id " +
+                "WHERE r.patient_id = ? " +
+                "AND (COALESCE(TRIM(r.report_title), '') <> '' OR COALESCE(TRIM(r.lab_tests), '') <> '' OR COALESCE(TRIM(r.diagnosis), '') <> '') " +
+                "ORDER BY a.appointment_date DESC, r.id DESC";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -765,17 +813,276 @@ public class PatientDashboardController {
 
             while (rs.next()) {
                 reports.add(new MedicalReport(
+                        rs.getInt("id"),
                         rs.getString("name"),
+                        rs.getString("appointment_date"),
+                        rs.getString("report_title"),
+                        rs.getString("lab_tests"),
                         rs.getString("diagnosis"),
                         rs.getString("prescription"),
                         rs.getString("doctor_notes"),
-                        rs.getString("report_date")
+                        rs.getString("report_date"),
+                        rs.getString("request_status"),
+                        rs.getString("result_status"),
+                        rs.getString("file_path"),
+                        rs.getDouble("price"),
+                        rs.getString("payment_status"),
+                        rs.getString("payment_method"),
+                        rs.getString("admin_notes")
                 ));
             }
             tblReports.setItems(reports);
+            updateSelectedReportInfo(tblReports.getSelectionModel().getSelectedItem());
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupPaymentTable() {
+        if (tblPayments != null) {
+            colPaymentType.setCellValueFactory(new PropertyValueFactory<>("paymentType"));
+            colPaymentReport.setCellValueFactory(new PropertyValueFactory<>("reportTitle"));
+            colPaymentDoctor.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+            colPaymentAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+            colPaymentStatus.setCellValueFactory(new PropertyValueFactory<>("paymentStatus"));
+            colPaymentMethod.setCellValueFactory(new PropertyValueFactory<>("paymentMethod"));
+            tblPayments.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+                if (lblPaymentInfo == null) return;
+                if (newValue == null) {
+                    lblPaymentInfo.setText("Due payment will appear here after admin prepares your lab report.");
+                } else {
+                    lblPaymentInfo.setText("Selected: " + newValue.getReportTitle() + " | Due: " + newValue.getAmount() + " | Type: " + newValue.getPaymentType());
+                }
+            });
+        }
+    }
+
+    @FXML
+    private void requestLabReport() {
+        MedicalReport selectedReport = tblReports != null ? tblReports.getSelectionModel().getSelectedItem() : null;
+        if (selectedReport == null) {
+            showAlert("Error", "Please select a report first.", Alert.AlertType.ERROR);
+            return;
+        }
+        if (selectedReport.getLabTests() == null || selectedReport.getLabTests().isBlank()) {
+            showAlert("Error", "This report does not include any lab test request.", Alert.AlertType.ERROR);
+            return;
+        }
+        if ("requested".equalsIgnoreCase(selectedReport.getRequestStatus()) || "ready".equalsIgnoreCase(selectedReport.getRequestStatus())) {
+            showAlert("Info", "This lab report has already been sent to hospital admin.", Alert.AlertType.INFORMATION);
+            return;
+        }
+
+        String query = "UPDATE lab_report_requests SET request_status = 'requested', requested_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP " +
+                "WHERE medical_report_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, selectedReport.getId());
+            int updated = pstmt.executeUpdate();
+            if (updated == 0) {
+                try (PreparedStatement insert = conn.prepareStatement(
+                        "INSERT INTO lab_report_requests (medical_report_id, patient_id, request_status, result_status, payment_status, requested_at, updated_at) " +
+                                "VALUES (?, ?, 'requested', 'pending', 'unpaid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)")) {
+                    insert.setInt(1, selectedReport.getId());
+                    insert.setInt(2, patientId);
+                    updated = insert.executeUpdate();
+                }
+            }
+            if (updated > 0) {
+                notifyAdmins(conn,
+                        "New Lab Report Request",
+                        SessionManager.getUserName() + " requested lab tests for report: " + selectedReport.getReportTitle());
+                showAlert("Success", "Lab report request sent to hospital admin.", Alert.AlertType.INFORMATION);
+                loadMedicalReports();
+                loadPayments();
+            } else {
+                showAlert("Error", "Unable to request the lab report right now.", Alert.AlertType.ERROR);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to request lab report.", Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void downloadSelectedLabReport() {
+        MedicalReport selectedReport = tblReports != null ? tblReports.getSelectionModel().getSelectedItem() : null;
+        if (selectedReport == null) {
+            showAlert("Error", "Please select a report first.", Alert.AlertType.ERROR);
+            return;
+        }
+        if (!"ready".equalsIgnoreCase(selectedReport.getRequestStatus())) {
+            showAlert("Info", "Lab report is still pending with hospital admin.", Alert.AlertType.INFORMATION);
+            return;
+        }
+        if (selectedReport.getFilePath() == null || selectedReport.getFilePath().isBlank()) {
+            showAlert("Error", "No downloadable file has been uploaded yet.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        File source = new File(selectedReport.getFilePath());
+        if (!source.exists()) {
+            showAlert("Error", "Uploaded lab report file is missing on disk.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Lab Report");
+        chooser.setInitialFileName(source.getName());
+        File destination = chooser.showSaveDialog(getStageFromNode(btnDownloadLabReport));
+        if (destination == null) return;
+
+        try {
+            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            showAlert("Success", "Lab report downloaded successfully.", Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            showAlert("Error", "Failed to download lab report file.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void loadPayments() {
+        ObservableList<LabPayment> payments = FXCollections.observableArrayList();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement appointmentStmt = conn.prepareStatement(
+                     "SELECT a.id, 'appointment' AS source_type, 'Chamber Fee' AS payment_type, " +
+                             "('Appointment on ' || a.appointment_date || ' at ' || a.appointment_time) AS report_title, " +
+                             "u.name AS doctor_name, COALESCE(d.fee, 0) AS amount, " +
+                             "COALESCE(a.payment_status, 'unpaid') AS payment_status, COALESCE(a.payment_method, '') AS payment_method " +
+                             "FROM appointments a " +
+                             "JOIN doctors d ON a.doctor_id = d.id " +
+                             "JOIN users u ON d.user_id = u.id " +
+                             "WHERE a.patient_id = ? AND a.status = 'completed' " +
+                             "ORDER BY a.appointment_date DESC");
+             PreparedStatement labStmt = conn.prepareStatement(
+                     "SELECT l.id, 'lab' AS source_type, 'Lab Test Fee' AS payment_type, " +
+                             "COALESCE(r.report_title, 'Medical Report') AS report_title, u.name AS doctor_name, " +
+                             "COALESCE(l.price, 0) AS amount, COALESCE(l.payment_status, 'unpaid') AS payment_status, " +
+                             "COALESCE(l.payment_method, '') AS payment_method " +
+                             "FROM lab_report_requests l " +
+                             "JOIN medical_reports r ON l.medical_report_id = r.id " +
+                             "JOIN doctors d ON r.doctor_id = d.id " +
+                             "JOIN users u ON d.user_id = u.id " +
+                             "WHERE l.patient_id = ? AND l.request_status = 'ready' " +
+                             "ORDER BY l.updated_at DESC")) {
+            appointmentStmt.setInt(1, patientId);
+            ResultSet rs = appointmentStmt.executeQuery();
+            while (rs.next()) {
+                payments.add(new LabPayment(
+                        rs.getInt("id"),
+                        rs.getString("source_type"),
+                        rs.getString("payment_type"),
+                        rs.getString("report_title"),
+                        rs.getString("doctor_name"),
+                        String.format("Tk %.2f", rs.getDouble("amount")),
+                        rs.getString("payment_status"),
+                        rs.getString("payment_method")
+                ));
+            }
+
+            labStmt.setInt(1, patientId);
+            rs = labStmt.executeQuery();
+            while (rs.next()) {
+                payments.add(new LabPayment(
+                        rs.getInt("id"),
+                        rs.getString("source_type"),
+                        rs.getString("payment_type"),
+                        rs.getString("report_title"),
+                        rs.getString("doctor_name"),
+                        String.format("Tk %.2f", rs.getDouble("amount")),
+                        rs.getString("payment_status"),
+                        rs.getString("payment_method")
+                ));
+            }
+            if (tblPayments != null) {
+                tblPayments.setItems(payments);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to load payments.", Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void submitSelectedPayment() {
+        LabPayment selectedPayment = tblPayments != null ? tblPayments.getSelectionModel().getSelectedItem() : null;
+        if (selectedPayment == null) {
+            showAlert("Error", "Please select a due payment first.", Alert.AlertType.ERROR);
+            return;
+        }
+        if ("paid".equalsIgnoreCase(selectedPayment.getPaymentStatus())) {
+            showAlert("Info", "This payment is already completed.", Alert.AlertType.INFORMATION);
+            return;
+        }
+
+        String paymentMethod = cmbPaymentMethod != null ? cmbPaymentMethod.getValue() : null;
+        if (paymentMethod == null || paymentMethod.isBlank()) {
+            showAlert("Error", "Please select a payment method.", Alert.AlertType.ERROR);
+            return;
+        }
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "appointment".equalsIgnoreCase(selectedPayment.getSourceType())
+                             ? "UPDATE appointments SET payment_status = 'paid', payment_method = ? WHERE id = ?"
+                             : "UPDATE lab_report_requests SET payment_status = 'paid', payment_method = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")) {
+            pstmt.setString(1, paymentMethod);
+            pstmt.setInt(2, selectedPayment.getId());
+            pstmt.executeUpdate();
+            showAlert("Success", "Payment marked as paid via " + paymentMethod + ".", Alert.AlertType.INFORMATION);
+            loadPayments();
+            loadMedicalReports();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to complete payment.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void notifyAdmins(Connection conn, String title, String message) throws SQLException {
+        String adminQuery = "SELECT id FROM users WHERE LOWER(role) = 'admin'";
+        try (PreparedStatement pstmt = conn.prepareStatement(adminQuery);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                try (PreparedStatement insert = conn.prepareStatement(
+                        "INSERT INTO notifications (user_id, title, message) VALUES (?, ?, ?)")) {
+                    insert.setInt(1, rs.getInt("id"));
+                    insert.setString(2, title);
+                    insert.setString(3, message);
+                    insert.executeUpdate();
+                }
+            }
+        }
+    }
+
+    private void updateSelectedReportInfo(MedicalReport report) {
+        if (lblSelectedReportInfo == null) return;
+        if (report == null) {
+            lblSelectedReportInfo.setText("Select a report to request lab tests or view ready results.");
+            if (txtSelectedReportDetails != null) txtSelectedReportDetails.clear();
+            return;
+        }
+        lblSelectedReportInfo.setText("Appointment: " + safeText(report.getAppointmentDate()) +
+                " | Doctor: Dr. " + report.getDoctorName() +
+                " | Request: " + report.getRequestStatus() +
+                " | Result: " + report.getResultStatus());
+        if (txtSelectedReportDetails != null) {
+            txtSelectedReportDetails.setText(
+                    "Report Name: " + safeText(report.getReportTitle()) +
+                            "\nLab Tests: " + safeText(report.getLabTests()) +
+                            "\nReport Details: " + safeText(report.getDiagnosis()) +
+                            "\nPrescription: " + safeText(report.getPrescription()) +
+                            "\nDoctor Notes: " + safeText(report.getNotes()) +
+                            "\nAdmin Notes: " + safeText(report.getAdminNotes()) +
+                            "\nLab File: " + safeText(report.getFilePath())
+            );
+        }
+    }
+
+    private String safeText(String value) {
+        return value == null || value.isBlank() ? "N/A" : value;
+    }
+
+    private Stage getStageFromNode(Node node) {
+        return (Stage) node.getScene().getWindow();
     }
 
     private void loadNotifications() {
@@ -1534,21 +1841,74 @@ public class PatientDashboardController {
     }
 
     public static class MedicalReport {
-        private String doctorName, diagnosis, prescription, notes, reportDate;
+        private int id;
+        private String doctorName, appointmentDate, reportTitle, labTests, diagnosis, prescription, notes, reportDate;
+        private String requestStatus, resultStatus, filePath, paymentStatus, paymentMethod, adminNotes;
+        private double price;
 
-        public MedicalReport(String doctorName, String diagnosis, String prescription, String notes, String reportDate) {
+        public MedicalReport(int id, String doctorName, String appointmentDate, String reportTitle, String labTests, String diagnosis,
+                             String prescription, String notes, String reportDate, String requestStatus,
+                             String resultStatus, String filePath, double price, String paymentStatus,
+                             String paymentMethod, String adminNotes) {
+            this.id = id;
             this.doctorName = doctorName;
+            this.appointmentDate = appointmentDate;
+            this.reportTitle = reportTitle;
+            this.labTests = labTests;
             this.diagnosis = diagnosis;
             this.prescription = prescription;
             this.notes = notes;
             this.reportDate = reportDate;
+            this.requestStatus = requestStatus;
+            this.resultStatus = resultStatus;
+            this.filePath = filePath;
+            this.price = price;
+            this.paymentStatus = paymentStatus;
+            this.paymentMethod = paymentMethod;
+            this.adminNotes = adminNotes;
         }
 
+        public int getId() { return id; }
         public String getDoctorName() { return doctorName; }
+        public String getAppointmentDate() { return appointmentDate; }
+        public String getReportTitle() { return reportTitle; }
+        public String getLabTests() { return labTests; }
         public String getDiagnosis() { return diagnosis; }
         public String getPrescription() { return prescription; }
         public String getNotes() { return notes; }
         public String getReportDate() { return reportDate; }
+        public String getRequestStatus() { return requestStatus; }
+        public String getResultStatus() { return resultStatus; }
+        public String getFilePath() { return filePath; }
+        public double getPrice() { return price; }
+        public String getPaymentStatus() { return paymentStatus; }
+        public String getPaymentMethod() { return paymentMethod; }
+        public String getAdminNotes() { return adminNotes; }
+    }
+
+    public static class LabPayment {
+        private int id;
+        private String sourceType, paymentType, reportTitle, doctorName, amount, paymentStatus, paymentMethod;
+
+        public LabPayment(int id, String sourceType, String paymentType, String reportTitle, String doctorName, String amount, String paymentStatus, String paymentMethod) {
+            this.id = id;
+            this.sourceType = sourceType;
+            this.paymentType = paymentType;
+            this.reportTitle = reportTitle;
+            this.doctorName = doctorName;
+            this.amount = amount;
+            this.paymentStatus = paymentStatus;
+            this.paymentMethod = paymentMethod;
+        }
+
+        public int getId() { return id; }
+        public String getSourceType() { return sourceType; }
+        public String getPaymentType() { return paymentType; }
+        public String getReportTitle() { return reportTitle; }
+        public String getDoctorName() { return doctorName; }
+        public String getAmount() { return amount; }
+        public String getPaymentStatus() { return paymentStatus; }
+        public String getPaymentMethod() { return paymentMethod; }
     }
 
     public static class DoctorPost {

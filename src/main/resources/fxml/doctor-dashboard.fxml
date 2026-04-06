@@ -128,7 +128,7 @@
                     <VBox styleClass="stat-card stat-card-teal" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
                         <Label text="💰 INCOME" styleClass="stat-label"/>
-                        <Label fx:id="totalIncomeLabel" text="৳0.00" styleClass="stat-value-small">
+                        <Label fx:id="totalIncomeLabel" text="Tk 0.00" styleClass="stat-value-small">
                             <font><Font name="System Bold" size="24"/></font>
                         </Label>
                         <Label text="Total Earnings" styleClass="stat-desc"/>
@@ -225,16 +225,27 @@
                     <VBox spacing="5">
                         <Label text="Select Appointment:"/>
                         <ComboBox fx:id="reportAppointmentCombo" promptText="Choose completed appointment..." maxWidth="Infinity"/>
+                        <Label fx:id="reportPatientInfoLabel" text="Selected Patient: None" styleClass="info-text"/>
                     </VBox>
 
                     <VBox spacing="5">
-                        <Label text="Diagnosis:"/>
-                        <TextArea fx:id="reportDiagnosis" promptText="Enter diagnosis..." prefRowCount="3"/>
+                        <Label text="Report Name:"/>
+                        <TextField fx:id="reportTitleField" promptText="Enter report name..."/>
                     </VBox>
 
                     <VBox spacing="5">
-                        <Label text="Treatment Notes:"/>
-                        <TextArea fx:id="reportTreatmentNotes" promptText="Enter treatment details..." prefRowCount="4"/>
+                        <Label text="Required Lab Tests:"/>
+                        <TextArea fx:id="reportLabTests" promptText="Example: Dengue NS1, Hb, CBC..." prefRowCount="3"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Report Details:"/>
+                        <TextArea fx:id="reportDiagnosis" promptText="Enter report details..." prefRowCount="3"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Doctor Notes:"/>
+                        <TextArea fx:id="reportTreatmentNotes" promptText="Enter doctor notes..." prefRowCount="4"/>
                     </VBox>
 
                     <VBox spacing="5">
@@ -242,7 +253,7 @@
                         <TextArea fx:id="reportFollowUpAdvice" promptText="Enter follow-up advice..." prefRowCount="3"/>
                     </VBox>
 
-                    <Button fx:id="saveReportBtn" text="Save Report" onAction="#saveReport" styleClass="primary-btn" prefWidth="180" maxWidth="180"/>
+                    <Button fx:id="saveReportBtn" text="Save Lab Report" onAction="#saveReport" styleClass="primary-btn" prefWidth="180" maxWidth="180"/>
                 </VBox>
             </VBox>
 
@@ -259,6 +270,7 @@
                         <VBox spacing="5">
                             <Label text="Select Appointment:"/>
                             <ComboBox fx:id="prescriptionAppointmentCombo" promptText="Choose appointment..." maxWidth="Infinity"/>
+                            <Label fx:id="prescriptionPatientInfoLabel" text="Selected Patient: None" styleClass="info-text"/>
                         </VBox>
 
                         <VBox spacing="5">
@@ -387,7 +399,7 @@
                     </VBox>
 
                     <VBox spacing="5">
-                        <Label text="Consultation Fee (৳):" styleClass="form-label"/>
+                        <Label text="Consultation Fee (Tk):" styleClass="form-label"/>
                         <TextField fx:id="profileFeeField" promptText="e.g., 500"/>
                     </VBox>
 

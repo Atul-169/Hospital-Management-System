@@ -13,8 +13,8 @@ public class SceneManager {
     public static final double SPLASH_HEIGHT = 768;
     public static final double AUTH_WIDTH = 1024;
     public static final double AUTH_HEIGHT = 768;
-    public static final double APP_WIDTH = 1280;
-    public static final double APP_HEIGHT = 820;
+    public static final double APP_WIDTH = 1440;
+    public static final double APP_HEIGHT = 900;
 
     public static void switchScene(Node sourceNode, String fxmlPath) {
         try {

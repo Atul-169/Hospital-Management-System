@@ -218,6 +218,7 @@ public class RegisterController {
     private void loadScene(Object eventSource, String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Scene scene = SceneManager.createScene(loader.load(), fxmlPath);
             Stage stage;
             if (eventSource instanceof ActionEvent) {
                 stage = (Stage) ((Node) ((ActionEvent) eventSource).getSource()).getScene().getWindow();
@@ -226,8 +227,8 @@ public class RegisterController {
             } else {
                 stage = (Stage) ((Node) eventSource).getScene().getWindow();
             }
-            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
+            SceneManager.configureStage(stage, fxmlPath);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

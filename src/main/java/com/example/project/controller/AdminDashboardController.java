@@ -11,9 +11,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.Node;
+import java.io.File;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +40,7 @@ public class AdminDashboardController {
     @FXML private Button managePatientsBtn;
     @FXML private Button viewAppointmentsBtn;
     @FXML private Button reportsBtn;
+    @FXML private Button sendLabReportsBtn;
     @FXML private Button transactionsBtn;
     @FXML private Button notificationsBtn;
     @FXML private Button monitoringBtn;
@@ -47,6 +52,7 @@ public class AdminDashboardController {
     @FXML private VBox managePatientsPanel;
     @FXML private VBox viewAppointmentsPanel;
     @FXML private VBox reportsPanel;
+    @FXML private VBox sendLabReportsPanel;
     @FXML private VBox transactionsPanel;
     @FXML private VBox notificationsPanel;
     @FXML private VBox monitoringPanel;
@@ -105,6 +111,17 @@ public class AdminDashboardController {
     @FXML private TableColumn<Report, String> reportDiagnosisCol;
     @FXML private Label totalReportsCountLabel;
     @FXML private FlowPane reportsGrid;
+
+    // Send Lab Reports Components
+    @FXML private ComboBox<String> labReportRequestCombo;
+    @FXML private Label labReportSelectionInfoLabel;
+    @FXML private ComboBox<String> labResultStatusCombo;
+    @FXML private TextField labReportPriceField;
+    @FXML private TextField labReportFilePathField;
+    @FXML private TextArea labAdminNotesArea;
+    @FXML private Button browseLabReportFileBtn;
+    @FXML private Button sendLabReportBtn;
+    @FXML private FlowPane labRequestsGrid;
 
     // Transactions Components
     @FXML private TableView<Transaction> transactionsTable;
@@ -174,6 +191,17 @@ public class AdminDashboardController {
                 "confirmed", "completed", "cancelled", "upcoming"
             ));
             manageAppointmentStatusCombo.setValue("confirmed");
+        }
+
+        if (labResultStatusCombo != null) {
+            labResultStatusCombo.setItems(FXCollections.observableArrayList(
+                    "positive", "negative", "inconclusive", "normal"
+            ));
+            labResultStatusCombo.setValue("normal");
+        }
+
+        if (labReportRequestCombo != null) {
+            labReportRequestCombo.valueProperty().addListener((obs, oldValue, newValue) -> updateLabRequestSelectionInfo(newValue));
         }
     }
 
@@ -298,14 +326,20 @@ public class AdminDashboardController {
                 totalReportsLabel.setText(String.valueOf(rs.getInt("count")));
             }
 
-            // Total Revenue (sum of doctor fees from completed appointments)
+            double revenue = 0;
             String revenueQuery = "SELECT SUM(d.fee) as total FROM appointments a " +
-                    "JOIN doctors d ON a.doctor_id = d.id WHERE a.status = 'completed'";
+                    "JOIN doctors d ON a.doctor_id = d.id WHERE a.status = 'completed' AND COALESCE(a.payment_status, 'unpaid') = 'paid'";
             rs = stmt.executeQuery(revenueQuery);
             if (rs.next()) {
-                double revenue = rs.getDouble("total");
-                totalRevenueLabel.setText(String.format("৳%.2f", revenue));
+                revenue += rs.getDouble("total");
             }
+
+            String labRevenueQuery = "SELECT SUM(price) as total FROM lab_report_requests WHERE payment_status = 'paid'";
+            rs = stmt.executeQuery(labRevenueQuery);
+            if (rs.next()) {
+                revenue += rs.getDouble("total");
+            }
+            totalRevenueLabel.setText(String.format("Tk %.2f", revenue));
 
         } catch (SQLException e) {
             showAlert("Error", "Failed to load dashboard statistics: " + e.getMessage());
@@ -370,6 +404,17 @@ public class AdminDashboardController {
     }
 
     @FXML
+    private void showSendLabReports() {
+        hideAllPanels();
+        removeActiveClass();
+        if (sendLabReportsPanel != null) {
+            sendLabReportsPanel.setVisible(true);
+            loadLabReportRequests();
+        }
+        if (sendLabReportsBtn != null) sendLabReportsBtn.getStyleClass().add("active");
+    }
+
+    @FXML
     private void showTransactions() {
         hideAllPanels();
         removeActiveClass();
@@ -407,6 +452,7 @@ public class AdminDashboardController {
         if (managePatientsPanel != null) managePatientsPanel.setVisible(false);
         if (viewAppointmentsPanel != null) viewAppointmentsPanel.setVisible(false);
         if (reportsPanel != null) reportsPanel.setVisible(false);
+        if (sendLabReportsPanel != null) sendLabReportsPanel.setVisible(false);
         if (transactionsPanel != null) transactionsPanel.setVisible(false);
         if (notificationsPanel != null) notificationsPanel.setVisible(false);
         if (monitoringPanel != null) monitoringPanel.setVisible(false);
@@ -418,6 +464,7 @@ public class AdminDashboardController {
         if (managePatientsBtn != null) managePatientsBtn.getStyleClass().remove("active");
         if (viewAppointmentsBtn != null) viewAppointmentsBtn.getStyleClass().remove("active");
         if (reportsBtn != null) reportsBtn.getStyleClass().remove("active");
+        if (sendLabReportsBtn != null) sendLabReportsBtn.getStyleClass().remove("active");
         if (transactionsBtn != null) transactionsBtn.getStyleClass().remove("active");
         if (notificationsBtn != null) notificationsBtn.getStyleClass().remove("active");
         if (monitoringBtn != null) monitoringBtn.getStyleClass().remove("active");
@@ -822,6 +869,7 @@ public class AdminDashboardController {
         loadPatients();
         loadAppointments();
         loadReports();
+        loadLabReportRequests();
         loadTransactions();
         loadMonitoringData();
         loadDashboardStatistics();
@@ -832,7 +880,7 @@ public class AdminDashboardController {
         ObservableList<Report> reports = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "SELECT r.id, u1.name as patient_name, u2.name as doctor_name, " +
-                    "r.report_date, r.diagnosis " +
+                    "r.report_date, COALESCE(r.report_title, r.diagnosis) as diagnosis " +
                     "FROM medical_reports r " +
                     "JOIN patients p ON r.patient_id = p.id " +
                     "JOIN users u1 ON p.user_id = u1.id " +
@@ -863,6 +911,167 @@ public class AdminDashboardController {
         }
     }
 
+    private void loadLabReportRequests() {
+        ObservableList<LabRequest> requests = FXCollections.observableArrayList();
+        ObservableList<String> comboItems = FXCollections.observableArrayList();
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "SELECT l.id, u1.name AS patient_name, u2.name AS doctor_name, " +
+                    "COALESCE(r.report_title, 'Medical Report') AS report_title, COALESCE(r.lab_tests, '') AS lab_tests, " +
+                    "COALESCE(l.request_status, 'not_requested') AS request_status, COALESCE(l.result_status, 'pending') AS result_status, " +
+                    "COALESCE(l.price, 0) AS price, COALESCE(l.payment_status, 'unpaid') AS payment_status " +
+                    "FROM lab_report_requests l " +
+                    "JOIN medical_reports r ON l.medical_report_id = r.id " +
+                    "JOIN patients p ON l.patient_id = p.id " +
+                    "JOIN users u1 ON p.user_id = u1.id " +
+                    "JOIN doctors d ON r.doctor_id = d.id " +
+                    "JOIN users u2 ON d.user_id = u2.id " +
+                    "WHERE l.request_status IN ('requested', 'ready') " +
+                    "ORDER BY CASE WHEN l.request_status = 'requested' THEN 0 ELSE 1 END, l.updated_at DESC";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                LabRequest request = new LabRequest(
+                        rs.getInt("id"),
+                        rs.getString("patient_name"),
+                        rs.getString("doctor_name"),
+                        rs.getString("report_title"),
+                        rs.getString("lab_tests"),
+                        rs.getString("request_status"),
+                        rs.getString("result_status"),
+                        rs.getDouble("price"),
+                        rs.getString("payment_status")
+                );
+                requests.add(request);
+                comboItems.add(formatLabRequestDisplay(request));
+            }
+
+            if (labReportRequestCombo != null) {
+                labReportRequestCombo.setItems(comboItems);
+                labReportRequestCombo.setValue(comboItems.isEmpty() ? null : comboItems.getFirst());
+            }
+
+            renderLabRequests(requests);
+            updateLabRequestSelectionInfo(labReportRequestCombo != null ? labReportRequestCombo.getValue() : null);
+        } catch (SQLException e) {
+            showAlert("Error", "Failed to load lab report requests: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void browseLabReportFile() {
+        if (browseLabReportFileBtn == null) return;
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select Lab Report File");
+        File file = chooser.showOpenDialog(getStageFromNode(browseLabReportFileBtn));
+        if (file != null && labReportFilePathField != null) {
+            labReportFilePathField.setText(file.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    private void sendLabReport() {
+        String selectedRequest = labReportRequestCombo != null ? labReportRequestCombo.getValue() : null;
+        if (selectedRequest == null || selectedRequest.isBlank()) {
+            showAlert("Error", "Please select a patient lab request first.");
+            return;
+        }
+
+        double price;
+        try {
+            price = Double.parseDouble(labReportPriceField.getText().trim());
+        } catch (Exception e) {
+            showAlert("Error", "Please enter a valid lab price.");
+            return;
+        }
+
+        int requestId = Integer.parseInt(selectedRequest.split(" - ")[0]);
+        String resultStatus = labResultStatusCombo != null ? labResultStatusCombo.getValue() : "normal";
+        String notes = labAdminNotesArea != null ? labAdminNotesArea.getText().trim() : "";
+        String filePath = labReportFilePathField != null ? labReportFilePathField.getText().trim() : "";
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String patientQuery = "SELECT p.user_id, COALESCE(r.report_title, 'Medical Report') AS report_title " +
+                    "FROM lab_report_requests l JOIN patients p ON l.patient_id = p.id " +
+                    "JOIN medical_reports r ON l.medical_report_id = r.id WHERE l.id = ?";
+            int patientUserId = -1;
+            String reportTitle = "Medical Report";
+            try (PreparedStatement patientStmt = conn.prepareStatement(patientQuery)) {
+                patientStmt.setInt(1, requestId);
+                ResultSet patientRs = patientStmt.executeQuery();
+                if (patientRs.next()) {
+                    patientUserId = patientRs.getInt("user_id");
+                    reportTitle = patientRs.getString("report_title");
+                }
+            }
+
+            String update = "UPDATE lab_report_requests SET request_status = 'ready', result_status = ?, admin_notes = ?, file_path = ?, " +
+                    "price = ?, payment_status = CASE WHEN payment_status = 'paid' THEN payment_status ELSE 'unpaid' END, updated_at = CURRENT_TIMESTAMP " +
+                    "WHERE id = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(update)) {
+                pstmt.setString(1, resultStatus);
+                pstmt.setString(2, notes);
+                pstmt.setString(3, filePath);
+                pstmt.setDouble(4, price);
+                pstmt.setInt(5, requestId);
+                pstmt.executeUpdate();
+            }
+
+            if (patientUserId > 0) {
+                try (PreparedStatement notifyStmt = conn.prepareStatement(
+                        "INSERT INTO notifications (user_id, title, message) VALUES (?, ?, ?)")) {
+                    notifyStmt.setInt(1, patientUserId);
+                    notifyStmt.setString(2, "Lab Report Ready");
+                    notifyStmt.setString(3, reportTitle + " is ready. Result: " + resultStatus + ". Please check reports and payment section.");
+                    notifyStmt.executeUpdate();
+                }
+            }
+
+            showAlert("Success", "Lab report uploaded and patient notified.");
+            clearLabReportForm();
+            loadLabReportRequests();
+            loadTransactions();
+        } catch (SQLException e) {
+            showAlert("Error", "Failed to send lab report: " + e.getMessage());
+        }
+    }
+
+    private void clearLabReportForm() {
+        if (labReportPriceField != null) labReportPriceField.clear();
+        if (labReportFilePathField != null) labReportFilePathField.clear();
+        if (labAdminNotesArea != null) labAdminNotesArea.clear();
+        if (labResultStatusCombo != null) labResultStatusCombo.setValue("normal");
+    }
+
+    private String formatLabRequestDisplay(LabRequest request) {
+        return request.getId() + " - " + request.getPatientName() + " - " + request.getReportTitle();
+    }
+
+    private void updateLabRequestSelectionInfo(String selectedRequest) {
+        if (labReportSelectionInfoLabel == null) return;
+        if (selectedRequest == null || selectedRequest.isBlank()) {
+            labReportSelectionInfoLabel.setText("Choose a requested lab report to prepare and send.");
+            return;
+        }
+        labReportSelectionInfoLabel.setText("Selected: " + selectedRequest);
+    }
+
+    private void renderLabRequests(ObservableList<LabRequest> requests) {
+        if (labRequestsGrid == null) return;
+        labRequestsGrid.getChildren().clear();
+        for (LabRequest request : requests) {
+            labRequestsGrid.getChildren().add(createInfoCard(
+                    request.getReportTitle(),
+                    "Patient: " + request.getPatientName(),
+                    "Doctor: " + request.getDoctorName(),
+                    "Tests: " + request.getLabTests(),
+                    "Request: " + request.getRequestStatus(),
+                    "Result: " + request.getResultStatus(),
+                    String.format("Price: Tk %.2f | Payment: %s", request.getPrice(), request.getPaymentStatus())
+            ));
+        }
+    }
+
     // Transactions Methods
     private void loadTransactions() {
         ObservableList<Transaction> transactions = FXCollections.observableArrayList();
@@ -876,7 +1085,7 @@ public class AdminDashboardController {
                     "FROM appointments a " +
                     "JOIN doctors d ON a.doctor_id = d.id " +
                     "JOIN users u ON d.user_id = u.id " +
-                    "WHERE a.status = 'completed' " +
+                    "WHERE a.status = 'completed' AND COALESCE(a.payment_status, 'unpaid') = 'paid' " +
                     "ORDER BY a.created_at DESC";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
@@ -893,6 +1102,25 @@ public class AdminDashboardController {
                 ));
             }
 
+            String labQuery = "SELECT l.id, 'Lab Report' AS type, u.name AS doctor_name, l.price AS amount, l.updated_at AS date " +
+                    "FROM lab_report_requests l " +
+                    "JOIN medical_reports r ON l.medical_report_id = r.id " +
+                    "JOIN doctors d ON r.doctor_id = d.id " +
+                    "JOIN users u ON d.user_id = u.id " +
+                    "WHERE l.payment_status = 'paid' AND l.price > 0 ORDER BY l.updated_at DESC";
+            rs = stmt.executeQuery(labQuery);
+            while (rs.next()) {
+                double amount = rs.getDouble("amount");
+                totalReportFees += amount;
+                transactions.add(new Transaction(
+                        rs.getInt("id"),
+                        rs.getString("type"),
+                        rs.getString("doctor_name"),
+                        amount,
+                        rs.getString("date")
+                ));
+            }
+
             if (transactionsTable != null) transactionsTable.setItems(transactions);
             renderTransactions(transactions);
 
@@ -900,10 +1128,10 @@ public class AdminDashboardController {
             double total = totalDoctorFees + totalReportFees;
             double hospitalShare = total * 0.30;
 
-            if (doctorFeeLabel != null) doctorFeeLabel.setText(String.format("৳%.2f", totalDoctorFees));
-            if (reportFeeLabel != null) reportFeeLabel.setText(String.format("৳%.2f", totalReportFees));
-            if (hospitalShareLabel != null) hospitalShareLabel.setText(String.format("৳%.2f", hospitalShare));
-            if (totalTransactionsLabel != null) totalTransactionsLabel.setText(String.format("৳%.2f", total));
+            if (doctorFeeLabel != null) doctorFeeLabel.setText(String.format("Tk %.2f", totalDoctorFees));
+            if (reportFeeLabel != null) reportFeeLabel.setText(String.format("Tk %.2f", totalReportFees));
+            if (hospitalShareLabel != null) hospitalShareLabel.setText(String.format("Tk %.2f", hospitalShare));
+            if (totalTransactionsLabel != null) totalTransactionsLabel.setText(String.format("Tk %.2f", total));
 
         } catch (SQLException e) {
             showAlert("Error", "Failed to load transactions: " + e.getMessage());
@@ -1052,7 +1280,7 @@ public class AdminDashboardController {
                     "Specialization: " + doctor.getSpecialization(),
                     "Experience: " + doctor.getExperience(),
                     "Phone: " + doctor.getPhone(),
-                    String.format("Fee: ৳%.0f", doctor.getFee()),
+                    String.format("Fee: Tk %.0f", doctor.getFee()),
                     () -> selectedDoctor = doctor
             ));
         }
@@ -1117,7 +1345,7 @@ public class AdminDashboardController {
             transactionsGrid.getChildren().add(createInfoCard(
                     transaction.getType(),
                     "Doctor: " + transaction.getDoctorName(),
-                    String.format("Amount: ৳%.2f", transaction.getAmount()),
+                    String.format("Amount: Tk %.2f", transaction.getAmount()),
                     "Date: " + transaction.getDate(),
                     "Ref: #" + transaction.getId()
             ));
@@ -1198,6 +1426,10 @@ public class AdminDashboardController {
             card.getChildren().add(label);
         }
         return card;
+    }
+
+    private Stage getStageFromNode(Node node) {
+        return (Stage) node.getScene().getWindow();
     }
 
     private void showAlert(String title, String content) {
@@ -1326,6 +1558,41 @@ public class AdminDashboardController {
         public String getDoctorName() { return doctorName; }
         public double getAmount() { return amount; }
         public String getDate() { return date; }
+    }
+
+    public static class LabRequest {
+        private int id;
+        private String patientName;
+        private String doctorName;
+        private String reportTitle;
+        private String labTests;
+        private String requestStatus;
+        private String resultStatus;
+        private double price;
+        private String paymentStatus;
+
+        public LabRequest(int id, String patientName, String doctorName, String reportTitle, String labTests,
+                          String requestStatus, String resultStatus, double price, String paymentStatus) {
+            this.id = id;
+            this.patientName = patientName;
+            this.doctorName = doctorName;
+            this.reportTitle = reportTitle;
+            this.labTests = labTests;
+            this.requestStatus = requestStatus;
+            this.resultStatus = resultStatus;
+            this.price = price;
+            this.paymentStatus = paymentStatus;
+        }
+
+        public int getId() { return id; }
+        public String getPatientName() { return patientName; }
+        public String getDoctorName() { return doctorName; }
+        public String getReportTitle() { return reportTitle; }
+        public String getLabTests() { return labTests; }
+        public String getRequestStatus() { return requestStatus; }
+        public String getResultStatus() { return resultStatus; }
+        public double getPrice() { return price; }
+        public String getPaymentStatus() { return paymentStatus; }
     }
 
     public static class BloodDonor {

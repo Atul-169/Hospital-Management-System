@@ -1,95 +1,462 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-        <?import javafx.scene.layout.*?>
-        <?import javafx.scene.control.*?>
-        <?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="AdminDashboardController">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.project.controller.AdminDashboardController"
+            styleClass="root"
+            stylesheets="@../css/style.css">
 
-    <!-- Sidebar -->
     <left>
-        <VBox prefWidth="230" spacing="10"
-              style="-fx-background-color:#111827; -fx-padding:15;">
+        <VBox prefWidth="280" spacing="5" styleClass="sidebar">
+            <padding>
+                <Insets top="20" right="15" bottom="20" left="15"/>
+            </padding>
 
-            <Label text="Admin Panel"
-                   style="-fx-text-fill:white; -fx-font-size:18; -fx-font-weight:bold;"/>
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-brand">
+                <Label text="✚" styleClass="brand-icon"/>
+                <Label text="BUET MedTech" styleClass="brand-text"/>
+                <VBox.margin>
+                    <Insets bottom="20"/>
+                </VBox.margin>
+            </HBox>
 
-            <Separator/>
+            <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
+                <VBox spacing="5" styleClass="sidebar-menu">
+                    <Label text="ADMIN PANEL" styleClass="sidebar-group-label"/>
+                    <Button fx:id="dashboardBtn" text="📊 Dashboard" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showDashboard" styleClass="nav-btn, active"/>
+                    <Button fx:id="manageDoctorsBtn" text="🩺 Manage Doctors" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showManageDoctors" styleClass="nav-btn"/>
+                    <Button fx:id="managePatientsBtn" text="👥 Manage Patients" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showManagePatients" styleClass="nav-btn"/>
+                    <Button fx:id="viewAppointmentsBtn" text="📅 Appointments" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showViewAppointments" styleClass="nav-btn"/>
+                    <Button fx:id="reportsBtn" text="📄 Reports" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showReports" styleClass="nav-btn"/>
+                    <Button fx:id="sendLabReportsBtn" text="🧪 Send Lab Reports" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showSendLabReports" styleClass="nav-btn"/>
+                    <Button fx:id="transactionsBtn" text="💳 Transactions" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showTransactions" styleClass="nav-btn"/>
+                    <Button fx:id="notificationsBtn" text="🔔 Notifications" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showNotifications" styleClass="nav-btn"/>
+                    <Button fx:id="monitoringBtn" text="🧭 Monitoring" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            onAction="#showMonitoring" styleClass="nav-btn"/>
+                </VBox>
+            </ScrollPane>
 
-            <Button text="🏠 Dashboard" maxWidth="Infinity"/>
-            <Button text="👨‍⚕ Manage Doctors" maxWidth="Infinity"/>
-            <Button text="🧑‍🤝‍🧑 Manage Patients" maxWidth="Infinity"/>
-            <Button text="📅 Manage Appointments" maxWidth="Infinity"/>
-            <Button text="🏥 Departments" maxWidth="Infinity"/>
-            <Button text="💰 Billing" maxWidth="Infinity"/>
-            <Button text="📊 Reports" maxWidth="Infinity"/>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <Button text="⚙ System Settings"/>
-            <Button text="🚪 Logout"/>
+            <VBox spacing="10" styleClass="sidebar-footer">
+                <Separator styleClass="sidebar-separator"/>
+                <Label text="Administrator Access" styleClass="sidebar-user-name"/>
+                <Button fx:id="logoutBtn" text="🚪 Logout" maxWidth="Infinity" alignment="CENTER_LEFT"
+                        onAction="#logout" styleClass="nav-btn, logout-btn"/>
+            </VBox>
         </VBox>
     </left>
 
-    <!-- Top -->
-    <top>
-        <HBox style="-fx-background-color:white; -fx-padding:10;">
-            <Label text="Admin Dashboard"
-                   style="-fx-font-size:18; -fx-font-weight:bold;"/>
-
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <Label text="Administrator"/>
-        </HBox>
-    </top>
-
-    <!-- Content -->
     <center>
-        <VBox spacing="20" style="-fx-padding:20; -fx-background-color:#f1f5f9;">
+        <StackPane styleClass="content-area">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
 
-            <!-- Stats -->
-            <HBox spacing="20">
+            <VBox fx:id="dashboardPanel" spacing="20" visible="true">
+                <Label text="Admin Dashboard" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
 
-                <VBox style="-fx-background-color:white; -fx-padding:15; -fx-background-radius:10;">
-                    <Label text="Total Doctors"/>
-                    <Label text="40" style="-fx-font-size:22;"/>
-                </VBox>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="22">
+                        <VBox spacing="10" styleClass="admin-hero-card">
+                            <padding>
+                                <Insets top="22" right="24" bottom="22" left="24"/>
+                            </padding>
+                            <Label text="Hospital operations at a glance" styleClass="admin-hero-title"/>
+                            <Label text="Track doctors, patients, revenue, reports and system activity from one control center." styleClass="info-text" wrapText="true"/>
+                        </VBox>
 
-                <VBox style="-fx-background-color:white; -fx-padding:15; -fx-background-radius:10;">
-                    <Label text="Total Patients"/>
-                    <Label text="1500"/>
-                </VBox>
+                        <GridPane hgap="18" vgap="18" styleClass="dashboard-grid">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                            </columnConstraints>
 
-                <VBox style="-fx-background-color:white; -fx-padding:15; -fx-background-radius:10;">
-                    <Label text="Appointments Today"/>
-                    <Label text="85"/>
-                </VBox>
+                            <VBox styleClass="stat-card stat-card-blue" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="🩺 DOCTORS" styleClass="stat-label"/>
+                                <Label fx:id="totalDoctorsLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Registered specialists" styleClass="stat-desc"/>
+                            </VBox>
 
-                <VBox style="-fx-background-color:white; -fx-padding:15; -fx-background-radius:10;">
-                    <Label text="Revenue Today"/>
-                    <Label text="$5200"/>
-                </VBox>
+                            <VBox styleClass="stat-card stat-card-green" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="👥 PATIENTS" styleClass="stat-label"/>
+                                <Label fx:id="totalPatientsLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Active patient records" styleClass="stat-desc"/>
+                            </VBox>
 
-            </HBox>
+                            <VBox styleClass="stat-card stat-card-orange" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="📅 APPOINTMENTS" styleClass="stat-label"/>
+                                <Label fx:id="totalAppointmentsLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Total scheduled visits" styleClass="stat-desc"/>
+                            </VBox>
 
-            <!-- Charts -->
-            <HBox spacing="20">
+                            <VBox styleClass="stat-card stat-card-purple" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="💳 REVENUE" styleClass="stat-label"/>
+                                <Label fx:id="totalRevenueLabel" text="Tk 0.00" styleClass="stat-value-small"/>
+                                <Label text="Completed appointment income" styleClass="stat-desc"/>
+                            </VBox>
 
-                <PieChart title="Department Distribution" prefWidth="350"/>
+                            <VBox styleClass="stat-card stat-card-teal" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="✅ COMPLETED" styleClass="stat-label"/>
+                                <Label fx:id="completedAppointmentsLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Appointments closed successfully" styleClass="stat-desc"/>
+                            </VBox>
 
-                <BarChart title="Appointments per Day">
-                    <xAxis>
-                        <CategoryAxis label="Day"/>
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis label="Appointments"/>
-                    </yAxis>
-                </BarChart>
+                            <VBox styleClass="stat-card admin-stat-amber" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="⏳ PENDING" styleClass="stat-label"/>
+                                <Label fx:id="pendingAppointmentsLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Upcoming or waiting actions" styleClass="stat-desc"/>
+                            </VBox>
 
-            </HBox>
+                            <VBox styleClass="stat-card stat-card-pink" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="📄 REPORTS" styleClass="stat-label"/>
+                                <Label fx:id="totalReportsLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Generated medical reports" styleClass="stat-desc"/>
+                            </VBox>
 
-        </VBox>
+                            <VBox styleClass="form-container admin-summary-card" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                                <Label text="Control Focus" styleClass="subsection-title"/>
+                                <Label text="Use the left menu to review accounts, approve workflows, manage system content and monitor platform activity." styleClass="info-text" wrapText="true"/>
+                            </VBox>
+                        </GridPane>
+
+                        <HBox spacing="18">
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Doctor Operations" styleClass="subsection-title"/>
+                                <Label text="Create accounts, review profiles and remove inactive doctor records from one place." styleClass="info-text" wrapText="true"/>
+                                <Button text="Open Manage Doctors" styleClass="primary-btn" onAction="#showManageDoctors" prefWidth="220"/>
+                            </VBox>
+
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Patient Oversight" styleClass="subsection-title"/>
+                                <Label text="Search records quickly and handle patient account cleanup without leaving the dashboard." styleClass="info-text" wrapText="true"/>
+                                <Button text="Open Manage Patients" styleClass="secondary-btn" onAction="#showManagePatients" prefWidth="220"/>
+                            </VBox>
+
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Live Monitoring" styleClass="subsection-title"/>
+                                <Label text="Check donor activity, doctor posts and patient Q&amp;A to keep the platform healthy." styleClass="info-text" wrapText="true"/>
+                                <Button text="Open Monitoring" styleClass="secondary-btn" onAction="#showMonitoring" prefWidth="220"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="manageDoctorsPanel" spacing="20" visible="false">
+                <Label text="Manage Doctors" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <VBox spacing="16" styleClass="form-container">
+                            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="table-toolbar">
+                                <TextField fx:id="doctorSearchField" promptText="Search doctors by name, email or specialization..." HBox.hgrow="ALWAYS"/>
+                                <Button text="Search" onAction="#searchDoctors" styleClass="primary-btn"/>
+                                <Button text="Delete Selected" onAction="#deleteDoctor" styleClass="danger-btn"/>
+                            </HBox>
+
+                            <Separator/>
+
+                            <Label text="Add New Doctor" styleClass="subsection-title"/>
+                            <GridPane hgap="12" vgap="12">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="33.33"/>
+                                    <ColumnConstraints percentWidth="33.33"/>
+                                    <ColumnConstraints percentWidth="33.33"/>
+                                </columnConstraints>
+
+                                <TextField fx:id="addDoctorName" promptText="Full Name" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <TextField fx:id="addDoctorEmail" promptText="Email Address" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <PasswordField fx:id="addDoctorPassword" promptText="Password" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+
+                                <TextField fx:id="addDoctorSpecialization" promptText="Specialization" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <TextField fx:id="addDoctorQualification" promptText="Qualification" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <TextField fx:id="addDoctorExperience" promptText="Experience (e.g. 5 years)" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+                                <TextField fx:id="addDoctorPhone" promptText="Phone Number" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <TextField fx:id="addDoctorFee" promptText="Consultation Fee" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Button text="Add Doctor" onAction="#addDoctor" styleClass="primary-btn" GridPane.columnIndex="2" GridPane.rowIndex="2" maxWidth="Infinity"/>
+                            </GridPane>
+                        </VBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Doctor Directory" styleClass="subsection-title"/>
+                            <FlowPane fx:id="doctorsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="managePatientsPanel" spacing="20" visible="false">
+                <Label text="Manage Patients" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <VBox spacing="16" styleClass="form-container">
+                            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="table-toolbar">
+                                <TextField fx:id="patientSearchField" promptText="Search patients by name, email or phone..." HBox.hgrow="ALWAYS"/>
+                                <Button text="Search" onAction="#searchPatients" styleClass="primary-btn"/>
+                                <Button text="Delete Selected" onAction="#deletePatient" styleClass="danger-btn"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Patient Directory" styleClass="subsection-title"/>
+                            <FlowPane fx:id="patientsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="viewAppointmentsPanel" spacing="20" visible="false">
+                <Label text="Manage Appointments" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <VBox spacing="16" styleClass="form-container">
+                            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                            <Label text="Filter Appointments" styleClass="subsection-title"/>
+                            <GridPane hgap="12" vgap="12">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="25"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                </columnConstraints>
+
+                                <ComboBox fx:id="filterDoctorCombo" promptText="Filter by Doctor" GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="Infinity"/>
+                                <ComboBox fx:id="filterStatusCombo" promptText="Filter by Status" GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity"/>
+                                <DatePicker fx:id="filterDatePicker" promptText="Filter by Date" GridPane.columnIndex="2" GridPane.rowIndex="0" maxWidth="Infinity"/>
+                                <Button text="Apply Filters" onAction="#applyAppointmentFilters" styleClass="primary-btn" GridPane.columnIndex="3" GridPane.rowIndex="0" maxWidth="Infinity"/>
+                            </GridPane>
+
+                            <Separator/>
+
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="Update Status:" styleClass="form-label"/>
+                                <ComboBox fx:id="manageAppointmentStatusCombo" prefWidth="220"/>
+                                <Button text="Update Selected" onAction="#updateSelectedAppointmentStatus" styleClass="secondary-btn"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Appointment Queue" styleClass="subsection-title"/>
+                            <FlowPane fx:id="appointmentsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="reportsPanel" spacing="20" visible="false">
+                <Label text="Medical Reports" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <HBox spacing="18">
+                            <VBox styleClass="form-container quick-grid-card" HBox.hgrow="ALWAYS">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="Reports Overview" styleClass="subsection-title"/>
+                                <Label fx:id="totalReportsCountLabel" text="Total Reports: 0" styleClass="info-text"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Generated Reports" styleClass="subsection-title"/>
+                            <FlowPane fx:id="reportsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="sendLabReportsPanel" spacing="20" visible="false">
+                <Label text="Send Lab Reports" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <VBox spacing="16" styleClass="form-container">
+                            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                            <Label text="Upload Completed Lab Result" styleClass="subsection-title"/>
+                            <ComboBox fx:id="labReportRequestCombo" promptText="Select patient lab request..." maxWidth="Infinity"/>
+                            <Label fx:id="labReportSelectionInfoLabel" text="Choose a requested lab report to prepare and send." styleClass="info-text" wrapText="true"/>
+
+                            <GridPane hgap="12" vgap="12">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="33.33"/>
+                                    <ColumnConstraints percentWidth="33.33"/>
+                                    <ColumnConstraints percentWidth="33.33"/>
+                                </columnConstraints>
+
+                                <ComboBox fx:id="labResultStatusCombo" promptText="Result Status" GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="Infinity"/>
+                                <TextField fx:id="labReportPriceField" promptText="Test Price (Tk)" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Button fx:id="browseLabReportFileBtn" text="Browse File" onAction="#browseLabReportFile" styleClass="secondary-btn" GridPane.columnIndex="2" GridPane.rowIndex="0" maxWidth="Infinity"/>
+                            </GridPane>
+
+                            <TextField fx:id="labReportFilePathField" promptText="Selected file path..." editable="false"/>
+                            <TextArea fx:id="labAdminNotesArea" promptText="Write admin notes, positive/negative summary, or instructions..." prefRowCount="5" wrapText="true"/>
+
+                            <HBox spacing="10">
+                                <Button fx:id="sendLabReportBtn" text="Mark Lab Report Ready" onAction="#sendLabReport" styleClass="primary-btn"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Pending / Ready Lab Requests" styleClass="subsection-title"/>
+                            <FlowPane fx:id="labRequestsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="transactionsPanel" spacing="20" visible="false">
+                <Label text="Transactions" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <GridPane hgap="18" vgap="18">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                                <ColumnConstraints percentWidth="25"/>
+                            </columnConstraints>
+
+                            <VBox styleClass="stat-card stat-card-blue" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="DOCTOR FEES" styleClass="stat-label"/>
+                                <Label fx:id="doctorFeeLabel" text="0.00" styleClass="stat-value-small"/>
+                                <Label text="Collected consultation fees" styleClass="stat-desc"/>
+                            </VBox>
+
+                            <VBox styleClass="stat-card stat-card-green" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="REPORT FEES" styleClass="stat-label"/>
+                                <Label fx:id="reportFeeLabel" text="0.00" styleClass="stat-value-small"/>
+                                <Label text="Generated from reports" styleClass="stat-desc"/>
+                            </VBox>
+
+                            <VBox styleClass="stat-card stat-card-orange" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="HOSPITAL SHARE" styleClass="stat-label"/>
+                                <Label fx:id="hospitalShareLabel" text="0.00" styleClass="stat-value-small"/>
+                                <Label text="30% operational share" styleClass="stat-desc"/>
+                            </VBox>
+
+                            <VBox styleClass="stat-card stat-card-purple" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                                <Label text="TOTAL" styleClass="stat-label"/>
+                                <Label fx:id="totalTransactionsLabel" text="0.00" styleClass="stat-value-small"/>
+                                <Label text="Combined transaction total" styleClass="stat-desc"/>
+                            </VBox>
+                        </GridPane>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Transaction Feed" styleClass="subsection-title"/>
+                            <FlowPane fx:id="transactionsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="notificationsPanel" spacing="20" visible="false">
+                <Label text="Send Notifications" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <VBox spacing="16" styleClass="form-container admin-section-shell" maxWidth="860">
+                            <padding><Insets top="22" right="22" bottom="22" left="22"/></padding>
+                            <Label text="Broadcast Message" styleClass="subsection-title"/>
+                            <Label text="Send a platform-wide update to all users with a clear title, message and category." styleClass="info-text" wrapText="true"/>
+
+                            <TextField fx:id="notificationTitle" promptText="Notification title"/>
+                            <TextArea fx:id="notificationMessage" promptText="Write the notification message..." prefRowCount="6" wrapText="true"/>
+
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <ComboBox fx:id="notificationCategory" prefWidth="220"/>
+                                <Button fx:id="sendNotificationBtn" text="Send to All Users" onAction="#sendNotification" styleClass="primary-btn"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <VBox fx:id="monitoringPanel" spacing="20" visible="false">
+                <Label text="System Monitoring" styleClass="section-title">
+                    <font><Font name="System Bold" size="24"/></font>
+                </Label>
+
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll-pane admin-panel-scroll">
+                    <VBox spacing="20">
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Blood Donors" styleClass="subsection-title"/>
+                            <FlowPane fx:id="bloodDonorsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Doctor Health Posts" styleClass="subsection-title"/>
+                            <FlowPane fx:id="doctorPostsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+
+                        <VBox spacing="14" styleClass="dashboard-highlight admin-section-shell">
+                            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                            <Label text="Patient Q&amp;A" styleClass="subsection-title"/>
+                            <FlowPane fx:id="questionsGrid" hgap="16" vgap="16" prefWrapLength="1120" styleClass="admin-card-grid"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </StackPane>
     </center>
 
 </BorderPane>
-

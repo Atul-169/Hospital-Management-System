@@ -35,6 +35,7 @@
                     <Button fx:id="btnBookAppointment" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showBookAppointment" styleClass="nav-btn" text="📅 Book Appointment" />
                     <Button fx:id="btnViewAppointments" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showViewAppointments" styleClass="nav-btn" text="📋 My Appointments" />
                     <Button fx:id="btnViewReports" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showViewReports" styleClass="nav-btn" text="📄 Medical Reports" />
+                    <Button fx:id="btnPayments" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showPayments" styleClass="nav-btn" text="💳 Payments" />
                     <Button fx:id="btnNotifications" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showNotifications" styleClass="nav-btn" text="🔔 Notifications" />
                     <Button fx:id="btnDoctorPosts" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showDoctorPosts" styleClass="nav-btn" text="💡 Health Tips" />
                     <Button fx:id="btnQA" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showQA" styleClass="nav-btn" text="❓ Q&amp;A Forum" />
@@ -293,15 +294,65 @@
                     </font>
                 </Label>
 
-                <TableView fx:id="tblReports" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colReportDoctor" text="Doctor" prefWidth="130"/>
-                        <TableColumn fx:id="colDiagnosis" text="Diagnosis" prefWidth="180"/>
-                        <TableColumn fx:id="colPrescription" text="Prescription" prefWidth="200"/>
-                        <TableColumn fx:id="colNotes" text="Notes" prefWidth="200"/>
-                        <TableColumn fx:id="colReportDate" text="Date" prefWidth="120"/>
-                    </columns>
-                </TableView>
+                <VBox spacing="15" VBox.vgrow="ALWAYS">
+                    <TableView fx:id="tblReports" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colReportAppointment" text="Appointment" prefWidth="120"/>
+                            <TableColumn fx:id="colReportDoctor" text="Doctor" prefWidth="130"/>
+                            <TableColumn fx:id="colReportTitle" text="Report" prefWidth="170"/>
+                            <TableColumn fx:id="colLabTests" text="Lab Tests" prefWidth="220"/>
+                            <TableColumn fx:id="colPrescription" text="Prescription" prefWidth="160"/>
+                            <TableColumn fx:id="colLabRequestStatus" text="Request" prefWidth="110"/>
+                            <TableColumn fx:id="colLabResultStatus" text="Result" prefWidth="110"/>
+                            <TableColumn fx:id="colReportDate" text="Date" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+
+                    <VBox spacing="10" styleClass="form-container">
+                        <padding>
+                            <Insets top="16" right="16" bottom="16" left="16"/>
+                        </padding>
+                        <Label fx:id="lblSelectedReportInfo" text="Select a report to request lab tests or view ready results." styleClass="info-text" wrapText="true"/>
+                        <TextArea fx:id="txtSelectedReportDetails" editable="false" prefRowCount="6" wrapText="true"/>
+                        <HBox spacing="10">
+                            <Button fx:id="btnRequestLabReport" text="Ask Hospital For Lab Report" styleClass="primary-btn" onAction="#requestLabReport"/>
+                            <Button fx:id="btnDownloadLabReport" text="Download Lab Report" styleClass="secondary-btn" onAction="#downloadSelectedLabReport"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+            <VBox fx:id="paymentSection" spacing="20" visible="false">
+                <Label text="Payments" styleClass="section-title">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+
+                <VBox spacing="15" VBox.vgrow="ALWAYS">
+                    <TableView fx:id="tblPayments" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colPaymentType" text="Type" prefWidth="130"/>
+                            <TableColumn fx:id="colPaymentReport" text="Report" prefWidth="220"/>
+                            <TableColumn fx:id="colPaymentDoctor" text="Doctor" prefWidth="150"/>
+                            <TableColumn fx:id="colPaymentAmount" text="Amount" prefWidth="120"/>
+                            <TableColumn fx:id="colPaymentStatus" text="Status" prefWidth="120"/>
+                            <TableColumn fx:id="colPaymentMethod" text="Method" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+
+                    <VBox spacing="10" styleClass="form-container" maxWidth="520">
+                        <padding>
+                            <Insets top="16" right="16" bottom="16" left="16"/>
+                        </padding>
+                        <Label fx:id="lblPaymentInfo" text="Due payment will appear here after admin prepares your lab report." styleClass="info-text" wrapText="true"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Pay Via:" styleClass="form-label"/>
+                            <ComboBox fx:id="cmbPaymentMethod" prefWidth="180"/>
+                            <Button fx:id="btnSubmitPayment" text="Pay Now" styleClass="primary-btn" onAction="#submitSelectedPayment"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
             </VBox>
 
             <!-- Notifications Section -->

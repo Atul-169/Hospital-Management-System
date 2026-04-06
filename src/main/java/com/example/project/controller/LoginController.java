@@ -17,6 +17,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,6 +40,18 @@ public class LoginController {
     private Label errorLabel;
 
     @FXML
+    private HBox forgotPasswordBox;
+
+    @FXML
+    private Label forgotPasswordLabel;
+
+    @FXML
+    private HBox registerBox;
+
+    @FXML
+    private Label registerNowLabel;
+
+    @FXML
     private TextField usernameField;
 
     @FXML
@@ -54,6 +67,15 @@ public class LoginController {
             roleLabel.setText(role.toUpperCase() + " LOGIN");
         } else {
             roleLabel.setText("SELECT ROLE FIRST");
+        }
+        boolean isAdmin = "admin".equalsIgnoreCase(role);
+        if (forgotPasswordBox != null) {
+            forgotPasswordBox.setVisible(!isAdmin);
+            forgotPasswordBox.setManaged(!isAdmin);
+        }
+        if (registerBox != null) {
+            registerBox.setVisible(!isAdmin);
+            registerBox.setManaged(!isAdmin);
         }
         installHoverAnimation(loginBtn);
         Platform.runLater(() -> {
@@ -95,15 +117,15 @@ public class LoginController {
     @FXML
 
     public void handleLogin(ActionEvent event) {
-        String email = usernameField.getText();
-        String password = passwordField.getText();
+        String loginIdentifier = usernameField.getText() == null ? "" : usernameField.getText().trim();
+        String password = passwordField.getText() == null ? "" : passwordField.getText().trim();
         String selectedRole = SessionManager.normalizeRole(SessionManager.getSelectedRole());
 
         if (selectedRole == null || selectedRole.isBlank()) {
             showError("Please select a role first.");
             return;
         }
-        if (email.isEmpty() || password.isEmpty()) {
+        if (loginIdentifier.isEmpty() || password.isEmpty()) {
             showError("Please fill all fields!");
             return;
         }
@@ -117,13 +139,17 @@ public class LoginController {
         Task<String[]> loginTask = new Task<>() {
             @Override
             protected String[] call() throws Exception {
-                String sql = "SELECT * FROM users WHERE email = ? AND password = ? AND LOWER(role) = LOWER(?)";
+                String sql = "SELECT * FROM users " +
+                        "WHERE (LOWER(TRIM(email)) = LOWER(?) OR LOWER(TRIM(name)) = LOWER(?)) " +
+                        "AND password = ? " +
+                        "AND LOWER(TRIM(role)) = LOWER(?)";
                 try (Connection conn = DatabaseConnection.getConnection();
                      PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                    pstmt.setString(1, email);
-                    pstmt.setString(2, password);
-                    pstmt.setString(3, selectedRole);
+                    pstmt.setString(1, loginIdentifier);
+                    pstmt.setString(2, loginIdentifier);
+                    pstmt.setString(3, password);
+                    pstmt.setString(4, selectedRole);
 
                     ResultSet rs = pstmt.executeQuery();
                     if (rs.next()) {
@@ -177,29 +203,9 @@ public class LoginController {
     }
 
     private void checkDoctorProfile(ActionEvent event, int userId) {
-        System.out.println("[DEBUG_LOG] Checking doctor profile completion for user ID: " + userId);
         ensureProfileRowExists("doctors", userId);
-        String sql = "SELECT profile_completed FROM doctors WHERE user_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, userId);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                int status = rs.getInt("profile_completed");
-                System.out.println("[DEBUG_LOG] Doctor profile_completed: " + status);
-                if (status == 1) {
-                    loadScene(event, "/fxml/doctor-dashboard.fxml");
-                } else {
-                    loadScene(event, "/fxml/profile-setup.fxml");
-                }
-            } else {
-                System.out.println("[DEBUG_LOG] No doctor record found for user ID: " + userId);
-                loadScene(event, "/fxml/profile-setup.fxml");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            loadScene(event, "/fxml/doctor-dashboard.fxml"); // Fallback
-        }
+        // Doctor dashboard already routes incomplete profiles to the in-dashboard profile panel.
+        loadScene(event, "/fxml/doctor-dashboard.fxml");
     }
 
     private void checkPatientProfile(ActionEvent event, int userId) {
@@ -274,6 +280,7 @@ public class LoginController {
     private void loadScene(Object eventSource, String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Scene scene = SceneManager.createScene(loader.load(), fxmlPath);
             Stage stage;
             if (eventSource instanceof ActionEvent) {
                 stage = (Stage) ((Node) ((ActionEvent) eventSource).getSource()).getScene().getWindow();
@@ -282,8 +289,8 @@ public class LoginController {
             } else {
                 stage = (Stage) ((Node) eventSource).getScene().getWindow();
             }
-            Scene scene = new Scene(loader.load());
             stage.setScene(scene);
+            SceneManager.configureStage(stage, fxmlPath);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
