@@ -728,7 +728,9 @@
 .dark-theme .stat-label { -fx-text-fill: #94a3b8; }
 .dark-theme .stat-value { -fx-text-fill: #818cf8; }
 
-.dark-theme .subsection-title { -fx-text-fill: #e2e8f0; }
+.dark-theme .subsection-title { -fx-text-fill: #e2e8f0;
+ -fx-padding:5px;
+ }
 .dark-theme .form-label { -fx-text-fill: #cbd5e1; }
 .dark-theme .text-field-custom, .dark-theme .text-area {
     -fx-background-color: #1e293b;
@@ -768,6 +770,7 @@
     -fx-text-fill: #2d3748;
     -fx-font-weight: 700;
     -fx-font-size: 18px;
+    -fx-padding:5px;
 }
 
 /* Dashboard Stats Cards */
@@ -867,6 +870,7 @@
 .info-text {
     -fx-text-fill: #64748b;
     -fx-font-size: 13px;
+    -fx-padding:5px;
 }
 
 /* Buttons */
