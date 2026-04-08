@@ -17,23 +17,45 @@ import java.sql.SQLException;
 
 public class ProfileSetupController {
 
+
     @FXML private VBox patientFields;
+
+
     @FXML private VBox doctorFields;
 
-    // Patient Fields
+
     @FXML private TextField phoneField;
+
+
     @FXML private ComboBox<String> bloodGroupCombo;
+
+
     @FXML private TextField addressField;
+
+
     @FXML private CheckBox allergiesCheck;
+
+
     @FXML private CheckBox diabetesCheck;
+
+
     @FXML private TextArea historyArea;
 
-    // Doctor Fields
+
     @FXML private TextField specializationField;
+
+
     @FXML private TextField qualificationField;
+
+
     @FXML private TextField experienceField;
+
+
     @FXML private TextField docPhoneField;
+
+
     @FXML private TextField feeField;
+
 
     @FXML
     public void initialize() {
@@ -71,6 +93,7 @@ public class ProfileSetupController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     private void loadDoctorData() {
@@ -91,7 +114,9 @@ public class ProfileSetupController {
         }
     }
 
+
     @FXML private Button saveBtn, cancelBtn;
+
 
     @FXML
     public void handleCancel(ActionEvent event) {
@@ -102,6 +127,7 @@ public class ProfileSetupController {
             loadScene(event, "/fxml/patient-dashboard.fxml");
         }
     }
+
 
     @FXML
     public void handleSaveProfile(ActionEvent event) {
@@ -197,6 +223,7 @@ public class ProfileSetupController {
             System.err.println("[DEBUG_LOG] Failed to save doctor profile: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
     private void showAlert(String title, String content) {
@@ -218,5 +245,6 @@ public class ProfileSetupController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

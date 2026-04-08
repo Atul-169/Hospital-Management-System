@@ -16,8 +16,10 @@ import com.example.project.util.SceneManager;
 
 public class SplashController {
 
+
     @FXML
     private ImageView logoImage;
+
 
     @FXML
     public void initialize() {
@@ -62,5 +64,6 @@ public class SplashController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

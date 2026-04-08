@@ -31,26 +31,34 @@ import com.example.project.util.SessionManager;
 
 public class RegisterController {
 
+
     @FXML
     private Label roleLabel;
+
 
     @FXML
     private Label errorLabel;
 
+
     @FXML
     private TextField nameField;
+
 
     @FXML
     private TextField emailField;
 
+
     @FXML
     private PasswordField passwordField;
+
 
     @FXML
     private PasswordField confirmPasswordField;
 
+
     @FXML
     private Button registerBtn;
+
 
     @FXML
     public void initialize() {
@@ -95,6 +103,7 @@ public class RegisterController {
         });
     }
 
+
     @FXML
     public void handleRegister(ActionEvent event) {
         String name = nameField.getText();
@@ -103,7 +112,6 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
         String role = SessionManager.normalizeRole(SessionManager.getSelectedRole());
 
-        // ১. বেসিক ভ্যালিডেশন
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             showError("Please fill all fields!");
             return;
@@ -114,24 +122,19 @@ public class RegisterController {
             return;
         }
 
-        // ২. ডাটাবেজে ডাটা ইনসার্ট করা
-        // SQL Injection থেকে বাঁচার জন্য PreparedStatement ব্যবহার করা হয়
         String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
 
         try (
                 Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // '?' চিহ্নের জায়গায় ভ্যালু সেট করা
             pstmt.setString(1, name);
             pstmt.setString(2, email);
             pstmt.setString(3, password);
             pstmt.setString(4, role);
 
-            // কুয়েরি রান করা
             pstmt.executeUpdate();
 
-            // ৪. ডক্টর বা পেশেন্ট টেবিলে প্রাথমিক এন্ট্রি করা (যাতে লগইনের সময় চেক করা যায়)
             try (ResultSet rs = pstmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     int userId = rs.getInt(1);
@@ -153,10 +156,8 @@ public class RegisterController {
 
             System.out.println("[DEBUG_LOG] User Registered Successfully!");
 
-            // ৩. রেজিস্ট্রেশন সাকসেস হলে মেসেজ দেখানো
             showSuccess("Registration Successful! Please Sign In.");
 
-            // Clear fields
             nameField.clear();
             emailField.clear();
             passwordField.clear();
@@ -168,6 +169,7 @@ public class RegisterController {
             } else {
                 showError("Registration Failed: " + e.getMessage());
             }
+
         }
     }
 
@@ -191,7 +193,6 @@ public class RegisterController {
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
 
-        // Animation: Fade in and Shake
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), errorLabel);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
@@ -205,10 +206,13 @@ public class RegisterController {
         new ParallelTransition(fadeIn, shake).play();
     }
 
+
+
     @FXML
     public void handleBackToLogin(ActionEvent event) {
         loadScene(event, "/fxml/login.fxml");
     }
+
 
     @FXML
     public void handleBackToLoginMouse(MouseEvent event) {

@@ -18,10 +18,18 @@ import com.example.project.util.SceneManager;
 
 public class RoleSelectionController {
 
+
     @FXML private VBox rightCard;
+
+
     @FXML private Button adminBtn;
+
+
     @FXML private Button doctorBtn;
+
+
     @FXML private Button patientBtn;
+
 
     @FXML
     public void initialize() {
@@ -57,7 +65,6 @@ public class RoleSelectionController {
         Platform.runLater(() -> {
             rightCard.getScene().setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ESCAPE) {
-                    // go back to splash or close
                     Stage stage = (Stage) rightCard.getScene().getWindow();
                     stage.close();
                 }
@@ -106,6 +113,7 @@ public class RoleSelectionController {
         openLogin(event);
     }
 
+
     private void openLogin(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
@@ -119,4 +127,5 @@ public class RoleSelectionController {
             e.printStackTrace();
         }
     }
+
 }

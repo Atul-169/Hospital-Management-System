@@ -1,9 +1,10 @@
 
-/* --- Role Selection Screen --- */
+
 .role-root {
     -fx-background-color: #0b1020;
     -fx-font-family: "Segoe UI";
 }
+
 
 .role-left-pane {
     -fx-background-color: #0b1224;
@@ -19,6 +20,7 @@
     -fx-padding: 35 30 35 30;
     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.18), 28, 0.2, 0, 8);
 }
+
 
 .role-title {
     -fx-text-fill: #0f172a;
@@ -40,18 +42,21 @@
     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.16), 12, 0.12, 0, 4);
 }
 
-/* individual colors */
+
+
 #adminBtn {
     -fx-background-color: linear-gradient(to right, #0f172a, #1e293b);
 }
+
 #doctorBtn {
     -fx-background-color: linear-gradient(to right, #0f766e, #0891b2);
 }
+
 #patientBtn {
     -fx-background-color: linear-gradient(to right, #00d2ff, #3a7bd5);
 }
 
-/* --- Login Screen --- */
+
 .login-root {
     -fx-background-color: #f1f5f9;
 }
@@ -59,6 +64,7 @@
 .login-left-pane {
     -fx-background-color: #0b1224;
 }
+
 
 .login-right-pane {
     -fx-background-color: white;
@@ -115,6 +121,7 @@
     -fx-transition: 0.3s;
 }
 
+
 .login-primary-btn:hover {
     -fx-opacity: 0.95;
 }
@@ -130,13 +137,14 @@
     -fx-cursor: hand;
 }
 
+
 .register-action:hover {
     -fx-underline: true;
 }
 
-/* --- Error & Success Labels --- */
+
 .error-label {
-    -fx-text-fill: #ef4444; /* Soft Red */
+    -fx-text-fill: #ef4444;
     -fx-font-size: 13px;
     -fx-font-weight: 600;
     -fx-padding: 8 12;
@@ -148,7 +156,7 @@
 }
 
 .success-label {
-    -fx-text-fill: #10b981; /* Emerald Green */
+    -fx-text-fill: #10b981;
     -fx-font-size: 13px;
     -fx-font-weight: 600;
     -fx-padding: 8 12;
@@ -159,7 +167,7 @@
     -fx-opacity: 0;
 }
 
-/* --- Custom CheckBox Style --- */
+
 .custom-checkbox {
     -fx-text-fill: #475569;
     -fx-font-size: 14px;
@@ -186,7 +194,7 @@
     -fx-background-color: white;
 }
 
-/* --- Text Area Custom --- */
+
 .text-area-custom {
     -fx-background-radius: 12;
     -fx-border-radius: 12;
@@ -195,6 +203,7 @@
     -fx-font-size: 14px;
 }
 
+
 .text-area-custom .content {
     -fx-background-color: white;
 }
@@ -202,6 +211,7 @@
 .text-area-custom:focused {
     -fx-border-color: #3a7bd5;
 }
+
 .dashboard-root {
     -fx-background-color: #f8fafc;
 }
@@ -248,7 +258,9 @@
 }
 
 .sidebar-scroll .scroll-bar:vertical .track,
+
 .sidebar-scroll .scroll-bar:vertical .increment-button,
+
 .sidebar-scroll .scroll-bar:vertical .decrement-button {
     -fx-background-color: transparent;
 }
@@ -269,6 +281,7 @@
 .content-scroll-pane .scroll-bar {
     -fx-background-color: transparent;
 }
+
 
 .menu-item {
     -fx-background-color: transparent;
@@ -295,6 +308,7 @@
     -fx-font-size: 18px;
 }
 
+
 .logout-btn {
     -fx-background-color: rgba(239, 68, 68, 0.1);
     -fx-text-fill: #f87171;
@@ -305,20 +319,24 @@
     -fx-cursor: hand;
 }
 
+
 .logout-btn:hover {
     -fx-background-color: #ef4444;
     -fx-text-fill: white;
 }
 
-/* --- Main Content --- */
+
+
 .main-content {
     -fx-background-color: #f8fafc;
 }
+
 
 .top-bar {
     -fx-background-color: white;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 10, 0, 0, 2);
 }
+
 
 .welcome-text {
     -fx-text-fill: #1e293b;
@@ -342,7 +360,7 @@
     -fx-background-color: #f1f5f9;
 }
 
-/* --- Content Elements --- */
+
 .content-scroll {
     -fx-background: transparent;
     -fx-background-color: transparent;
@@ -361,9 +379,11 @@
 .card-blue {
     -fx-background-color: linear-gradient(to bottom right, #3a7bd5, #00d2ff);
 }
+
 .card-green {
     -fx-background-color: linear-gradient(to bottom right, #059669, #10b981);
 }
+
 .card-orange {
     -fx-background-color: linear-gradient(to bottom right, #ea580c, #f97316);
 }
@@ -400,6 +420,7 @@
     -fx-font-weight: 700;
 }
 
+
 .view-all-btn {
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #3a7bd5;
@@ -410,11 +431,12 @@
     -fx-cursor: hand;
 }
 
+
 .view-all-btn:hover {
     -fx-background-color: #e2e8f0;
 }
 
-/* --- List Items --- */
+
 .list-item {
     -fx-padding: 12;
     -fx-background-color: #f8fafc;
@@ -439,6 +461,7 @@
     -fx-font-size: 16px;
     -fx-font-weight: 800;
 }
+
 
 .date-month {
     -fx-text-fill: #64748b;
@@ -475,20 +498,20 @@
     -fx-font-weight: 600;
 }
 
+
 .tip-author {
     -fx-text-fill: #94a3b8;
     -fx-font-size: 12px;
 }
 
-/* ==================== PATIENT DASHBOARD STYLES ==================== */
 
-/* Root & Layout */
+
 .root {
     -fx-background-color: #f8fafc;
     -fx-font-family: "Inter", "Segoe UI", "SF Pro Display", Arial, sans-serif;
 }
 
-/* Sidebar Navigation */
+
 .sidebar {
     -fx-background-color: linear-gradient(to bottom, #081121 0%, #0f172a 42%, #132238 100%);
     -fx-pref-width: 280;
@@ -562,6 +585,7 @@
     -fx-effect: dropshadow(gaussian, rgba(56, 189, 248, 0.28), 18, 0.18, 0, 0);
 }
 
+
 .nav-btn.active {
     -fx-background-color: linear-gradient(to right, rgba(37, 99, 235, 0.34), rgba(56, 189, 248, 0.16));
     -fx-text-fill: #eff6ff;
@@ -576,6 +600,7 @@
     -fx-border-color: rgba(148, 163, 184, 0.10);
     -fx-border-width: 1 0 0 0;
 }
+
 
 .sidebar-user-name {
     -fx-text-fill: #e2e8f0;
@@ -592,6 +617,7 @@
     -fx-border-radius: 16;
 }
 
+
 .mode-btn {
     -fx-background-color: transparent;
     -fx-text-fill: #94a3b8;
@@ -602,10 +628,12 @@
     -fx-cursor: hand;
 }
 
+
 .mode-btn:hover {
     -fx-background-color: rgba(255, 255, 255, 0.08);
     -fx-text-fill: #e2e8f0;
 }
+
 
 .mode-btn.active {
     -fx-background-color: linear-gradient(to right, #334155, #1e3a8a);
@@ -616,6 +644,7 @@
 .sidebar-separator {
     -fx-opacity: 0.1;
 }
+
 
 .logout-btn {
     -fx-background-color: rgba(248, 113, 113, 0.08);
@@ -631,7 +660,7 @@
     -fx-effect: dropshadow(gaussian, rgba(248, 113, 113, 0.24), 16, 0.18, 0, 0);
 }
 
-/* Appointment Grid & Cards */
+
 .appointment-grid {
     -fx-alignment: center-left;
 }
@@ -657,13 +686,18 @@
     -fx-font-weight: bold;
 }
 
+
 .status-pending { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
+
 .status-upcoming { -fx-background-color: #ede9fe; -fx-text-fill: #5b21b6; }
+
 .status-confirmed { -fx-background-color: #dcfce7; -fx-text-fill: #166534; }
+
 .status-completed { -fx-background-color: #e0f2fe; -fx-text-fill: #075985; }
+
 .status-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #991b1b; }
 
-/* Doctor Card Modern */
+
 .doctor-card-container {
     -fx-background-radius: 20;
     -fx-overflow: hidden;
@@ -712,6 +746,7 @@
     -fx-background-color: #0f172a;
 }
 
+
 .dark-theme .content-area {
     -fx-background-color: #0f172a;
 }
@@ -726,21 +761,26 @@
 }
 
 .dark-theme .stat-label { -fx-text-fill: #94a3b8; }
+
 .dark-theme .stat-value { -fx-text-fill: #818cf8; }
 
 .dark-theme .subsection-title { -fx-text-fill: #e2e8f0;
  -fx-padding:5px;
  }
+
 .dark-theme .form-label { -fx-text-fill: #cbd5e1; }
+
 .dark-theme .text-field-custom, .dark-theme .text-area {
     -fx-background-color: #1e293b;
     -fx-border-color: #334155;
     -fx-text-fill: white;
 }
+
 .dark-theme .top-nav {
     -fx-background-color: #1e293b;
     -fx-border-color: #334155;
 }
+
 
 .dark-theme .profile-icon-btn {
     -fx-background-color: #334155;
@@ -754,7 +794,9 @@
 }
 
 .dark-theme .doctor-name { -fx-text-fill: #f1f5f9; }
+
 .dark-theme .section-title { -fx-text-fill: #f1f5f9; }
+
 .content-area {
     -fx-background-color: #f0f4f8;
 }
@@ -773,7 +815,7 @@
     -fx-padding:5px;
 }
 
-/* Dashboard Stats Cards */
+
 .dashboard-grid {
     -fx-alignment: center;
 }
@@ -847,6 +889,7 @@
     -fx-padding: 5 0;
 }
 
+
 .stat-desc {
     -fx-text-fill: #64748b;
     -fx-font-size: 13px;
@@ -854,7 +897,7 @@
     -fx-padding: 5 0 0 0;
 }
 
-/* Form Container */
+
 .form-container {
     -fx-background-color: white;
     -fx-background-radius: 16;
@@ -867,13 +910,14 @@
     -fx-font-weight: 600;
 }
 
+
 .info-text {
     -fx-text-fill: #64748b;
     -fx-font-size: 13px;
     -fx-padding:5px;
 }
 
-/* Buttons */
+
 .primary-btn {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);
     -fx-text-fill: white;
@@ -916,7 +960,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12, 0, 0, 4);
 }
 
-/* Text Fields & Inputs */
+
 TextField, ComboBox, DatePicker, TextArea {
     -fx-background-color: white;
     -fx-background-radius: 10;
@@ -937,21 +981,24 @@ TextArea {
     -fx-background-color: white;
 }
 
+
 TextArea .content {
     -fx-background-color: white;
     -fx-padding: 8;
 }
+
 
 .response-area {
     -fx-background-color: #f8fafc;
     -fx-border-color: #cbd5e1;
 }
 
+
 .response-area .content {
     -fx-background-color: #f8fafc;
 }
 
-/* Tables */
+
 TableView {
     -fx-background-color: white;
     -fx-background-radius: 18;
@@ -982,6 +1029,7 @@ TableView .table-row-cell {
     -fx-cell-size: 52;
 }
 
+
 TableView .table-row-cell:odd {
     -fx-background-color: #f9fafb;
 }
@@ -1007,8 +1055,11 @@ TableView .table-cell {
     -fx-alignment: CENTER_LEFT;
 }
 
+
 .table-panel,
+
 .monitor-card,
+
 .quick-grid-card {
     -fx-background-color: linear-gradient(to bottom, #ffffff, #f8fbff);
     -fx-background-radius: 18;
@@ -1021,6 +1072,7 @@ TableView .table-cell {
 .table-toolbar {
     -fx-padding: 0 0 4 0;
 }
+
 
 .admin-table {
     -fx-background-insets: 0;
@@ -1077,7 +1129,8 @@ TableView .table-cell {
     -fx-border-radius: 18;
 }
 
-/* Q&A Table Specific Styling */
+
+
 .qa-table .table-row-cell:selected {
     -fx-background-color: rgba(102, 126, 234, 0.15);
     -fx-background-insets: 0;
@@ -1091,7 +1144,7 @@ TableView .table-cell {
     -fx-font-weight: 600;
 }
 
-/* Lists */
+
 ListView {
     -fx-background-color: white;
     -fx-background-radius: 12;
@@ -1118,12 +1171,12 @@ ListView .list-cell:hover {
     -fx-background-radius: 8;
 }
 
-/* Separator */
+
 Separator {
     -fx-background-color: #e2e8f0;
 }
 
-/* Dark Theme Support */
+
 .dark-theme {
     -fx-background-color: #0b1224;
 }
@@ -1141,6 +1194,7 @@ Separator {
 .dark-theme .content-area {
     -fx-background-color: #0b1224;
 }
+
 
 .dark-theme .section-title {
     -fx-text-fill: #f8fafc;
@@ -1181,7 +1235,9 @@ Separator {
 }
 
 .sidebar-scroll,
+
 .scroll-pane,
+
 .content-scroll-pane {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -1189,55 +1245,77 @@ Separator {
 }
 
 .sidebar-scroll .corner,
+
 .scroll-pane .corner,
+
 .content-scroll-pane .corner {
     -fx-background-color: transparent;
 }
 
 .sidebar-scroll .scroll-bar:vertical,
+
 .scroll-pane .scroll-bar:vertical,
+
 .content-scroll-pane .scroll-bar:vertical {
     -fx-background-color: transparent;
     -fx-pref-width: 14;
     -fx-padding: 2;
 }
 
+
 .sidebar-scroll .scroll-bar:vertical .track,
+
 .scroll-pane .scroll-bar:vertical .track,
+
 .content-scroll-pane .scroll-bar:vertical .track {
     -fx-background-color: rgba(148, 163, 184, 0.18);
     -fx-background-radius: 999;
 }
 
 .sidebar-scroll .scroll-bar:vertical .thumb,
+
 .scroll-pane .scroll-bar:vertical .thumb,
+
 .content-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: linear-gradient(to bottom, #7dd3fc, #3b82f6);  /* solid, no opacity */
+    -fx-background-color: linear-gradient(to bottom, #7dd3fc, #3b82f6);
     -fx-background-radius: 999;
-    -fx-min-height: 40;       /* thumb won't shrink too small */
+    -fx-min-height: 40;
 }
 
+
 .sidebar-scroll .scroll-bar:vertical .thumb:hover,
+
 .scroll-pane .scroll-bar:vertical .thumb:hover,
+
 .content-scroll-pane .scroll-bar:vertical .thumb:hover {
     -fx-background-color: linear-gradient(to bottom, #bae6fd, #60a5fa);
 }
 
 .sidebar-scroll .scroll-bar:vertical .increment-button,
+
 .sidebar-scroll .scroll-bar:vertical .decrement-button,
+
 .scroll-pane .scroll-bar:vertical .increment-button,
+
 .scroll-pane .scroll-bar:vertical .decrement-button,
+
 .content-scroll-pane .scroll-bar:vertical .increment-button,
+
 .content-scroll-pane .scroll-bar:vertical .decrement-button {
     -fx-background-color: transparent;
     -fx-padding: 0;
 }
 
 .sidebar-scroll .scroll-bar:vertical .increment-arrow,
+
 .sidebar-scroll .scroll-bar:vertical .decrement-arrow,
+
 .scroll-pane .scroll-bar:vertical .increment-arrow,
+
 .scroll-pane .scroll-bar:vertical .decrement-arrow,
+
 .content-scroll-pane .scroll-bar:vertical .increment-arrow,
+
 .content-scroll-pane .scroll-bar:vertical .decrement-arrow {
     -fx-shape: "";
     -fx-padding: 0;
@@ -1246,6 +1324,7 @@ Separator {
 .dark-theme TableView, .dark-theme ListView, .dark-theme .form-container, .dark-theme .scroll-pane {
     -fx-background-color: #1e293b;
 }
+
 
 .dark-theme .table-cell, .dark-theme .list-cell {
     -fx-text-fill: #cbd5e1;
@@ -1257,6 +1336,7 @@ Separator {
     -fx-border-color: #475569;
 }
 
+
 .dark-theme Label {
     -fx-text-fill: #cbd5e1;
 }
@@ -1265,7 +1345,7 @@ Separator {
     -fx-text-fill: #38bdf8;
 }
 
-/* ScrollBar Styling */
+
 .scroll-pane {
     -fx-background-color: transparent;
 }
@@ -1287,15 +1367,19 @@ Separator {
     -fx-background-color: #94a3b8;
 }
 
+
 .scroll-bar .increment-button,
+
 .scroll-bar .decrement-button {
     -fx-background-color: transparent;
 }
 
-/* ==================== DOCTOR GRID CARDS ==================== */
+
+
 .doctor-grid-container {
     -fx-background-color: transparent;
 }
+
 
 .doctor-card {
     -fx-background-color: white;
@@ -1316,6 +1400,7 @@ Separator {
     -fx-scale-x: 1.03;
     -fx-scale-y: 1.03;
 }
+
 
 .doctor-card-image-container {
     -fx-background-radius: 20 20 0 0;
@@ -1367,10 +1452,12 @@ Separator {
     -fx-font-weight: 800;
 }
 
+
 .doctor-card-actions {
     -fx-padding: 0 20 20 20;
     -fx-spacing: 10;
 }
+
 
 .doctor-details-overlay {
     -fx-background-color: rgba(102,126,234,0.95);
@@ -1402,7 +1489,8 @@ Separator {
     -fx-scale-y: 1.05;
 }
 
-/* ==================== BLOOD DONOR CARDS ==================== */
+
+
 .donor-card {
     -fx-background-color: white;
     -fx-background-radius: 16;
@@ -1432,6 +1520,7 @@ Separator {
     -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.4), 10, 0, 0, 3);
 }
 
+
 .donor-name {
     -fx-text-fill: #1a202c;
     -fx-font-size: 16px;
@@ -1452,7 +1541,8 @@ Separator {
     -fx-background-radius: 12;
 }
 
-/* ==================== Q&A CARDS ==================== */
+
+
 .qa-card {
     -fx-background-color: white;
     -fx-background-radius: 16;
@@ -1557,30 +1647,36 @@ Separator {
     -fx-background-color: transparent;
 }
 
+
 .question-list .list-cell {
     -fx-padding: 8 0 8 0;
 }
 
 .question-list .list-cell:filled:selected,
+
 .question-list .list-cell:filled:selected:focused {
     -fx-background-color: transparent;
 }
 
-/* Responsive Adjustments */
+
 @media screen and (max-width: 1024px) {
+
     .sidebar {
         -fx-pref-width: 180;
     }
+
 
     .stat-value {
         -fx-font-size: 28px;
     }
 }
 
-/* ==================== ADMIN DASHBOARD ==================== */
+
+
 .admin-panel-scroll {
     -fx-fit-to-width: true;
 }
+
 
 .admin-hero-card {
     -fx-background-color: linear-gradient(to right, rgba(14, 116, 144, 0.96), rgba(37, 99, 235, 0.92));
@@ -1641,12 +1737,14 @@ Separator {
 }
 
 .dark-theme .admin-summary-card,
+
 .dark-theme .admin-section-shell {
     -fx-background-color: linear-gradient(to bottom right, #162033, #1e293b);
     -fx-border-color: rgba(71, 85, 105, 0.60);
 }
 
 .dark-theme .admin-hero-card .info-text,
+
 .dark-theme .admin-summary-card .info-text {
     -fx-text-fill: #cbd5e1;
 }

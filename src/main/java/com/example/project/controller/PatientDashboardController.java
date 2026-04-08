@@ -26,85 +26,168 @@ import java.time.LocalDate;
 
 public class PatientDashboardController {
 
-    // Navigation
+
     @FXML private Button btnDashboard, btnSearchDoctors, btnBookAppointment, btnViewAppointments;
+
+
     @FXML private Button btnViewReports, btnPayments, btnDoctorPosts, btnQA, btnBloodDonation, btnSmartAssistant, btnNotifications;
+
+
     @FXML private Button btnProfile, btnLogout, btnProfileSettings;
+
+
     @FXML private Label lblWelcome;
+
+
     @FXML private Button btnLightMode, btnDarkMode;
 
-    // Main Content Area
+
     @FXML private StackPane contentArea;
+
+
     @FXML private VBox sidebar;
 
-    // Dashboard Section
+
     @FXML private VBox dashboardSection;
+
+
     @FXML private Label lblUpcomingAppointments, lblTotalReports, lblUnreadNotifs, lblBloodDonationStatus;
+
+
     @FXML private VBox notificationsSection;
+
+
     @FXML private ListView<NotificationItem> lstDashboardNotifications;
+
+
     @FXML private ListView<DoctorPost> lstDashboardPosts;
+
+
     @FXML private ListView<Question> lstDashboardQuestions;
+
+
     @FXML private FlowPane dashboardDonorGridPane;
 
-    // Search Doctors Section
+
     @FXML private VBox searchDoctorsSection;
+
+
     @FXML private TextField txtSearchName, txtSearchSpecialization, txtSearchFee;
+
+
     @FXML private FlowPane doctorGridPane;
 
-    // Book Appointment Section
+
     @FXML private VBox bookAppointmentSection;
+
+
     @FXML private ComboBox<String> cmbSelectDoctor;
+
+
     @FXML private DatePicker dpAppointmentDate;
+
+
     @FXML private ComboBox<String> cmbAppointmentTime;
+
+
     @FXML private TextArea txtVisitReason;
 
-    // View Appointments Section
+
     @FXML private VBox viewAppointmentsSection;
+
+
     @FXML private FlowPane gridAppointments;
+
+
     @FXML private ComboBox<String> cmbAppointmentFilter;
 
-    // View Reports Section
+
     @FXML private VBox viewReportsSection;
+
+
     @FXML private TableView<MedicalReport> tblReports;
+
+
     @FXML private TableColumn<MedicalReport, String> colReportAppointment, colReportDoctor, colReportTitle, colLabTests, colPrescription, colLabRequestStatus, colLabResultStatus, colReportDate;
+
+
     @FXML private Label lblSelectedReportInfo;
+
+
     @FXML private TextArea txtSelectedReportDetails;
+
+
     @FXML private Button btnRequestLabReport, btnDownloadLabReport;
 
-    // Payment Section
+
     @FXML private VBox paymentSection;
+
+
     @FXML private TableView<LabPayment> tblPayments;
+
+
     @FXML private TableColumn<LabPayment, String> colPaymentType, colPaymentReport, colPaymentDoctor, colPaymentAmount, colPaymentStatus, colPaymentMethod;
+
+
     @FXML private ComboBox<String> cmbPaymentMethod;
+
+
     @FXML private Label lblPaymentInfo;
+
+
     @FXML private Button btnSubmitPayment;
 
-    // Doctor Posts Section
+
     @FXML private VBox doctorPostsSection;
+
+
     @FXML private ComboBox<String> cmbPostCategory;
+
+
     @FXML private ListView<DoctorPost> lstDoctorPosts;
 
-    // Q&A Section
+
     @FXML private VBox qaSection;
+
+
     @FXML private TextArea txtAskQuestion;
+
+
     @FXML private ListView<Question> lstMyQuestions;
+
+
     @FXML private ListView<NotificationItem> lstNotifications;
 
-    // Blood Donation Section
+
     @FXML private VBox bloodDonationSection;
+
+
     @FXML private VBox donorRegistrationForm;
+
+
     @FXML private ComboBox<String> cmbBloodGroup;
+
+
     @FXML private TextField txtDonorLocation, txtDonorPhone;
+
+
     @FXML private ComboBox<String> cmbAvailabilityStatus;
+
+
     @FXML private FlowPane donorGridPane;
+
+
     @FXML private TextField txtSearchBloodGroup;
 
-    // Smart Assistant Section
+
     @FXML private VBox smartAssistantSection;
+
+
     @FXML private TextArea txtSymptoms, txtAssistantResponse;
 
     private int patientId;
     private boolean isDarkMode = false;
+
 
     @FXML
     public void initialize() {
@@ -116,7 +199,6 @@ public class PatientDashboardController {
 
         checkProfileStatus();
 
-        // Initialize time slots
         if (cmbAppointmentTime != null) {
             cmbAppointmentTime.setItems(FXCollections.observableArrayList(
                     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
@@ -124,7 +206,6 @@ public class PatientDashboardController {
             ));
         }
 
-        // Initialize filters
         if (cmbAppointmentFilter != null) {
             cmbAppointmentFilter.setItems(FXCollections.observableArrayList(
                     "All", "Upcoming", "Confirmed", "Completed", "Cancelled"
@@ -157,23 +238,19 @@ public class PatientDashboardController {
             cmbPaymentMethod.setValue("bKash");
         }
 
-        // Setup table columns
         setupAppointmentGrid();
         setupReportTable();
         setupPaymentTable();
 
-        // Load dashboard by default
         showDashboard();
         loadUnreadNotificationsCount();
     }
 
-    // ==================== NAVIGATION ====================
     private void showSection(VBox section, Button navBtn) {
         hideAllSections();
         section.setVisible(true);
         section.setManaged(true);
 
-        // Update active button style
         btnDashboard.getStyleClass().remove("active");
         btnSearchDoctors.getStyleClass().remove("active");
         btnBookAppointment.getStyleClass().remove("active");
@@ -192,12 +269,12 @@ public class PatientDashboardController {
 
         applyTheme();
 
-        // Fade In Animation
         FadeTransition ft = new FadeTransition(Duration.millis(400), section);
         ft.setFromValue(0.0);
         ft.setToValue(1.0);
         ft.play();
     }
+
 
     @FXML
     private void showDashboard() {
@@ -206,11 +283,13 @@ public class PatientDashboardController {
         loadNotificationsPreview();
     }
 
+
     @FXML
     private void showSearchDoctors() {
         showSection(searchDoctorsSection, btnSearchDoctors);
         loadAllDoctors();
     }
+
 
     @FXML
     private void showBookAppointment() {
@@ -218,11 +297,13 @@ public class PatientDashboardController {
         loadDoctorsForAppointment();
     }
 
+
     @FXML
     private void showViewAppointments() {
         showSection(viewAppointmentsSection, btnViewAppointments);
         loadAppointments("All");
     }
+
 
     @FXML
     private void showViewReports() {
@@ -230,11 +311,14 @@ public class PatientDashboardController {
         loadMedicalReports();
     }
 
+
     @FXML
     private void showPayments() {
         showSection(paymentSection, btnPayments);
         loadPayments();
     }
+
+
 
     @FXML
     private void showNotifications() {
@@ -242,11 +326,13 @@ public class PatientDashboardController {
         loadNotifications();
     }
 
+
     @FXML
     private void showDoctorPosts() {
         showSection(doctorPostsSection, btnDoctorPosts);
         loadDoctorPosts("All");
     }
+
 
     @FXML
     private void showQA() {
@@ -254,11 +340,13 @@ public class PatientDashboardController {
         loadMyQuestions();
     }
 
+
     @FXML
     private void showBloodDonation() {
         showSection(bloodDonationSection, btnBloodDonation);
         loadBloodDonors();
     }
+
 
     @FXML
     private void showSmartAssistant() {
@@ -312,11 +400,13 @@ public class PatientDashboardController {
         }
     }
 
+
     @FXML
     private void setLightMode() {
         isDarkMode = false;
         applyTheme();
     }
+
 
     @FXML
     private void setDarkMode() {
@@ -326,7 +416,7 @@ public class PatientDashboardController {
 
     private void applyTheme() {
         if (contentArea == null || contentArea.getScene() == null) return;
-        
+
         String theme = isDarkMode ? "dark-theme" : "light-theme";
         contentArea.getScene().getRoot().getStyleClass().removeAll("light-theme", "dark-theme");
         contentArea.getScene().getRoot().getStyleClass().add(theme);
@@ -340,15 +430,17 @@ public class PatientDashboardController {
         }
     }
 
+
     @FXML
     private void toggleTheme() {
-        // Method kept for compatibility but logic moved to setLightMode/setDarkMode
     }
+
 
     @FXML
     private void showProfile() {
         SceneManager.switchScene(btnProfile, "/fxml/profile-setup.fxml");
     }
+
 
     @FXML
     private void handleLogout() {
@@ -356,7 +448,7 @@ public class PatientDashboardController {
         SceneManager.switchScene(btnLogout, "/fxml/role-selection.fxml");
     }
 
-    // ==================== DASHBOARD ====================
+
     private void loadDashboardData() {
         lblUpcomingAppointments.setText(String.valueOf(getUpcomingAppointmentsCount()));
         lblTotalReports.setText(String.valueOf(getTotalReportsCount()));
@@ -391,6 +483,7 @@ public class PatientDashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return 0;
     }
 
@@ -413,6 +506,7 @@ public class PatientDashboardController {
         }
     }
 
+
     private String getBloodDonationStatus() {
         String query = "SELECT availability_status FROM blood_donors WHERE patient_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -426,7 +520,6 @@ public class PatientDashboardController {
         return "Not Registered";
     }
 
-    // ==================== SEARCH DOCTORS ====================
     private void loadAllDoctors() {
         doctorGridPane.getChildren().clear();
         String query = "SELECT u.name, d.specialization, d.experience, d.qualification, d.fee, d.id " +
@@ -461,7 +554,6 @@ public class PatientDashboardController {
         VBox card = new VBox(0);
         card.getStyleClass().add("doctor-card");
 
-        // Image container
         VBox imageContainer = new VBox();
         imageContainer.getStyleClass().add("doctor-card-image-container");
         imageContainer.setMinHeight(140);
@@ -470,7 +562,6 @@ public class PatientDashboardController {
         avatarLabel.setStyle("-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: white;");
         imageContainer.getChildren().add(avatarLabel);
 
-        // Card body (Visible by default)
         VBox body = new VBox(8);
         body.getStyleClass().add("doctor-card-body");
         body.setPadding(new javafx.geometry.Insets(15));
@@ -482,7 +573,6 @@ public class PatientDashboardController {
 
         card.getChildren().addAll(imageContainer, body);
 
-        // Details Overlay (Hidden by default, slides up on hover)
         VBox overlay = new VBox(10);
         overlay.getStyleClass().add("doctor-card-overlay");
         overlay.setAlignment(Pos.CENTER);
@@ -511,7 +601,6 @@ public class PatientDashboardController {
 
         container.getChildren().addAll(card, overlay);
 
-        // Hover animations
         container.setOnMouseEntered(e -> {
             javafx.animation.TranslateTransition slideUp = new javafx.animation.TranslateTransition(Duration.millis(300), overlay);
             slideUp.setToY(0);
@@ -543,6 +632,8 @@ public class PatientDashboardController {
         }
         return ("" + name.charAt(0)).toUpperCase();
     }
+
+
 
     @FXML
     private void searchDoctors() {
@@ -592,7 +683,6 @@ public class PatientDashboardController {
         }
     }
 
-    // ==================== BOOK APPOINTMENT ====================
     private void loadDoctorsForAppointment() {
         ObservableList<String> doctorNames = FXCollections.observableArrayList();
         String query = "SELECT u.name FROM doctors d JOIN users u ON d.user_id = u.id WHERE d.profile_completed = 1";
@@ -610,6 +700,7 @@ public class PatientDashboardController {
         }
     }
 
+
     @FXML
     private void submitAppointment() {
         String doctorName = cmbSelectDoctor.getValue();
@@ -621,6 +712,7 @@ public class PatientDashboardController {
             showAlert("Error", "Please fill all fields", Alert.AlertType.ERROR);
             return;
         }
+
 
         int doctorId = getDoctorIdByName(doctorName);
         if (doctorId == -1) {
@@ -641,7 +733,6 @@ public class PatientDashboardController {
             pstmt.executeUpdate();
             showAlert("Success", "Appointment booked successfully!", Alert.AlertType.INFORMATION);
 
-            // Clear fields
             cmbSelectDoctor.setValue(null);
             dpAppointmentDate.setValue(null);
             cmbAppointmentTime.setValue(null);
@@ -653,13 +744,13 @@ public class PatientDashboardController {
         }
     }
 
-    // ==================== VIEW APPOINTMENTS ====================
     private void setupAppointmentGrid() {
         if (cmbAppointmentFilter != null && cmbAppointmentFilter.getItems().isEmpty()) {
             cmbAppointmentFilter.setItems(FXCollections.observableArrayList("All", "Upcoming", "Confirmed", "Completed", "Cancelled"));
             cmbAppointmentFilter.setValue("All");
         }
     }
+
 
     @FXML
     private void filterAppointments() {
@@ -700,6 +791,7 @@ public class PatientDashboardController {
             e.printStackTrace();
         }
     }
+
 
     private VBox createAppointmentCard(int appointmentId, String doctor, String date, String time, String reason, String status) {
         VBox card = new VBox(10);
@@ -750,6 +842,7 @@ public class PatientDashboardController {
         return card;
     }
 
+
     private void cancelAppointment(int appointmentId) {
         String query = "UPDATE appointments SET status = 'cancelled' WHERE id = ? AND patient_id = ? AND status IN ('upcoming', 'confirmed')";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -771,7 +864,7 @@ public class PatientDashboardController {
         }
     }
 
-    // ==================== VIEW REPORTS ====================
+
     private void setupReportTable() {
         if (tblReports != null) {
             colReportAppointment.setCellValueFactory(new PropertyValueFactory<>("appointmentDate"));
@@ -785,6 +878,7 @@ public class PatientDashboardController {
             tblReports.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> updateSelectedReportInfo(newValue));
         }
     }
+
 
     private void loadMedicalReports() {
         ObservableList<MedicalReport> reports = FXCollections.observableArrayList();
@@ -855,7 +949,9 @@ public class PatientDashboardController {
                 }
             });
         }
+
     }
+
 
     @FXML
     private void requestLabReport() {
@@ -904,6 +1000,7 @@ public class PatientDashboardController {
         }
     }
 
+
     @FXML
     private void downloadSelectedLabReport() {
         MedicalReport selectedReport = tblReports != null ? tblReports.getSelectionModel().getSelectedItem() : null;
@@ -911,6 +1008,7 @@ public class PatientDashboardController {
             showAlert("Error", "Please select a report first.", Alert.AlertType.ERROR);
             return;
         }
+
         if (!"ready".equalsIgnoreCase(selectedReport.getRequestStatus())) {
             showAlert("Info", "Lab report is still pending with hospital admin.", Alert.AlertType.INFORMATION);
             return;
@@ -926,6 +1024,7 @@ public class PatientDashboardController {
             return;
         }
 
+
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save Lab Report");
         chooser.setInitialFileName(source.getName());
@@ -939,6 +1038,7 @@ public class PatientDashboardController {
             showAlert("Error", "Failed to download lab report file.", Alert.AlertType.ERROR);
         }
     }
+
 
     private void loadPayments() {
         ObservableList<LabPayment> payments = FXCollections.observableArrayList();
@@ -1002,6 +1102,7 @@ public class PatientDashboardController {
         }
     }
 
+
     @FXML
     private void submitSelectedPayment() {
         LabPayment selectedPayment = tblPayments != null ? tblPayments.getSelectionModel().getSelectedItem() : null;
@@ -1009,6 +1110,7 @@ public class PatientDashboardController {
             showAlert("Error", "Please select a due payment first.", Alert.AlertType.ERROR);
             return;
         }
+
         if ("paid".equalsIgnoreCase(selectedPayment.getPaymentStatus())) {
             showAlert("Info", "This payment is already completed.", Alert.AlertType.INFORMATION);
             return;
@@ -1051,6 +1153,7 @@ public class PatientDashboardController {
                 }
             }
         }
+
     }
 
     private void updateSelectedReportInfo(MedicalReport report) {
@@ -1115,6 +1218,7 @@ public class PatientDashboardController {
                 ));
             }
 
+
             if (lstNotifications != null) {
                 lstNotifications.setItems(notifications);
                 lstNotifications.setCellFactory(param -> new ListCell<>() {
@@ -1128,6 +1232,7 @@ public class PatientDashboardController {
                             setGraphic(createNotificationCard(item));
                             setText(null);
                         }
+
                     }
                 });
             }
@@ -1275,6 +1380,7 @@ public class PatientDashboardController {
                         rs.getString("availability_status")
                 )));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1324,11 +1430,12 @@ public class PatientDashboardController {
                     setGraphic(createQACard(item));
                     setText(null);
                 }
+
             }
         };
     }
 
-    // ==================== DOCTOR POSTS ====================
+
     @FXML
     private void filterPosts() {
         String category = cmbPostCategory.getValue();
@@ -1424,7 +1531,8 @@ public class PatientDashboardController {
         return card;
     }
 
-    // ==================== Q&A ====================
+
+
     @FXML
     private void askQuestion() {
         String question = txtAskQuestion.getText().trim();
@@ -1473,6 +1581,7 @@ public class PatientDashboardController {
                         rs.getString("created_at")
                 ));
             }
+
             lstMyQuestions.setItems(questions);
             lstMyQuestions.setCellFactory(param -> createQuestionCellFactory());
 
@@ -1480,6 +1589,7 @@ public class PatientDashboardController {
             e.printStackTrace();
         }
     }
+
 
     private VBox createQACard(Question q) {
         VBox card = new VBox(12);
@@ -1501,6 +1611,7 @@ public class PatientDashboardController {
             badge = new Label("⏳ Pending");
             badge.getStyleClass().add("pending-badge");
         }
+
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -1533,7 +1644,7 @@ public class PatientDashboardController {
         return card;
     }
 
-    // ==================== BLOOD DONATION ====================
+
     @FXML
     private void joinAsDonor() {
         String bloodGroup = cmbBloodGroup.getValue();
@@ -1559,7 +1670,6 @@ public class PatientDashboardController {
             pstmt.executeUpdate();
             showAlert("Success", "Registered as blood donor successfully!", Alert.AlertType.INFORMATION);
 
-            // Hide registration form after successful registration
             donorRegistrationForm.setVisible(false);
             donorRegistrationForm.setManaged(false);
 
@@ -1580,7 +1690,6 @@ public class PatientDashboardController {
         HBox header = new HBox(15);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        // Blood group badge
         Label bloodBadge = new Label(donor.getBloodGroup());
         bloodBadge.getStyleClass().add("blood-group-badge");
 
@@ -1594,7 +1703,6 @@ public class PatientDashboardController {
         info.getChildren().addAll(nameLabel, statusLabel);
         header.getChildren().addAll(bloodBadge, info);
 
-        // Details
         VBox details = new VBox(8);
 
         HBox locationBox = new HBox(8);
@@ -1616,6 +1724,7 @@ public class PatientDashboardController {
         card.getChildren().addAll(header, details);
         return card;
     }
+
 
     @FXML
     private void searchDonors() {
@@ -1653,10 +1762,10 @@ public class PatientDashboardController {
         }
     }
 
+
     private void loadBloodDonors() {
         donorGridPane.getChildren().clear();
 
-        // Check if current user is already registered, hide form if true
         checkAndHideDonorForm();
 
         String query = "SELECT u.name, b.blood_group, b.location, b.phone, b.availability_status " +
@@ -1699,7 +1808,7 @@ public class PatientDashboardController {
         }
     }
 
-    // ==================== SMART ASSISTANT ====================
+
     @FXML
     private void analyzeSymptoms() {
         String symptoms = txtSymptoms.getText().trim().toLowerCase();
@@ -1713,7 +1822,6 @@ public class PatientDashboardController {
     }
 
     private String getSmartResponse(String symptoms) {
-        // Emergency keywords
         if (symptoms.contains("chest pain") || symptoms.contains("heart attack") ||
                 symptoms.contains("difficulty breathing") || symptoms.contains("severe bleeding") ||
                 symptoms.contains("unconscious") || symptoms.contains("stroke")) {
@@ -1723,7 +1831,6 @@ public class PatientDashboardController {
                     "Emergency Hotline: 999";
         }
 
-        // Department recommendations
         if (symptoms.contains("fever") || symptoms.contains("cough") || symptoms.contains("cold")) {
             return "Recommendation: General Medicine Department\n\n" +
                     "Your symptoms suggest a common respiratory condition. " +
@@ -1764,7 +1871,6 @@ public class PatientDashboardController {
                 "Please book an appointment through our 'Book Appointment' section.";
     }
 
-    // ==================== UTILITY METHODS ====================
     private int getPatientId(int userId) {
         String query = "SELECT id FROM patients WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -1791,6 +1897,7 @@ public class PatientDashboardController {
         return -1;
     }
 
+
     private void showAlert(String title, String content, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -1799,7 +1906,6 @@ public class PatientDashboardController {
         alert.showAndWait();
     }
 
-    // ==================== MODEL CLASSES ====================
     public static class Doctor {
         private int id;
         private String name, specialization, experience, qualification;
@@ -1910,6 +2016,7 @@ public class PatientDashboardController {
         public String getPaymentStatus() { return paymentStatus; }
         public String getPaymentMethod() { return paymentMethod; }
     }
+
 
     public static class DoctorPost {
         private String doctorName, title, content, category, createdAt;

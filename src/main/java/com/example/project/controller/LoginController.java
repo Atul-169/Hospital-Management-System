@@ -33,32 +33,42 @@ import javafx.concurrent.Task;
 
 public class LoginController {
 
+
     @FXML
     private Label roleLabel;
+
 
     @FXML
     private Label errorLabel;
 
+
     @FXML
     private HBox forgotPasswordBox;
+
 
     @FXML
     private Label forgotPasswordLabel;
 
+
     @FXML
     private HBox registerBox;
+
 
     @FXML
     private Label registerNowLabel;
 
+
     @FXML
     private TextField usernameField;
+
 
     @FXML
     private PasswordField passwordField;
 
+
     @FXML
     private Button loginBtn;
+
 
     @FXML
     public void initialize() {
@@ -114,6 +124,7 @@ public class LoginController {
         });
     }
 
+
     @FXML
 
     public void handleLogin(ActionEvent event) {
@@ -125,17 +136,16 @@ public class LoginController {
             showError("Please select a role first.");
             return;
         }
+
         if (loginIdentifier.isEmpty() || password.isEmpty()) {
             showError("Please fill all fields!");
             return;
         }
 
-        // ✅ Show loading state
         loginBtn.setDisable(true);
         loginBtn.setText("Connecting...");
         errorLabel.setVisible(false);
 
-        // ✅ Run DB work on background thread
         Task<String[]> loginTask = new Task<>() {
             @Override
             protected String[] call() throws Exception {
@@ -162,12 +172,12 @@ public class LoginController {
                 }
                 return null; // login failed
             }
+
         };
 
         loginTask.setOnSucceeded(e -> {
             String[] result = loginTask.getValue();
 
-            // ✅ Reset button
             loginBtn.setDisable(false);
             loginBtn.setText("Sign In");
 
@@ -191,6 +201,7 @@ public class LoginController {
             } else {
                 loadScene(event, "/fxml/" + userRole.toLowerCase() + "-dashboard.fxml");
             }
+
         });
 
         loginTask.setOnFailed(e -> {
@@ -204,7 +215,6 @@ public class LoginController {
 
     private void checkDoctorProfile(ActionEvent event, int userId) {
         ensureProfileRowExists("doctors", userId);
-        // Doctor dashboard already routes incomplete profiles to the in-dashboard profile panel.
         loadScene(event, "/fxml/doctor-dashboard.fxml");
     }
 
@@ -220,6 +230,7 @@ public class LoginController {
             } else {
                 loadScene(event, "/fxml/profile-setup.fxml");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             loadScene(event, "/fxml/patient-dashboard.fxml"); // Fallback
@@ -231,7 +242,6 @@ public class LoginController {
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
 
-        // Animation: Fade in and Shake
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), errorLabel);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
@@ -245,6 +255,7 @@ public class LoginController {
         new ParallelTransition(fadeIn, shake).play();
     }
 
+
     @FXML
     public void handleBack(ActionEvent event) {
         try {
@@ -256,6 +267,7 @@ public class LoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void ensureProfileRowExists(String tableName, int userId) {
@@ -270,7 +282,9 @@ public class LoginController {
         } catch (SQLException e) {
             System.err.println("[DEBUG_LOG] Failed to ensure profile row in " + tableName + ": " + e.getMessage());
         }
+
     }
+
 
     @FXML
     public void handleRegisterRedirect(MouseEvent event) {

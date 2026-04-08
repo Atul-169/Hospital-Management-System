@@ -25,149 +25,358 @@ import java.time.format.DateTimeFormatter;
 
 public class AdminDashboardController {
 
-    // Dashboard Statistics Labels
+
     @FXML private Label totalDoctorsLabel;
+
+
     @FXML private Label totalPatientsLabel;
+
+
     @FXML private Label totalAppointmentsLabel;
+
+
     @FXML private Label completedAppointmentsLabel;
+
+
     @FXML private Label pendingAppointmentsLabel;
+
+
     @FXML private Label totalReportsLabel;
+
+
     @FXML private Label totalRevenueLabel;
 
-    // Navigation Buttons
+
     @FXML private Button dashboardBtn;
+
+
     @FXML private Button manageDoctorsBtn;
+
+
     @FXML private Button managePatientsBtn;
+
+
     @FXML private Button viewAppointmentsBtn;
+
+
     @FXML private Button reportsBtn;
+
+
     @FXML private Button sendLabReportsBtn;
+
+
     @FXML private Button transactionsBtn;
+
+
     @FXML private Button notificationsBtn;
+
+
     @FXML private Button monitoringBtn;
+
+
     @FXML private Button logoutBtn;
 
-    // Content Panels
+
     @FXML private VBox dashboardPanel;
+
+
     @FXML private VBox manageDoctorsPanel;
+
+
     @FXML private VBox managePatientsPanel;
+
+
     @FXML private VBox viewAppointmentsPanel;
+
+
     @FXML private VBox reportsPanel;
+
+
     @FXML private VBox sendLabReportsPanel;
+
+
     @FXML private VBox transactionsPanel;
+
+
     @FXML private VBox notificationsPanel;
+
+
     @FXML private VBox monitoringPanel;
 
-    // Manage Doctors Components
+
     @FXML private TableView<Doctor> doctorsTable;
+
+
     @FXML private TableColumn<Doctor, Integer> doctorIdCol;
+
+
     @FXML private TableColumn<Doctor, String> doctorNameCol;
+
+
     @FXML private TableColumn<Doctor, String> doctorEmailCol;
+
+
     @FXML private TableColumn<Doctor, String> doctorSpecializationCol;
+
+
     @FXML private TableColumn<Doctor, String> doctorExperienceCol;
+
+
     @FXML private TableColumn<Doctor, String> doctorPhoneCol;
+
+
     @FXML private TableColumn<Doctor, Double> doctorFeeCol;
+
+
     @FXML private TextField doctorSearchField;
+
+
     @FXML private TextField addDoctorName;
+
+
     @FXML private TextField addDoctorEmail;
+
+
     @FXML private PasswordField addDoctorPassword;
+
+
     @FXML private TextField addDoctorSpecialization;
+
+
     @FXML private TextField addDoctorExperience;
+
+
     @FXML private TextField addDoctorQualification;
+
+
     @FXML private TextField addDoctorPhone;
+
+
     @FXML private TextField addDoctorFee;
+
+
     @FXML private FlowPane doctorsGrid;
 
-    // Manage Patients Components
+
     @FXML private TableView<Patient> patientsTable;
+
+
     @FXML private TableColumn<Patient, Integer> patientIdCol;
+
+
     @FXML private TableColumn<Patient, String> patientNameCol;
+
+
     @FXML private TableColumn<Patient, String> patientEmailCol;
+
+
     @FXML private TableColumn<Patient, String> patientPhoneCol;
+
+
     @FXML private TableColumn<Patient, String> patientBloodGroupCol;
+
+
     @FXML private TextField patientSearchField;
+
+
     @FXML private FlowPane patientsGrid;
 
-    // View Appointments Components
+
     @FXML private TableView<Appointment> appointmentsTable;
+
+
     @FXML private TableColumn<Appointment, Integer> appointmentIdCol;
+
+
     @FXML private TableColumn<Appointment, String> appointmentPatientCol;
+
+
     @FXML private TableColumn<Appointment, String> appointmentDoctorCol;
+
+
     @FXML private TableColumn<Appointment, String> appointmentDateCol;
+
+
     @FXML private TableColumn<Appointment, String> appointmentTimeCol;
+
+
     @FXML private TableColumn<Appointment, String> appointmentStatusCol;
+
+
     @FXML private ComboBox<String> filterDoctorCombo;
+
+
     @FXML private ComboBox<String> filterPatientCombo;
+
+
     @FXML private DatePicker filterDatePicker;
+
+
     @FXML private ComboBox<String> filterStatusCombo;
+
+
     @FXML private ComboBox<String> manageAppointmentStatusCombo;
+
+
     @FXML private FlowPane appointmentsGrid;
 
-    // Reports Components
+
     @FXML private TableView<Report> reportsTable;
+
+
     @FXML private TableColumn<Report, Integer> reportIdCol;
+
+
     @FXML private TableColumn<Report, String> reportPatientCol;
+
+
     @FXML private TableColumn<Report, String> reportDoctorCol;
+
+
     @FXML private TableColumn<Report, String> reportDateCol;
+
+
     @FXML private TableColumn<Report, String> reportDiagnosisCol;
+
+
     @FXML private Label totalReportsCountLabel;
+
+
     @FXML private FlowPane reportsGrid;
 
-    // Send Lab Reports Components
+
     @FXML private ComboBox<String> labReportRequestCombo;
+
+
     @FXML private Label labReportSelectionInfoLabel;
+
+
     @FXML private ComboBox<String> labResultStatusCombo;
+
+
     @FXML private TextField labReportPriceField;
+
+
     @FXML private TextField labReportFilePathField;
+
+
     @FXML private TextArea labAdminNotesArea;
+
+
     @FXML private Button browseLabReportFileBtn;
+
+
     @FXML private Button sendLabReportBtn;
+
+
     @FXML private FlowPane labRequestsGrid;
 
-    // Transactions Components
+
     @FXML private TableView<Transaction> transactionsTable;
+
+
     @FXML private TableColumn<Transaction, Integer> transactionIdCol;
+
+
     @FXML private TableColumn<Transaction, String> transactionTypeCol;
+
+
     @FXML private TableColumn<Transaction, String> transactionDoctorCol;
+
+
     @FXML private TableColumn<Transaction, Double> transactionAmountCol;
+
+
     @FXML private TableColumn<Transaction, String> transactionDateCol;
+
+
     @FXML private Label doctorFeeLabel;
+
+
     @FXML private Label reportFeeLabel;
+
+
     @FXML private Label hospitalShareLabel;
+
+
     @FXML private Label totalTransactionsLabel;
+
+
     @FXML private FlowPane transactionsGrid;
 
-    // Notifications Components
+
     @FXML private TextField notificationTitle;
+
+
     @FXML private TextArea notificationMessage;
+
+
     @FXML private ComboBox<String> notificationCategory;
+
+
     @FXML private Button sendNotificationBtn;
 
-    // Monitoring Components
+
     @FXML private TableView<BloodDonor> bloodDonorsTable;
+
+
     @FXML private TableColumn<BloodDonor, String> donorNameCol;
+
+
     @FXML private TableColumn<BloodDonor, String> donorBloodGroupCol;
+
+
     @FXML private TableColumn<BloodDonor, String> donorPhoneCol;
+
+
     @FXML private TableColumn<BloodDonor, String> donorLocationCol;
+
+
     @FXML private TableColumn<BloodDonor, String> donorStatusCol;
+
+
     @FXML private FlowPane bloodDonorsGrid;
 
+
     @FXML private TableView<DoctorPost> doctorPostsTable;
+
+
     @FXML private TableColumn<DoctorPost, String> postTitleCol;
+
+
     @FXML private TableColumn<DoctorPost, String> postDoctorCol;
+
+
     @FXML private TableColumn<DoctorPost, String> postCategoryCol;
+
+
     @FXML private TableColumn<DoctorPost, String> postDateCol;
+
+
     @FXML private FlowPane doctorPostsGrid;
 
+
     @FXML private TableView<Question> questionsTable;
+
+
     @FXML private TableColumn<Question, String> questionPatientCol;
+
+
     @FXML private TableColumn<Question, String> questionTextCol;
+
+
     @FXML private TableColumn<Question, String> questionAnswerCol;
+
+
     @FXML private TableColumn<Question, String> questionDateCol;
+
+
     @FXML private FlowPane questionsGrid;
 
     private Doctor selectedDoctor;
     private Patient selectedPatient;
     private Appointment selectedAppointment;
+
 
     @FXML
     public void initialize() {
@@ -178,7 +387,6 @@ public class AdminDashboardController {
     }
 
     private void populateComboBoxes() {
-        // Populate notification categories
         if (notificationCategory != null) {
             notificationCategory.setItems(FXCollections.observableArrayList(
                 "General", "Important", "Maintenance", "Update", "Alert"
@@ -206,7 +414,6 @@ public class AdminDashboardController {
     }
 
     private void setupTableColumns() {
-        // Doctors Table
         if (doctorIdCol != null) {
             doctorIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             doctorNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -217,7 +424,6 @@ public class AdminDashboardController {
             doctorFeeCol.setCellValueFactory(new PropertyValueFactory<>("fee"));
         }
 
-        // Patients Table
         if (patientIdCol != null) {
             patientIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             patientNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -226,7 +432,6 @@ public class AdminDashboardController {
             patientBloodGroupCol.setCellValueFactory(new PropertyValueFactory<>("bloodGroup"));
         }
 
-        // Appointments Table
         if (appointmentIdCol != null) {
             appointmentIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             appointmentPatientCol.setCellValueFactory(new PropertyValueFactory<>("patientName"));
@@ -236,7 +441,6 @@ public class AdminDashboardController {
             appointmentStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         }
 
-        // Reports Table
         if (reportIdCol != null) {
             reportIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             reportPatientCol.setCellValueFactory(new PropertyValueFactory<>("patientName"));
@@ -245,7 +449,6 @@ public class AdminDashboardController {
             reportDiagnosisCol.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
         }
 
-        // Transactions Table
         if (transactionIdCol != null) {
             transactionIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             transactionTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
@@ -254,7 +457,6 @@ public class AdminDashboardController {
             transactionDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
         }
 
-        // Blood Donors Table
         if (donorNameCol != null) {
             donorNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
             donorBloodGroupCol.setCellValueFactory(new PropertyValueFactory<>("bloodGroup"));
@@ -263,7 +465,7 @@ public class AdminDashboardController {
             donorStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         }
 
-        // Doctor Posts Table
+
         if (postTitleCol != null) {
             postTitleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
             postDoctorCol.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
@@ -271,19 +473,18 @@ public class AdminDashboardController {
             postDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
         }
 
-        // Questions Table
+
         if (questionPatientCol != null) {
             questionPatientCol.setCellValueFactory(new PropertyValueFactory<>("patientName"));
             questionTextCol.setCellValueFactory(new PropertyValueFactory<>("question"));
             questionAnswerCol.setCellValueFactory(new PropertyValueFactory<>("answer"));
             questionDateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
         }
+
     }
 
-    // Dashboard Statistics
     private void loadDashboardStatistics() {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Total Doctors
             String doctorQuery = "SELECT COUNT(*) as count FROM users WHERE LOWER(role) = 'doctor'";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(doctorQuery);
@@ -291,35 +492,31 @@ public class AdminDashboardController {
                 totalDoctorsLabel.setText(String.valueOf(rs.getInt("count")));
             }
 
-            // Total Patients
             String patientQuery = "SELECT COUNT(*) as count FROM users WHERE LOWER(role) = 'patient'";
             rs = stmt.executeQuery(patientQuery);
             if (rs.next()) {
                 totalPatientsLabel.setText(String.valueOf(rs.getInt("count")));
             }
 
-            // Total Appointments
             String appointmentQuery = "SELECT COUNT(*) as count FROM appointments";
             rs = stmt.executeQuery(appointmentQuery);
             if (rs.next()) {
                 totalAppointmentsLabel.setText(String.valueOf(rs.getInt("count")));
             }
 
-            // Completed Appointments
             String completedQuery = "SELECT COUNT(*) as count FROM appointments WHERE status = 'completed'";
             rs = stmt.executeQuery(completedQuery);
             if (rs.next()) {
                 completedAppointmentsLabel.setText(String.valueOf(rs.getInt("count")));
             }
 
-            // Pending Appointments
+
             String pendingQuery = "SELECT COUNT(*) as count FROM appointments WHERE status = 'pending' OR status = 'upcoming'";
             rs = stmt.executeQuery(pendingQuery);
             if (rs.next()) {
                 pendingAppointmentsLabel.setText(String.valueOf(rs.getInt("count")));
             }
 
-            // Total Reports
             String reportsQuery = "SELECT COUNT(*) as count FROM medical_reports";
             rs = stmt.executeQuery(reportsQuery);
             if (rs.next()) {
@@ -346,7 +543,7 @@ public class AdminDashboardController {
         }
     }
 
-    // Navigation Methods
+
     @FXML
     private void showDashboard() {
         hideAllPanels();
@@ -357,6 +554,7 @@ public class AdminDashboardController {
         }
         if (dashboardBtn != null) dashboardBtn.getStyleClass().add("active");
     }
+
 
     @FXML
     private void showManageDoctors() {
@@ -369,6 +567,7 @@ public class AdminDashboardController {
         if (manageDoctorsBtn != null) manageDoctorsBtn.getStyleClass().add("active");
     }
 
+
     @FXML
     private void showManagePatients() {
         hideAllPanels();
@@ -377,8 +576,10 @@ public class AdminDashboardController {
             managePatientsPanel.setVisible(true);
             loadPatients();
         }
+
         if (managePatientsBtn != null) managePatientsBtn.getStyleClass().add("active");
     }
+
 
     @FXML
     private void showViewAppointments() {
@@ -392,6 +593,8 @@ public class AdminDashboardController {
         if (viewAppointmentsBtn != null) viewAppointmentsBtn.getStyleClass().add("active");
     }
 
+
+
     @FXML
     private void showReports() {
         hideAllPanels();
@@ -402,6 +605,7 @@ public class AdminDashboardController {
         }
         if (reportsBtn != null) reportsBtn.getStyleClass().add("active");
     }
+
 
     @FXML
     private void showSendLabReports() {
@@ -414,6 +618,7 @@ public class AdminDashboardController {
         if (sendLabReportsBtn != null) sendLabReportsBtn.getStyleClass().add("active");
     }
 
+
     @FXML
     private void showTransactions() {
         hideAllPanels();
@@ -425,6 +630,7 @@ public class AdminDashboardController {
         if (transactionsBtn != null) transactionsBtn.getStyleClass().add("active");
     }
 
+
     @FXML
     private void showNotifications() {
         hideAllPanels();
@@ -434,6 +640,7 @@ public class AdminDashboardController {
         }
         if (notificationsBtn != null) notificationsBtn.getStyleClass().add("active");
     }
+
 
     @FXML
     private void showMonitoring() {
@@ -470,7 +677,6 @@ public class AdminDashboardController {
         if (monitoringBtn != null) monitoringBtn.getStyleClass().remove("active");
     }
 
-    // Manage Doctors Methods
     private void loadDoctors() {
         ObservableList<Doctor> doctors = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -498,6 +704,8 @@ public class AdminDashboardController {
         }
     }
 
+
+
     @FXML
     private void addDoctor() {
         String name = addDoctorName.getText().trim();
@@ -523,7 +731,6 @@ public class AdminDashboardController {
         }
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Insert user
             String insertUser = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'Doctor')";
             PreparedStatement pstmt = conn.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, name);
@@ -535,7 +742,6 @@ public class AdminDashboardController {
             if (rs.next()) {
                 int userId = rs.getInt(1);
 
-                // Insert doctor
                 String insertDoctor = "INSERT INTO doctors (user_id, specialization, experience, qualification, phone, fee, profile_completed) " +
                         "VALUES (?, ?, ?, ?, ?, ?, 1)";
                 PreparedStatement pstmt2 = conn.prepareStatement(insertDoctor);
@@ -555,6 +761,8 @@ public class AdminDashboardController {
             showAlert("Error", "Failed to add doctor: " + e.getMessage());
         }
     }
+
+
 
     @FXML
     private void deleteDoctor() {
@@ -583,7 +791,9 @@ public class AdminDashboardController {
                 showAlert("Error", "Failed to delete doctor: " + e.getMessage());
             }
         }
+
     }
+
 
     @FXML
     private void searchDoctors() {
@@ -635,7 +845,6 @@ public class AdminDashboardController {
         addDoctorFee.clear();
     }
 
-    // Manage Patients Methods
     private void loadPatients() {
         ObservableList<Patient> patients = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -654,12 +863,14 @@ public class AdminDashboardController {
                     rs.getString("blood_group")
                 ));
             }
+
             if (patientsTable != null) patientsTable.setItems(patients);
             renderPatients(patients);
         } catch (SQLException e) {
             showAlert("Error", "Failed to load patients: " + e.getMessage());
         }
     }
+
 
     @FXML
     private void deletePatient() {
@@ -689,6 +900,8 @@ public class AdminDashboardController {
             }
         }
     }
+
+
 
     @FXML
     private void searchPatients() {
@@ -727,7 +940,6 @@ public class AdminDashboardController {
         }
     }
 
-    // View Appointments Methods
     private void loadAppointments() {
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -760,7 +972,6 @@ public class AdminDashboardController {
     }
 
     private void loadAppointmentFilters() {
-        // Load doctors for filter
         ObservableList<String> doctors = FXCollections.observableArrayList("All Doctors");
         try (Connection conn = DatabaseConnection.getConnection()) {
             String query = "SELECT u.name FROM users u JOIN doctors d ON u.id = d.user_id WHERE LOWER(u.role) = 'doctor'";
@@ -777,7 +988,6 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
 
-        // Load status options
         ObservableList<String> statuses = FXCollections.observableArrayList(
             "All", "pending", "upcoming", "confirmed", "completed", "cancelled"
         );
@@ -786,6 +996,7 @@ public class AdminDashboardController {
             filterStatusCombo.setValue("All");
         }
     }
+
 
     @FXML
     private void applyAppointmentFilters() {
@@ -838,6 +1049,7 @@ public class AdminDashboardController {
         }
     }
 
+
     @FXML
     private void updateSelectedAppointmentStatus() {
         Appointment selected = selectedAppointment != null ? selectedAppointment :
@@ -863,6 +1075,7 @@ public class AdminDashboardController {
         }
     }
 
+
     @FXML
     private void refreshAdminTables() {
         loadDoctors();
@@ -875,7 +1088,7 @@ public class AdminDashboardController {
         loadDashboardStatistics();
     }
 
-    // Reports Methods
+
     private void loadReports() {
         ObservableList<Report> reports = FXCollections.observableArrayList();
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -910,6 +1123,7 @@ public class AdminDashboardController {
             showAlert("Error", "Failed to load reports: " + e.getMessage());
         }
     }
+
 
     private void loadLabReportRequests() {
         ObservableList<LabRequest> requests = FXCollections.observableArrayList();
@@ -946,6 +1160,7 @@ public class AdminDashboardController {
                 comboItems.add(formatLabRequestDisplay(request));
             }
 
+
             if (labReportRequestCombo != null) {
                 labReportRequestCombo.setItems(comboItems);
                 labReportRequestCombo.setValue(comboItems.isEmpty() ? null : comboItems.getFirst());
@@ -958,6 +1173,7 @@ public class AdminDashboardController {
         }
     }
 
+
     @FXML
     private void browseLabReportFile() {
         if (browseLabReportFileBtn == null) return;
@@ -968,6 +1184,7 @@ public class AdminDashboardController {
             labReportFilePathField.setText(file.getAbsolutePath());
         }
     }
+
 
     @FXML
     private void sendLabReport() {
@@ -1072,14 +1289,13 @@ public class AdminDashboardController {
         }
     }
 
-    // Transactions Methods
+
     private void loadTransactions() {
         ObservableList<Transaction> transactions = FXCollections.observableArrayList();
         double totalDoctorFees = 0;
         double totalReportFees = 0;
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Load appointment-based transactions
             String query = "SELECT a.id, 'Appointment' as type, u.name as doctor_name, " +
                     "d.fee as amount, a.created_at as date " +
                     "FROM appointments a " +
@@ -1101,6 +1317,7 @@ public class AdminDashboardController {
                     rs.getString("date")
                 ));
             }
+
 
             String labQuery = "SELECT l.id, 'Lab Report' AS type, u.name AS doctor_name, l.price AS amount, l.updated_at AS date " +
                     "FROM lab_report_requests l " +
@@ -1124,7 +1341,6 @@ public class AdminDashboardController {
             if (transactionsTable != null) transactionsTable.setItems(transactions);
             renderTransactions(transactions);
 
-            // Calculate hospital share (30% of total)
             double total = totalDoctorFees + totalReportFees;
             double hospitalShare = total * 0.30;
 
@@ -1138,7 +1354,8 @@ public class AdminDashboardController {
         }
     }
 
-    // Notifications Methods
+
+
     @FXML
     private void sendNotification() {
         String title = notificationTitle.getText().trim();
@@ -1151,7 +1368,6 @@ public class AdminDashboardController {
         }
 
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Get all user IDs
             String userQuery = "SELECT id FROM users";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(userQuery);
@@ -1168,6 +1384,7 @@ public class AdminDashboardController {
                 count++;
             }
 
+
             pstmt.executeBatch();
             showAlert("Success", "Notification sent to " + count + " users!");
             notificationTitle.clear();
@@ -1178,7 +1395,6 @@ public class AdminDashboardController {
         }
     }
 
-    // Monitoring Methods
     private void loadMonitoringData() {
         loadBloodDonors();
         loadDoctorPosts();
@@ -1210,6 +1426,7 @@ public class AdminDashboardController {
             showAlert("Error", "Failed to load blood donors: " + e.getMessage());
         }
     }
+
 
     private void loadDoctorPosts() {
         ObservableList<DoctorPost> posts = FXCollections.observableArrayList();
@@ -1263,6 +1480,7 @@ public class AdminDashboardController {
         }
     }
 
+
     @FXML
     private void logout() {
         SessionManager.clearSession();
@@ -1301,6 +1519,7 @@ public class AdminDashboardController {
                     () -> selectedPatient = patient
             ));
         }
+
     }
 
     private void renderAppointments(ObservableList<Appointment> appointments) {
@@ -1322,6 +1541,7 @@ public class AdminDashboardController {
             card.getChildren().add(status);
             appointmentsGrid.getChildren().add(card);
         }
+
     }
 
     private void renderReports(ObservableList<Report> reports) {
@@ -1336,6 +1556,7 @@ public class AdminDashboardController {
                     "Diagnosis: " + (report.getDiagnosis() == null || report.getDiagnosis().isBlank() ? "Pending" : report.getDiagnosis())
             ));
         }
+
     }
 
     private void renderTransactions(ObservableList<Transaction> transactions) {
@@ -1350,6 +1571,7 @@ public class AdminDashboardController {
                     "Ref: #" + transaction.getId()
             ));
         }
+
     }
 
     private void renderBloodDonors(ObservableList<BloodDonor> donors) {
@@ -1364,6 +1586,7 @@ public class AdminDashboardController {
                     "Status: " + donor.getStatus()
             ));
         }
+
     }
 
     private void renderDoctorPosts(ObservableList<DoctorPost> posts) {
@@ -1378,6 +1601,7 @@ public class AdminDashboardController {
             ));
         }
     }
+
 
     private void renderQuestions(ObservableList<Question> questions) {
         if (questionsGrid == null) return;
@@ -1407,6 +1631,7 @@ public class AdminDashboardController {
         return card;
     }
 
+
     private VBox createInfoCard(String title, String... lines) {
         VBox card = new VBox(8);
         card.getStyleClass().add("admin-grid-card");
@@ -1428,6 +1653,7 @@ public class AdminDashboardController {
         return card;
     }
 
+
     private Stage getStageFromNode(Node node) {
         return (Stage) node.getScene().getWindow();
     }
@@ -1440,7 +1666,6 @@ public class AdminDashboardController {
         alert.showAndWait();
     }
 
-    // Model Classes
     public static class Doctor {
         private int id;
         private String name;

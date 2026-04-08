@@ -9,23 +9,25 @@
     <children>
         <HBox  spacing="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-            <!-- Left side (Illustration/Image) -->
+
             <AnchorPane styleClass="login-left-pane" HBox.hgrow="NEVER" prefWidth="512.0" >
+
                 <children>
                     <ImageView fitHeight="768.0" fitWidth="512.0" preserveRatio="false" smooth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <image>
                             <Image url="@../images/role-select.png" />
                         </image>
                     </ImageView>
-                    <!-- Overlay if needed -->
+
                     <VBox alignment="CENTER" spacing="20" style="-fx-background-color: rgba(11, 18, 36, 0.4);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                 </children>
             </AnchorPane>
 
-            <!-- Right side (Login Form) -->
+
             <StackPane styleClass="login-right-pane" HBox.hgrow="NEVER" prefWidth="512.0" >
+
                 <children>
-                    <!-- Form Area -->
+
                     <VBox alignment="CENTER_LEFT" maxWidth="512" spacing="25.0" styleClass="login-card">
                         <HBox alignment="CENTER_LEFT">
                             <Button onAction="#handleBack" styleClass="back-btn-minimal">
@@ -45,17 +47,17 @@
                             <Label styleClass="login-subtitle" text="Please enter your details to sign in." />
                         </VBox>
 
-                        <!-- Error Message Label -->
+
                         <Label fx:id="errorLabel" managed="false" maxWidth="400.0" styleClass="error-label" visible="false" wrapText="true" />
 
                         <VBox spacing="15.0">
-                            <!-- Email/Username -->
+
                             <VBox spacing="6.0">
                                 <Label styleClass="input-label" text="Email or Username" />
                                 <TextField fx:id="usernameField" prefHeight="50.0" promptText="Enter your email or username" styleClass="text-field-custom" />
                             </VBox>
 
-                            <!-- Password -->
+
                             <VBox spacing="6.0">
                                 <Label styleClass="input-label" text="Password" />
                                 <PasswordField fx:id="passwordField" prefHeight="50.0" promptText="••••••••" styleClass="text-field-custom" />
@@ -69,10 +71,7 @@
                         <ProgressIndicator fx:id="loadingSpinner" visible="false"
                                            prefWidth="30" prefHeight="30"
                                            styleClass="spinner" />
-<!--                        <HBox alignment="CENTER">-->
-<!--                            <ProgressIndicator fx:id="loadingSpinner" visible="false"-->
-<!--                                               prefWidth="30" prefHeight="30" />-->
-<!--                        </HBox>-->
+
 
                         <HBox fx:id="registerBox" alignment="CENTER" spacing="5.0">
                             <Label styleClass="register-link" text="Don't have an account?" />

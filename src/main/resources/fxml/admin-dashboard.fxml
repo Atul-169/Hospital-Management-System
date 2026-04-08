@@ -58,6 +58,7 @@
         </VBox>
     </left>
 
+
     <center>
         <StackPane styleClass="content-area">
             <padding>
@@ -458,5 +459,6 @@
             </VBox>
         </StackPane>
     </center>
+
 
 </BorderPane>

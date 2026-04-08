@@ -25,15 +25,14 @@
 
 <BorderPane styleClass="root" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.project.controller.PatientDashboardController">
 
-    <!-- Top Navigation Bar (Removed per user request) -->
-    <!-- Left Sidebar Navigation -->
+
     <left>
         <VBox fx:id="sidebar" spacing="5" styleClass="sidebar">
             <padding>
                 <Insets bottom="20" left="15" right="15" top="20" />
             </padding>
 
-            <!-- App Logo/Brand -->
+
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="sidebar-brand">
                 <Label styleClass="brand-icon" text="✚" />
                 <Label styleClass="brand-text" text="BUET MedTech" />
@@ -42,7 +41,7 @@
                 </VBox.margin>
             </HBox>
 
-            <!-- Navigation Menu with ScrollPane -->
+
             <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
                 <VBox spacing="5" styleClass="sidebar-menu">
                     <Label styleClass="sidebar-group-label" text="Menu" />
@@ -57,17 +56,17 @@
                     <Button fx:id="btnQA" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showQA" styleClass="nav-btn" text="❓ Q&amp;A Forum" />
                     <Button fx:id="btnBloodDonation" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showBloodDonation" styleClass="nav-btn" text="🩸 Blood Donation" />
                     <Button fx:id="btnSmartAssistant" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showSmartAssistant" styleClass="nav-btn" text="🤖 AI Assistant" />
-                    
+
                     <Region prefHeight="20" />
                 </VBox>
             </ScrollPane>
 
-            <!-- Profile & Settings Section at Bottom -->
+
             <VBox spacing="10" styleClass="sidebar-footer">
                 <Separator styleClass="sidebar-separator" />
-                
+
                 <Label fx:id="lblWelcome" styleClass="sidebar-user-name" text="Welcome, Patient!" />
-                
+
                 <HBox alignment="CENTER" spacing="10" styleClass="mode-toggle-container">
                     <Button fx:id="btnLightMode" onAction="#setLightMode" styleClass="mode-btn, active" text="☀️ Light" />
                     <Button fx:id="btnDarkMode" onAction="#setDarkMode" styleClass="mode-btn" text="🌙 Dark" />
@@ -75,20 +74,21 @@
 
                 <Button fx:id="btnProfile" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#showProfile" styleClass="nav-btn" text="👤 Profile Setup" />
                 <Button fx:id="btnProfileSettings" alignment="CENTER_LEFT" managed="false" maxWidth="Infinity" onAction="#showProfile" styleClass="nav-btn" text="⚙️ Profile Settings" visible="false" />
-                
+
                 <Button fx:id="btnLogout" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#handleLogout" styleClass="nav-btn, logout-btn" text="🚪 Logout" />
             </VBox>
         </VBox>
     </left>
 
-    <!-- Main Content Area -->
+
+
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area">
             <padding>
                 <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
 
-            <!-- Dashboard Section -->
+
             <VBox fx:id="dashboardSection" spacing="20" visible="true">
                 <Label styleClass="section-title" text="Dashboard">
                     <font>
@@ -225,7 +225,7 @@
                 </ScrollPane>
             </VBox>
 
-            <!-- Search Doctors Section -->
+
             <VBox fx:id="searchDoctorsSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Search Doctors">
                     <font>
@@ -250,7 +250,7 @@
                 </ScrollPane>
             </VBox>
 
-            <!-- Book Appointment Section -->
+
             <VBox fx:id="bookAppointmentSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Book Appointment">
                     <font>
@@ -287,7 +287,7 @@
                 </VBox>
             </VBox>
 
-            <!-- View Appointments Section -->
+
             <VBox fx:id="viewAppointmentsSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="My Appointments">
                     <font>
@@ -309,7 +309,7 @@
                 </ScrollPane>
             </VBox>
 
-            <!-- View Reports Section -->
+
             <VBox fx:id="viewReportsSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Medical Reports">
                     <font>
@@ -378,7 +378,7 @@
                 </VBox>
             </VBox>
 
-            <!-- Notifications Section -->
+
             <VBox fx:id="notificationsSection" managed="false" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Notifications">
                     <font>
@@ -391,7 +391,7 @@
                 <ListView fx:id="lstNotifications" styleClass="question-list" VBox.vgrow="ALWAYS" />
             </VBox>
 
-            <!-- Doctor Posts Section -->
+
             <VBox fx:id="doctorPostsSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Health Tips &amp; Posts">
                     <font>
@@ -407,7 +407,7 @@
                 <ListView fx:id="lstDoctorPosts" styleClass="post-list" VBox.vgrow="ALWAYS" />
             </VBox>
 
-            <!-- Q&A Section -->
+
             <VBox fx:id="qaSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Q&amp;A Forum">
                     <font>
@@ -433,7 +433,7 @@
                 <ListView fx:id="lstMyQuestions" styleClass="question-list" VBox.vgrow="ALWAYS" />
             </VBox>
 
-            <!-- Blood Donation Section -->
+
             <VBox fx:id="bloodDonationSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Blood Donation Network">
                     <font>
@@ -499,7 +499,7 @@
                 </ScrollPane>
             </VBox>
 
-            <!-- Smart Assistant Section -->
+
             <VBox fx:id="smartAssistantSection" spacing="20" visible="false">
                 <Label styleClass="section-title" text="Smart Health Assistant">
                     <font>
@@ -532,5 +532,6 @@
 
         </StackPane>
     </center>
+
 
 </BorderPane>
